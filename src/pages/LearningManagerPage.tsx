@@ -285,9 +285,6 @@ export default function LearningManagerPage() {
           <i className="fas fa-chart-bar"></i> 진도현황
         </button>
         <div style={{borderTop: '1px solid #eebbc3', margin: '2rem 0 1rem 0'}} />
-        <button onClick={() => navigate('/wake-up')}>
-          <i className="fas fa-eye"></i> 집중력 매니저 (페이지)
-        </button>
         <button style={{marginTop: 8, background: '#764ba2', color: 'white'}} onClick={() => setFocusModalOpen(true)}>
           <i className="fas fa-bolt"></i> 집중력 매니저 ON
         </button>

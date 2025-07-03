@@ -11,6 +11,7 @@ const WakeUpModal: React.FC<WakeUpModalProps> = ({ onClose }) => {
   const [earThreshold, setEarThreshold] = useState(0.25);
   const [earValue, setEarValue] = useState(0.25);
   const [alerts, setAlerts] = useState<{drowsy: boolean, absence: boolean, attention: boolean}>({drowsy: false, absence: false, attention: false});
+  const [minimized, setMinimized] = useState(false);
 
   // Mediapipe 관련 상태
   const faceLandmarkerRef = useRef<any>(null);
@@ -67,6 +68,8 @@ const WakeUpModal: React.FC<WakeUpModalProps> = ({ onClose }) => {
     }
     window.speechSynthesis.cancel();
   }
+
+  const predictWebcamRef = useRef<(() => void) | null>(null);
 
   // Mediapipe 로딩 및 웹캠 시작
   useEffect(() => {
@@ -218,7 +221,7 @@ const WakeUpModal: React.FC<WakeUpModalProps> = ({ onClose }) => {
       setAlerts({ drowsy, absence, attention });
       requestAnimationFrame(predictWebcam);
     }
-
+    predictWebcamRef.current = predictWebcam;
     loadAndStart();
     return () => {
       running = false;
@@ -233,9 +236,89 @@ const WakeUpModal: React.FC<WakeUpModalProps> = ({ onClose }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!minimized) {
+      // 복원 시 video/canvas 크기 재설정 및 canvas 초기화
+      if (videoRef.current && streamRef.current) {
+        videoRef.current.width = 400;
+        videoRef.current.height = 300;
+        videoRef.current.srcObject = streamRef.current;
+        videoRef.current.onloadeddata = () => {
+          if (predictWebcamRef.current) predictWebcamRef.current();
+        };
+      }
+      if (canvasRef.current) {
+        canvasRef.current.width = 400;
+        canvasRef.current.height = 300;
+        const ctx = canvasRef.current.getContext('2d');
+        ctx?.clearRect(0, 0, 400, 300);
+      }
+    }
+  }, [minimized]);
+
+  if (minimized) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          top: 16,
+          right: 24,
+          width: 200,
+          height: 150,
+          opacity: 1.0,
+          pointerEvents: 'auto',
+          zIndex: 10001,
+          background: '#222',
+          borderRadius: 8,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        title="집중력 매니저 복원"
+        onClick={() => setMinimized(false)}
+      >
+        <div style={{position: 'relative', width: 200, height: 150}}>
+          <video
+            ref={videoRef}
+            width={200}
+            height={150}
+            autoPlay
+            playsInline
+            style={{
+              borderRadius: 8,
+              width: 200,
+              height: 150,
+              objectFit: 'cover',
+              display: 'block',
+              background: '#222'
+            }}
+          />
+          <canvas
+            ref={canvasRef}
+            width={200}
+            height={150}
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              borderRadius: 8,
+              width: 200,
+              height: 150,
+              pointerEvents: 'none',
+              background: 'transparent'
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ position: 'fixed', zIndex: 10000, left: 0, top: 0, width: '100vw', height: '100vh', background: 'rgba(44,62,80,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ position: 'relative', background: '#2c3e50', color: 'white', borderRadius: 12, padding: 32, boxShadow: '0 8px 32px rgba(0,0,0,0.25)', minWidth: 400, maxWidth: 700 }}>
+        <button onClick={() => { setMinimized(true); }} style={{ position: 'absolute', top: 16, right: 56, background: 'none', border: 'none', color: '#fff', fontSize: 22, cursor: 'pointer', zIndex: 11 }} title="최소화"><i className="fas fa-window-minimize"></i></button>
         <button onClick={() => { stopWebcam(); onClose(); }} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: '#fff', fontSize: 28, cursor: 'pointer', zIndex: 10 }}>&times;</button>
         <h2 style={{ marginBottom: 20, textAlign: 'center' }}>AI 집중력 매니저</h2>
         <div style={{ position: 'relative', border: '5px solid #3498db', borderRadius: 10, overflow: 'hidden', marginBottom: 20 }}>
