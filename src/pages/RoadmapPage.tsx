@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './RoadmapPage.css';
+import { useLocation } from 'react-router-dom';
 
 const branchIds = [
   'beginner',
@@ -24,6 +25,12 @@ const subBranchIds = [
 ];
 
 export default function RoadmapPage() {
+  const location = useLocation();
+  const topic = location.state?.topic || 'react';
+  let topicLabel = 'React';
+  if (topic === 'ml') topicLabel = 'Machine Learning';
+  else if (topic === 'python') topicLabel = 'Python';
+  else if (topic === 'react') topicLabel = 'React';
   const [mainBranchesVisible, setMainBranchesVisible] = useState(false);
   const [expandedBranches, setExpandedBranches] = useState<{ [key: string]: boolean }>({});
   const [expandedSubBranches, setExpandedSubBranches] = useState<{ [key: string]: boolean }>({});
@@ -63,14 +70,14 @@ export default function RoadmapPage() {
 
   return (
     <div className="mindmap-container">
-      <h1 className="mindmap-title">React 학습 로드맵</h1>
+      <h1 className="mindmap-title">{topicLabel} 학습 로드맵</h1>
       <div className="controls">
         <button className="btn" onClick={expandAll}>전체 펼치기</button>
         <button className="btn" onClick={collapseAll}>전체 접기</button>
       </div>
       <div className="mindmap">
         <div className="root-node" onClick={toggleAllBranches}>
-          React 학습 로드맵
+          {topicLabel} 학습 로드맵
         </div>
         <div
           className="main-branches"

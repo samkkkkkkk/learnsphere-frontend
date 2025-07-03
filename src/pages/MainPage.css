@@ -1,0 +1,248 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  margin: 0;
+  color: #222;
+  font-size: 1.15rem;
+}
+.container {
+  max-width: 1100px;
+  min-width: 900px;
+  margin: 0 auto;
+  padding: 56px 48px 0 48px;
+}
+.header {
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 2px 32px rgba(0,0,0,0.10);
+  border-radius: 0 0 32px 32px;
+  margin-bottom: 48px;
+}
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2.5rem 0 1.5rem 0;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+.logo-icon {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 2rem;
+}
+.logo h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.version-badge {
+  background: #28a745;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border-radius: 24px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.hero-section {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+.hero-section h2 {
+  font-size: 3.2rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.13);
+}
+.hero-description {
+  font-size: 1.35rem;
+  color: rgba(255,255,255,0.97);
+  margin-bottom: 2.2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.hero-features {
+  display: flex;
+  justify-content: center;
+  gap: 3.5rem;
+  flex-wrap: wrap;
+}
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1.18rem;
+}
+.feature-item i { color: #28a745; font-size: 1.4rem; }
+.selection-card {
+  background: white;
+  border-radius: 32px;
+  padding: 3.2rem 2.5rem 3.5rem 2.5rem;
+  box-shadow: 0 16px 64px rgba(0,0,0,0.13);
+  max-width: 1000px;
+  margin: 0 auto 3.5rem auto;
+}
+.card-header { text-align: center; margin-bottom: 2.8rem; }
+.card-header h3 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 0.7rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.7rem;
+}
+.card-header h3 i { color: #667eea; font-size: 1.5rem; }
+.card-header p { color: #666; font-size: 1.18rem; }
+.form-section { margin-bottom: 2.2rem; }
+.section-label { font-size: 1.25rem; font-weight: 700; color: #333; margin-bottom: 0.7rem; display: block; }
+.topic-grid { display: flex; gap: 2rem; }
+.topic-option {
+  flex: 1;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 2rem 2.2rem;
+  border: 2.5px solid #e9ecef;
+  border-radius: 18px;
+  cursor: pointer;
+  background: white;
+  transition: all 0.3s;
+  font-size: 1.15rem;
+}
+.topic-option.active { border-color: #667eea; background: #f0f4ff; }
+.topic-option.disabled { background: #f8f9fa; opacity: 0.6; cursor: not-allowed; }
+.topic-content h4 { font-size: 1.25rem; color: #333; margin-bottom: 0.3rem; }
+.topic-content p { color: #666; font-size: 1.05rem; }
+.topic-badge { padding: 0.7rem 1.5rem; border-radius: 24px; font-size: 1rem; font-weight: 700; }
+.topic-badge.available { background: #667eea; color: white; }
+.topic-badge.coming-soon { background: #6c757d; color: white; }
+.level-grid { display: flex; gap: 2rem; }
+.level-option {
+  flex: 1;
+  padding: 2rem 0;
+  border: 2.5px solid #e9ecef;
+  border-radius: 18px;
+  text-align: center;
+  cursor: pointer;
+  background: white;
+  transition: all 0.3s;
+  font-size: 1.15rem;
+}
+.level-option.active { border-color: #28a745; background: #f0fff4; }
+.level-option.disabled { background: #f8f9fa; opacity: 0.6; cursor: not-allowed; }
+.level-title { font-size: 1.18rem; font-weight: 700; color: #333; margin-bottom: 0.3rem; }
+.level-subtitle { font-size: 1.05rem; color: #666; }
+.generate-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 1.3rem 3.2rem;
+  border-radius: 18px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex; align-items: center; justify-content: center; gap: 1.1rem;
+  margin: 2.2rem auto 0 auto;
+}
+.generate-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(102,126,234,0.18); }
+.results-section { max-width: 900px; margin: 0 auto; display: none; }
+.results-header { text-align: center; margin-bottom: 3.2rem; }
+.results-header h2 { font-size: 2.2rem; color: #222; margin-bottom: 0.7rem; }
+.duration-info { color: #555; font-size: 1.18rem; }
+.roadmap-steps { display: flex; flex-direction: column; gap: 2.2rem; margin-bottom: 3.5rem; }
+.roadmap-step {
+  background: white;
+  border-radius: 28px;
+  padding: 2.5rem 2.2rem;
+  box-shadow: 0 10px 40px rgba(102,126,234,0.10);
+  opacity: 0;
+  transform: translateY(40px);
+  animation: none;
+  transition: box-shadow 0.2s;
+  font-size: 1.15rem;
+}
+.roadmap-step.show {
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeInUp 0.7s cubic-bezier(.23,1.01,.32,1) forwards;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.step-header { display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 1.5rem; }
+.step-number {
+  width: 54px; height: 54px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 1.5rem; flex-shrink: 0;
+}
+.step-info h3 { font-size: 1.45rem; color: #333; margin-bottom: 0.6rem; }
+.step-badges { display: flex; gap: 0.7rem; flex-wrap: wrap; }
+.step-badge { padding: 0.35rem 1.1rem; border-radius: 18px; font-size: 1.05rem; font-weight: 700; }
+.step-badge.difficulty { background: #e3f2fd; color: #1976d2; border: 1.5px solid #bbdefb; }
+.step-badge.duration { background: #f3e5f5; color: #7b1fa2; border: 1.5px solid #e1bee7; }
+.step-explanation { color: #555; line-height: 1.8; margin-bottom: 1.5rem; font-size: 1.13rem; }
+.step-divider { height: 1.5px; background: #e9ecef; margin: 1.5rem 0; }
+.step-resource { background: #f0f4ff; padding: 1.7rem; border-radius: 16px; border-left: 6px solid #667eea; }
+.resource-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.1rem; }
+.resource-header h4 { color: #333; font-size: 1.18rem; }
+.resource-header i { color: #667eea; font-size: 1.25rem; }
+.resource-content { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; }
+.resource-info h5 { color: #1a365d; font-size: 1.18rem; margin-bottom: 0.25rem; }
+.resource-info p { color: #4a5568; font-size: 1.05rem; }
+.resource-link {
+  background: white;
+  color: #667eea;
+  border: 2.5px solid #667eea;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s;
+  display: flex; align-items: center; gap: 0.7rem; white-space: nowrap;
+}
+.resource-link:hover { background: #667eea; color: white; }
+.success-card {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  border-radius: 24px;
+  padding: 3rem 2.2rem;
+  text-align: center;
+  color: white;
+  margin-bottom: 2.5rem;
+  font-size: 1.25rem;
+}
+.success-content i { font-size: 2.8rem; margin-bottom: 1.1rem; opacity: 0.9; }
+.success-content h3 { font-size: 1.7rem; margin-bottom: 1.1rem; }
+.success-content p { font-size: 1.18rem; opacity: 0.93; line-height: 1.7; }
+@media (max-width: 1200px) {
+  .container, .results-section { max-width: 98vw; min-width: 0; padding: 24px 4vw 0 4vw; }
+  .selection-card { padding: 1.2rem; }
+  .roadmap-step { padding: 1.1rem 0.7rem; }
+}
+@media (max-width: 900px) {
+  .container, .results-section { max-width: 100vw; min-width: 0; padding: 12px 2vw 0 2vw; }
+  .selection-card { padding: 1rem; }
+  .roadmap-step { padding: 0.7rem 0.3rem; }
+}
+@media (max-width: 600px) {
+  .container, .results-section { max-width: 100vw; min-width: 0; padding: 0 0 0 0; }
+  .selection-card { padding: 0.7rem; }
+  .roadmap-step { padding: 0.5rem 0.1rem; }
+  .topic-grid, .level-grid { flex-direction: column; gap: 1rem; }
+  .step-header { flex-direction: column; gap: 0.7rem; }
+  .resource-content { flex-direction: column; gap: 0.7rem; align-items: stretch; }
+} 
