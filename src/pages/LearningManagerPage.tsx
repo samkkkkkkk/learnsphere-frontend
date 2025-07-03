@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './LearningManagerPage.css';
 import { useNavigate } from 'react-router-dom';
+import WakeUpModal from './WakeUpModal';
 
 const CATEGORY_MAP = {
   programming: '프로그래밍',
@@ -74,6 +75,7 @@ export default function LearningManagerPage() {
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [feedbackResult, setFeedbackResult] = useState<string | null>(null);
   const [calendarWeek, setCalendarWeek] = useState(new Date());
+  const [focusModalOpen, setFocusModalOpen] = useState(false);
   // Refs
   const scheduleFormRef = useRef<HTMLFormElement>(null);
   const navigate = useNavigate();
@@ -284,7 +286,10 @@ export default function LearningManagerPage() {
         </button>
         <div style={{borderTop: '1px solid #eebbc3', margin: '2rem 0 1rem 0'}} />
         <button onClick={() => navigate('/wake-up')}>
-          <i className="fas fa-eye"></i> 집중력 매니저
+          <i className="fas fa-eye"></i> 집중력 매니저 (페이지)
+        </button>
+        <button style={{marginTop: 8, background: '#764ba2', color: 'white'}} onClick={() => setFocusModalOpen(true)}>
+          <i className="fas fa-bolt"></i> 집중력 매니저 ON
         </button>
       </aside>
       <main className="lm-main">
@@ -576,6 +581,9 @@ export default function LearningManagerPage() {
           )}
         </div>
       </main>
+      {focusModalOpen && (
+        <WakeUpModal onClose={() => setFocusModalOpen(false)} />
+      )}
     </div>
   );
 } 
