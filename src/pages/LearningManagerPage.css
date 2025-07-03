@@ -7,17 +7,25 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  color: #333;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: var(--color-text-main);
+  background: linear-gradient(135deg, var(--color-main-gradient-from) 0%, var(--color-main-gradient-to) 100%);
   min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
 }
-.container {
+.container,
+.goal-form-container,
+.section,
+.goal-form,
+.goal-form form {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 2.5rem 2rem;
+  box-sizing: border-box;
 }
 .header {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--color-bg-card);
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
   position: sticky;
@@ -68,11 +76,13 @@ body {
   padding: 2rem 0;
 }
 .section {
+  max-width: 100vw;
+  width: 100%;
+  margin: 0;
+  padding: 2.5rem 0;
   display: none;
   background: white;
   border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 2rem;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 .section.active {
@@ -132,15 +142,25 @@ body {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
 }
-.goal-form-container {
-  background: #f8f9fa;
-  padding: 2rem;
-  border-radius: 15px;
-  margin-bottom: 2rem;
+.goal-form-container * {
+  max-width: 100vw;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
 }
 .goal-form {
+  max-width: 100vw;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
   display: grid;
   gap: 1.5rem;
+}
+.goal-form form {
+  max-width: 100vw;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
 }
 .form-row {
   display: grid;
@@ -177,7 +197,7 @@ body {
 }
 .goal-item {
   background: #f8f9fa;
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 15px;
   border-left: 5px solid #667eea;
   transition: transform 0.3s ease;
@@ -664,15 +684,16 @@ body {
 .lm-layout {
   display: flex;
   min-height: 100vh;
-  background: #f8f9fb;
+  /* background: #f8f9fb; */
 }
 .lm-sidebar {
-  width: 200px;
+  width: 260px;
+  min-width: 200px;
   background: #3a3f58;
   display: flex;
   flex-direction: column;
-  padding: 2rem 0 2rem 0;
-  gap: 1rem;
+  padding: 3rem 0 3rem 0;
+  gap: 2rem;
   box-shadow: 2px 0 8px rgba(0,0,0,0.03);
 }
 .lm-sidebar button {
@@ -697,7 +718,7 @@ body {
 }
 .lm-main {
   flex: 1;
-  padding: 0;
+  padding: 2.5rem 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -709,6 +730,7 @@ body {
   .lm-sidebar {
     flex-direction: row;
     width: 100%;
+    min-width: 0;
     padding: 0.5rem 0;
     box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     justify-content: space-around;

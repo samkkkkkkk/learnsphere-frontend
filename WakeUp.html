@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AI 집중력 매니저 (최종 완성)</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #2c3e50;
+        color: white;
+        flex-direction: column;
+        font-family: sans-serif;
+      }
+      .video-container {
+        position: relative;
+        border: 5px solid #3498db;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+      }
+      #webcam {
+        display: block;
+        transform: scaleX(-1);
+      }
+      #output_canvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform: scaleX(-1);
+      }
+      h1 {
+        margin-bottom: 20px;
+      }
+      .alert-box {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 1.5em;
+        font-weight: bold;
+        display: none;
+        z-index: 10;
+      }
+      #drowsy-alert {
+        background-color: #e74c3c;
+      }
+      #absence-alert {
+        background-color: #3498db;
+      }
+      #attention-alert {
+        background-color: #f39c12;
+      }
+      #flash-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(255, 0, 0, 0.3);
+        z-index: 99;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.2s ease-out;
+      }
+      .settings {
+        background-color: #34495e;
+        padding: 15px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .settings label {
+        font-weight: bold;
+      }
+      .settings input[type='range'] {
+        width: 200px;
+      }
+      .settings #ear-value {
+        font-family: monospace;
+        font-size: 1.2em;
+        color: #f1c40f;
+        min-width: 50px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AI 집중력 매니저 (최종 완성)</h1>
+    <div class="video-container">
+      <video id="webcam" width="640" height="480" autoplay playsinline></video>
+      <canvas id="output_canvas" width="640" height="480"></canvas>
+      <div id="drowsy-alert" class="alert-box">졸음 감지!</div>
+      <div id="absence-alert" class="alert-box">자리를 비우셨나요?</div>
+      <div id="attention-alert" class="alert-box">집중하세요!</div>
+    </div>
+    <div id="flash-overlay"></div>
+    <div class="settings">
+      <label for="ear-slider">졸음 민감도 (높을수록 민감)</label>
+      <input
+        type="range"
+        id="ear-slider"
+        min="0.15"
+        max="0.35"
+        step="0.01"
+        value="0.25"
+      />
+      <span id="ear-value">0.25</span>
+    </div>
+
+    <script type="module">
+      import {
+        FaceLandmarker,
+        FilesetResolver,
+        DrawingUtils,
+      } from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/vision_bundle.js';
+
+      // 1. HTML 요소 변수
+      const videoElement = document.getElementById('webcam');
+      const canvasElement = document.getElementById('output_canvas');
+      const canvasCtx = canvasElement.getContext('2d');
+      const drowsyAlertElement = document.getElementById('drowsy-alert');
+      const flashOverlayElement = document.getElementById('flash-overlay');
+      const absenceAlertElement = document.getElementById('absence-alert');
+      const attentionAlertElement = document.getElementById('attention-alert');
+      const earSlider = document.getElementById('ear-slider');
+      const earValueSpan = document.getElementById('ear-value');
+
+      // 2. 상태 및 설정 변수
+      let faceLandmarker;
+      let lastVideoTime = -1;
+      let EAR_THRESHOLD = 0.25;
+      const DROWSY_CONSECUTIVE_FRAMES = 48;
+      let drowsyCounter = 0;
+      let headNodCounter = 0;
+      let isDrowsyAlertActive = false;
+      const PITCH_THRESHOLD_DEGREES = 15;
+      const ABSENCE_THRESHOLD_SECONDS = 3;
+      let absenceCounter = 0;
+      let isAbsenceAlertActive = false;
+      const YAW_THRESHOLD_DEGREES = 20;
+      const ATTENTION_LAPSE_SECONDS = 2;
+      let attentionLapseCounter = 0;
+      let isAttentionAlertActive = false;
+
+      // 3. 이벤트 리스너
+      earSlider.addEventListener('input', (event) => {
+        EAR_THRESHOLD = parseFloat(event.target.value);
+        earValueSpan.textContent = EAR_THRESHOLD.toFixed(2);
+      });
+
+      // 4. 헬퍼 함수
+      function speak(text) {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'ko-KR';
+          utterance.rate = 1.2;
+          window.speechSynthesis.speak(utterance);
+        }
+      }
+
+      function getDistance(p1, p2) {
+        return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+      }
+
+      function calculateEAR(eye) {
+        const verticalDist =
+          getDistance(eye[1], eye[5]) + getDistance(eye[2], eye[4]);
+        const horizontalDist = getDistance(eye[0], eye[3]);
+        return verticalDist / (2.0 * horizontalDist);
+      }
+
+      // 5. 메인 로직 함수
+      async function startWebcamAndPredict() {
+        const filesetResolver = await FilesetResolver.forVisionTasks(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+        );
+        faceLandmarker = await FaceLandmarker.createFromOptions(
+          filesetResolver,
+          {
+            baseOptions: {
+              modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`,
+              delegate: 'GPU',
+            },
+            runningMode: 'VIDEO',
+            numFaces: 1,
+            outputFacialTransformationMatrixes: true,
+          }
+        );
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          });
+          videoElement.srcObject = stream;
+          videoElement.addEventListener('loadeddata', predictWebcam);
+        } catch (err) {
+          console.error('웹캠 접근 오류:', err);
+        }
+      }
+
+      function predictWebcam() {
+        if (
+          !videoElement.srcObject ||
+          videoElement.paused ||
+          videoElement.ended ||
+          lastVideoTime === videoElement.currentTime
+        ) {
+          window.requestAnimationFrame(predictWebcam);
+          return;
+        }
+        lastVideoTime = videoElement.currentTime;
+        const results = faceLandmarker.detectForVideo(
+          videoElement,
+          performance.now()
+        );
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+        if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+          if (absenceCounter > 0) {
+            absenceCounter = 0;
+          }
+          if (isAbsenceAlertActive) {
+            absenceAlertElement.style.display = 'none';
+            isAbsenceAlertActive = false;
+          }
+
+          const landmarks = results.faceLandmarks[0];
+          const drawingUtils = new DrawingUtils(canvasCtx);
+          drawingUtils.drawConnectors(
+            landmarks,
+            FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+            { color: '#C0C0C070', lineWidth: 1 }
+          );
+
+          const leftEye = [362, 385, 387, 263, 373, 398].map(
+            (i) => landmarks[i]
+          );
+          const rightEye = [33, 160, 158, 133, 153, 144].map(
+            (i) => landmarks[i]
+          );
+          const avgEAR = (calculateEAR(leftEye) + calculateEAR(rightEye)) / 2.0;
+
+          if (avgEAR < EAR_THRESHOLD) {
+            drowsyCounter++;
+          } else {
+            drowsyCounter = 0;
+          }
+
+          if (
+            results.facialTransformationMatrixes &&
+            results.facialTransformationMatrixes.length > 0
+          ) {
+            const matrix = results.facialTransformationMatrixes[0].data;
+            const yaw = Math.atan2(matrix[8], matrix[10]) * (180 / Math.PI);
+            const pitch = Math.asin(-matrix[9]) * (180 / Math.PI);
+
+            if (Math.abs(yaw) > YAW_THRESHOLD_DEGREES) {
+              attentionLapseCounter++;
+            } else {
+              attentionLapseCounter = 0;
+            }
+            if (pitch > PITCH_THRESHOLD_DEGREES) {
+              headNodCounter++;
+            } else {
+              headNodCounter = 0;
+            }
+
+            if (
+              attentionLapseCounter > ATTENTION_LAPSE_SECONDS * 30 &&
+              !isAttentionAlertActive
+            ) {
+              isAttentionAlertActive = true;
+              attentionAlertElement.style.display = 'block';
+              speak('화면에 집중해주세요.');
+              setTimeout(() => {
+                attentionAlertElement.style.display = 'none';
+                isAttentionAlertActive = false;
+              }, 2000);
+            }
+          }
+
+          if (
+            (drowsyCounter >= DROWSY_CONSECUTIVE_FRAMES ||
+              headNodCounter >= DROWSY_CONSECUTIVE_FRAMES) &&
+            !isDrowsyAlertActive
+          ) {
+            isDrowsyAlertActive = true;
+            drowsyAlertElement.style.display = 'block';
+            speak('졸음이 감지되었습니다.');
+            flashOverlayElement.style.display = 'block';
+            flashOverlayElement.style.opacity = 1;
+            setTimeout(() => {
+              flashOverlayElement.style.opacity = 0;
+              setTimeout(() => {
+                flashOverlayElement.style.display = 'none';
+              }, 200);
+            }, 100);
+            setTimeout(() => {
+              drowsyAlertElement.style.display = 'none';
+              isDrowsyAlertActive = false;
+            }, 2000);
+          }
+        } else {
+          drowsyCounter = 0;
+          attentionLapseCounter = 0;
+          headNodCounter = 0;
+          absenceCounter++;
+          const absenceFramesThreshold = ABSENCE_THRESHOLD_SECONDS * 30;
+
+          if (
+            absenceCounter >= absenceFramesThreshold &&
+            !isAbsenceAlertActive
+          ) {
+            isAbsenceAlertActive = true;
+            absenceAlertElement.style.display = 'block';
+            speak('자리를 비우셨나요?');
+          }
+        }
+        window.requestAnimationFrame(predictWebcam);
+      }
+
+      // 6. 프로그램 시작
+      startWebcamAndPredict();
+    </script>
+  </body>
+</html>

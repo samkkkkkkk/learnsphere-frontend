@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './LearningManagerPage.css';
+import { useNavigate } from 'react-router-dom';
 
 const CATEGORY_MAP = {
   programming: '프로그래밍',
@@ -75,6 +76,7 @@ export default function LearningManagerPage() {
   const [calendarWeek, setCalendarWeek] = useState(new Date());
   // Refs
   const scheduleFormRef = useRef<HTMLFormElement>(null);
+  const navigate = useNavigate();
 
   // LocalStorage sync
   useEffect(() => {
@@ -279,6 +281,10 @@ export default function LearningManagerPage() {
         </button>
         <button className={activeTab === 'progress' ? 'active' : ''} onClick={() => setActiveTab('progress')}>
           <i className="fas fa-chart-bar"></i> 진도현황
+        </button>
+        <div style={{borderTop: '1px solid #eebbc3', margin: '2rem 0 1rem 0'}} />
+        <button onClick={() => navigate('/wake-up')}>
+          <i className="fas fa-eye"></i> 집중력 매니저
         </button>
       </aside>
       <main className="lm-main">
