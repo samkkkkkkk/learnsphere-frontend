@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './LearningManagerPage.css';
 import { useNavigate } from 'react-router-dom';
 import WakeUpModal from './WakeUpModal';
+import FocusManagerModal from './FocusManagerModal';
 
 const CATEGORY_MAP = {
   programming: '프로그래밍',
@@ -579,7 +580,7 @@ export default function LearningManagerPage() {
         </div>
       </main>
       {focusModalOpen && (
-        <WakeUpModal onClose={() => setFocusModalOpen(false)} />
+        <FocusManagerModal onClose={() => setFocusModalOpen(false)} />
       )}
     </div>
   );
