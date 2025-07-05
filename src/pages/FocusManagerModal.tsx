@@ -1,18 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useFocusManager } from '../contexts/FocusManagerContext';
 
 const EAR_THRESHOLD_DEFAULT = 0.25;
 
 const mediapipeUrl = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/vision_bundle.js';
 
-interface FocusManagerModalProps {
-  onClose: () => void;
-}
-
-const FocusManagerModal: React.FC<FocusManagerModalProps> = ({ onClose }) => {
+const FocusManagerModal: React.FC = () => {
+  const { isOpen, isMinimized, closeModal, minimizeModal, restoreModal } = useFocusManager();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [earThreshold, setEarThreshold] = useState(EAR_THRESHOLD_DEFAULT);
   const [alerts, setAlerts] = useState<{ drowsy: boolean; absence: boolean; attention: boolean }>({ drowsy: false, absence: false, attention: false });
-  const [minimized, setMinimized] = useState(false);
   const faceLandmarkerRef = useRef<any>(null);
   const lastVideoTimeRef = useRef(-1);
   const drowsyCounterRef = useRef(0);
@@ -64,11 +61,10 @@ const FocusManagerModal: React.FC<FocusManagerModalProps> = ({ onClose }) => {
     let FilesetResolver: any;
     let running = true;
 
-    async function loadAndStart() {
+    async function loadMediaPipe() {
       try {
         // @ts-ignore
         const visionModule = await import(/* @vite-ignore */ mediapipeUrl);
-        console.log('MediaPipe vision_bundle.js loaded:', visionModule);
         FaceLandmarker = visionModule.FaceLandmarker;
         FilesetResolver = visionModule.FilesetResolver;
         const filesetResolver = await FilesetResolver.forVisionTasks(
@@ -86,20 +82,48 @@ const FocusManagerModal: React.FC<FocusManagerModalProps> = ({ onClose }) => {
             outputFacialTransformationMatrixes: true,
           }
         );
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          streamRef.current = stream;
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            videoRef.current.onloadeddata = () => {
-              predictWebcam();
-            };
-          }
-        } catch (err) {
-          alert('웹캠 접근 오류: ' + err);
-        }
+        return true;
       } catch (err) {
         console.error('MediaPipe import error:', err);
+        return false;
+      }
+    }
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        streamRef.current = stream;
+        
+        // 비디오 요소가 준비될 때까지 대기
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.onloadeddata = () => {
+            predictWebcam();
+          };
+        } else {
+          // 비디오 ref가 준비될 때까지 대기
+          const checkVideoRef = () => {
+            if (videoRef.current) {
+              videoRef.current.srcObject = stream;
+              videoRef.current.onloadeddata = () => {
+                predictWebcam();
+              };
+            } else {
+              setTimeout(checkVideoRef, 100);
+            }
+          };
+          checkVideoRef();
+        }
+      } catch (err) {
+        console.error('Camera access error:', err);
+        alert('웹캠 접근 오류: ' + err);
+      }
+    }
+
+    async function loadAndStart() {
+      const mediaPipeLoaded = await loadMediaPipe();
+      if (mediaPipeLoaded) {
+        await startCamera();
       }
     }
 
@@ -172,11 +196,11 @@ const FocusManagerModal: React.FC<FocusManagerModalProps> = ({ onClose }) => {
       }
       window.speechSynthesis.cancel();
     };
-  }, [earThreshold]);
+  }, []); // earThreshold 의존성 제거
 
   // 복원 시 predictWebcam 재시작
   useEffect(() => {
-    if (!minimized && videoRef.current && faceLandmarkerRef.current) {
+    if (!isMinimized && videoRef.current && faceLandmarkerRef.current) {
       if (videoRef.current.readyState >= 2) {
         predictWebcamRef.current();
       } else {
@@ -186,15 +210,17 @@ const FocusManagerModal: React.FC<FocusManagerModalProps> = ({ onClose }) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [minimized]);
+  }, [isMinimized]);
+
+  if (!isOpen) return null;
 
   return (
     <>
-      <div style={{ display: minimized ? 'none' : 'block' }}>
+      <div style={{ display: isMinimized ? 'none' : 'block' }}>
         <div className="modal active" style={{ zIndex: 1000 }}>
           <div className="modal-content" style={{ position: 'relative', background: '#34495e', color: 'white', borderRadius: 10, padding: 24, minWidth: 400 }}>
-            <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: '#fff', fontSize: 28, cursor: 'pointer', zIndex: 10 }}>&times;</button>
-            <button onClick={() => setMinimized(true)} style={{ position: 'absolute', top: 16, right: 56, background: 'none', border: 'none', color: '#fff', fontSize: 24, cursor: 'pointer', zIndex: 10 }} title="최소화">&#8211;</button>
+            <button onClick={closeModal} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: '#fff', fontSize: 28, cursor: 'pointer', zIndex: 10 }}>&times;</button>
+            <button onClick={minimizeModal} style={{ position: 'absolute', top: 16, right: 56, background: 'none', border: 'none', color: '#fff', fontSize: 24, cursor: 'pointer', zIndex: 10 }} title="최소화">&#8211;</button>
             <h2 style={{ marginBottom: 16 }}>AI 집중력 매니저</h2>
             <div style={{ position: 'relative', width: 400, height: 300, margin: '0 auto 16px auto', border: '4px solid #3498db', borderRadius: 10, overflow: 'hidden' }}>
               <video ref={videoRef} width={400} height={300} autoPlay playsInline style={{ display: 'block', transform: 'scaleX(-1)' }} />
@@ -211,7 +237,7 @@ const FocusManagerModal: React.FC<FocusManagerModalProps> = ({ onClose }) => {
           </div>
         </div>
       </div>
-      {minimized && (
+      {isMinimized && (
         <button
           style={{
             position: 'fixed',
@@ -229,7 +255,7 @@ const FocusManagerModal: React.FC<FocusManagerModalProps> = ({ onClose }) => {
             cursor: 'pointer',
           }}
           title="AI 집중력 매니저 복원"
-          onClick={() => setMinimized(false)}
+          onClick={restoreModal}
         >
           <span role="img" aria-label="restore">🔍</span>
         </button>

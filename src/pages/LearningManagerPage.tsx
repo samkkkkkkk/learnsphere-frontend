@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './LearningManagerPage.css';
-import FocusManagerModal from './FocusManagerModal';
 
 const CATEGORY_MAP = {
   programming: '프로그래밍',
@@ -91,7 +90,6 @@ export default function LearningManagerPage() {
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [feedbackResult, setFeedbackResult] = useState<string | null>(null);
   const [calendarWeek, setCalendarWeek] = useState(new Date());
-  const [focusModalOpen, setFocusModalOpen] = useState(false);
   // Refs
   const scheduleFormRef = useRef<HTMLFormElement>(null);
 
@@ -304,10 +302,6 @@ export default function LearningManagerPage() {
         </button>
         <button className={activeTab === 'progress' ? 'active' : ''} onClick={() => setActiveTab('progress')}>
           <i className="fas fa-chart-bar"></i> 진도현황
-        </button>
-        <div style={{borderTop: '1px solid #eebbc3', margin: '2rem 0 1rem 0'}} />
-        <button style={{marginTop: 8, background: '#764ba2', color: 'white'}} onClick={() => setFocusModalOpen(true)}>
-          <i className="fas fa-bolt"></i> 집중력 매니저 ON
         </button>
       </aside>
       <main className="lm-main">
@@ -599,9 +593,6 @@ export default function LearningManagerPage() {
           )}
         </div>
       </main>
-      {focusModalOpen && (
-        <FocusManagerModal onClose={() => setFocusModalOpen(false)} />
-      )}
     </div>
   );
 } 
