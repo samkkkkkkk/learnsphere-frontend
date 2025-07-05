@@ -117,6 +117,8 @@ body {
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
+  white-space: nowrap;
+  min-width: fit-content;
 }
 .btn-primary {
   background: linear-gradient(135deg, #667eea, #764ba2);

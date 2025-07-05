@@ -69,7 +69,8 @@ export default function RoadmapPage() {
   );
 
   return (
-    <div className="mindmap-container">
+    <div className="roadmap-page">
+      <div className="mindmap-container">
       <h1 className="mindmap-title">{topicLabel} 학습 로드맵</h1>
       <div className="controls">
         <button className="btn" onClick={expandAll}>전체 펼치기</button>
@@ -489,6 +490,7 @@ export default function RoadmapPage() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 } 
