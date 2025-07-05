@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './LearningManagerPage.css';
-import { useNavigate } from 'react-router-dom';
-import WakeUpModal from './WakeUpModal';
 import FocusManagerModal from './FocusManagerModal';
 
 const CATEGORY_MAP = {
@@ -10,14 +8,9 @@ const CATEGORY_MAP = {
   language: '언어',
   business: '비즈니스',
   other: '기타',
-};
+} as const;
 
-const NAV_TABS = [
-  { id: 'goals', label: '목표 설정', icon: 'fas fa-target' },
-  { id: 'schedule', label: '일정 관리', icon: 'fas fa-calendar-alt' },
-  { id: 'feedback', label: 'AI 피드백', icon: 'fas fa-robot' },
-  { id: 'progress', label: '진도 현황', icon: 'fas fa-chart-bar' },
-];
+type CategoryKey = keyof typeof CATEGORY_MAP;
 
 function getTodayStr() {
   return new Date().toISOString().split('T')[0];
@@ -30,6 +23,7 @@ type GoalFormType = {
   description: string;
   dailyStudyTime: number;
 };
+
 type ScheduleFormType = {
   goalId: string;
   date: string;
@@ -38,17 +32,39 @@ type ScheduleFormType = {
   duration: number;
 };
 
+type Goal = {
+  id: number;
+  title: string;
+  category: CategoryKey;
+  deadline: string;
+  description: string;
+  dailyStudyTime: number;
+  progress: number;
+  createdAt: string;
+};
+
+type Schedule = {
+  id: number;
+  goalId: number;
+  date: string;
+  time: string;
+  content: string;
+  duration: number;
+  completed: boolean;
+  createdAt: string;
+};
+
 export default function LearningManagerPage() {
   // State
   const [activeTab, setActiveTab] = useState('goals');
-  const [goals, setGoals] = useState(() => {
+  const [goals, setGoals] = useState<Goal[]>(() => {
     try {
       return JSON.parse(localStorage.getItem('goals') || '[]');
     } catch {
       return [];
     }
   });
-  const [schedules, setSchedules] = useState(() => {
+  const [schedules, setSchedules] = useState<Schedule[]>(() => {
     try {
       return JSON.parse(localStorage.getItem('schedules') || '[]');
     } catch {
@@ -72,14 +88,12 @@ export default function LearningManagerPage() {
     content: '',
     duration: 60,
   });
-  const [feedbackType, setFeedbackType] = useState<string | null>(null);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [feedbackResult, setFeedbackResult] = useState<string | null>(null);
   const [calendarWeek, setCalendarWeek] = useState(new Date());
   const [focusModalOpen, setFocusModalOpen] = useState(false);
   // Refs
   const scheduleFormRef = useRef<HTMLFormElement>(null);
-  const navigate = useNavigate();
 
   // LocalStorage sync
   useEffect(() => {
@@ -101,15 +115,23 @@ export default function LearningManagerPage() {
     e.preventDefault();
     if (!goalForm.title || !goalForm.category || !goalForm.deadline) return;
     if (editingGoalId) {
-      setGoals(goals => goals.map(g => g.id === editingGoalId ? { ...g, ...goalForm, dailyStudyTime: Number(goalForm.dailyStudyTime) } : g));
+      setGoals((goals: Goal[]) => goals.map((g: Goal) => g.id === editingGoalId ? { 
+        ...g, 
+        ...goalForm, 
+        category: goalForm.category as CategoryKey,
+        dailyStudyTime: Number(goalForm.dailyStudyTime) 
+      } : g));
       setGoalMessage({ text: '목표가 수정되었습니다!', type: 'success' });
       setEditingGoalId(null);
     } else {
-      setGoals(goals => [
+      setGoals((goals: Goal[]) => [
         ...goals,
         {
           id: Date.now(),
-          ...goalForm,
+          title: goalForm.title,
+          category: goalForm.category as CategoryKey,
+          deadline: goalForm.deadline,
+          description: goalForm.description,
           dailyStudyTime: Number(goalForm.dailyStudyTime),
           progress: 0,
           createdAt: new Date().toISOString(),
@@ -119,7 +141,7 @@ export default function LearningManagerPage() {
     }
     setGoalForm({ title: '', category: '', deadline: getTodayStr(), description: '', dailyStudyTime: 60 });
   };
-  const handleGoalEdit = (goal: any) => {
+  const handleGoalEdit = (goal: Goal) => {
     setGoalForm({
       title: goal.title,
       category: goal.category,
@@ -131,7 +153,7 @@ export default function LearningManagerPage() {
   };
   const handleGoalDelete = (goalId: number) => {
     if (window.confirm('정말로 이 목표를 삭제하시겠습니까?')) {
-      setGoals(goals => goals.filter(g => g.id !== goalId));
+      setGoals((goals: Goal[]) => goals.filter((g: Goal) => g.id !== goalId));
     }
   };
 
@@ -151,7 +173,7 @@ export default function LearningManagerPage() {
   };
   const handleScheduleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSchedules(schedules => [
+    setSchedules((schedules: Schedule[]) => [
       ...schedules,
       {
         id: Date.now(),
@@ -162,16 +184,16 @@ export default function LearningManagerPage() {
         duration: Number(scheduleForm.duration),
         completed: false,
         createdAt: new Date().toISOString(),
-      },
+      } as Schedule,
     ]);
     handleScheduleModalClose();
   };
   const handleScheduleComplete = (scheduleId: number) => {
-    setSchedules(schedules => schedules.map(s => s.id === scheduleId ? { ...s, completed: !s.completed } : s));
+    setSchedules((schedules: Schedule[]) => schedules.map((s: Schedule) => s.id === scheduleId ? { ...s, completed: !s.completed } : s));
     // 진도 업데이트
-    const schedule = schedules.find(s => s.id === scheduleId);
+    const schedule = schedules.find((s: Schedule) => s.id === scheduleId);
     if (schedule && !schedule.completed) {
-      setGoals(goals => goals.map(g => g.id === schedule.goalId ? { ...g, progress: Math.min(100, (g.progress || 0) + Math.min(5, (schedule.duration / 60) * 2)) } : g));
+      setGoals((goals: Goal[]) => goals.map((g: Goal) => g.id === schedule.goalId ? { ...g, progress: Math.min(100, (g.progress || 0) + Math.min(5, (schedule.duration / 60) * 2)) } : g));
     }
   };
 
@@ -193,12 +215,11 @@ export default function LearningManagerPage() {
   }
   function getSchedulesForDate(date: Date) {
     const dateString = date.toISOString().split('T')[0];
-    return schedules.filter(s => s.date === dateString);
+    return schedules.filter((s: Schedule) => s.date === dateString);
   }
 
   // Feedback
   const handleFeedback = (type: string) => {
-    setFeedbackType(type);
     setFeedbackLoading(true);
     setFeedbackResult(null);
     setTimeout(() => {
@@ -207,9 +228,9 @@ export default function LearningManagerPage() {
     }, 1200);
   };
   function getAIFeedback(type: string) {
-    const completedSchedules = schedules.filter(s => s.completed).length;
+    const completedSchedules = schedules.filter((s: Schedule) => s.completed).length;
     const totalSchedules = schedules.length;
-    const avgProgress = goals.length > 0 ? goals.reduce((sum, g) => sum + (g.progress || 0), 0) / goals.length : 0;
+    const avgProgress = goals.length > 0 ? goals.reduce((sum: number, g: Goal) => sum + (g.progress || 0), 0) / goals.length : 0;
     if (type === 'content') {
       return `<h4><i class='fas fa-book'></i> 학습 콘텐츠 추천</h4><p>현재 진도율 ${avgProgress.toFixed(1)}%를 바탕으로 다음 학습 콘텐츠를 추천드립니다:</p><ul class='feedback-list'><li><i class='fas fa-check'></i> 기초 개념 복습 자료 - 이해도 향상을 위해</li><li><i class='fas fa-check'></i> 실습 프로젝트 - 실무 경험 쌓기</li><li><i class='fas fa-check'></i> 온라인 강의 - 체계적인 학습</li><li><i class='fas fa-check'></i> 커뮤니티 참여 - 동기부여 및 질문 해결</li></ul><p>특히 현재 진도에서는 <strong>실습 위주의 학습</strong>을 권장합니다.</p>`;
     }
@@ -226,16 +247,16 @@ export default function LearningManagerPage() {
   }
 
   // Progress Dashboard helpers
-  const avgProgress = goals.length > 0 ? goals.reduce((sum, g) => sum + (g.progress || 0), 0) / goals.length : 0;
-  const completedGoals = goals.filter(g => (g.progress || 0) >= 100).length;
-  const thisWeekSchedules = schedules.filter(s => {
+  const avgProgress = goals.length > 0 ? goals.reduce((sum: number, g: Goal) => sum + (g.progress || 0), 0) / goals.length : 0;
+  const completedGoals = goals.filter((g: Goal) => (g.progress || 0) >= 100).length;
+  const thisWeekSchedules = schedules.filter((s: Schedule) => {
     const start = getStartOfWeek(new Date());
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
     const scheduleDate = new Date(s.date);
     return scheduleDate >= start && scheduleDate <= end;
   });
-  const completedHours = thisWeekSchedules.filter(s => s.completed).reduce((sum, s) => sum + s.duration, 0) / 60;
+  const completedHours = thisWeekSchedules.filter((s: Schedule) => s.completed).reduce((sum: number, s: Schedule) => sum + s.duration, 0) / 60;
   // Streak 계산
   function calculateStreak() {
     const today = new Date();
@@ -244,7 +265,7 @@ export default function LearningManagerPage() {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
       const dateString = date.toISOString().split('T')[0];
-      const daySchedules = schedules.filter(s => s.date === dateString && s.completed);
+      const daySchedules = schedules.filter((s: Schedule) => s.date === dateString && s.completed);
       if (daySchedules.length > 0) {
         streak++;
       } else if (i > 0) {
@@ -257,9 +278,8 @@ export default function LearningManagerPage() {
 
   // 주간 차트 데이터
   function getWeeklyStudyData() {
-    const start = getStartOfWeek(new Date());
     const weekData = new Array(7).fill(0);
-    schedules.forEach(s => {
+    schedules.forEach((s: Schedule) => {
       if (s.completed) {
         const dayOfWeek = new Date(s.date).getDay();
         weekData[dayOfWeek] += s.duration / 60;
@@ -345,7 +365,7 @@ export default function LearningManagerPage() {
                     <p>아직 설정된 목표가 없습니다. 첫 번째 목표를 추가해보세요!</p>
                   </div>
                 ) : (
-                  goals.map((goal: any) => (
+                  goals.map((goal: Goal) => (
                     <div className="goal-item" key={goal.id}>
                       <div className="goal-header">
                         <h3 className="goal-title">{goal.title}</h3>
@@ -407,7 +427,7 @@ export default function LearningManagerPage() {
                       <div className={`calendar-day${isToday(date) ? ' today' : ''}`} key={i}>
                         <div className="day-header">{dayNames[i]} {date.getDate()}</div>
                         <div className="day-events">
-                          {daySchedules.map((s: any) => (
+                          {daySchedules.map((s: Schedule) => (
                             <div className={`event-item${s.completed ? ' completed' : ''}`} key={s.id} onClick={() => handleScheduleComplete(s.id)}>
                               {s.time} {s.content}
                             </div>
@@ -431,7 +451,7 @@ export default function LearningManagerPage() {
                         <label htmlFor="goalId">연결된 목표</label>
                         <select id="goalId" value={scheduleForm.goalId ?? ''} onChange={handleScheduleFormChange} required>
                           <option value="">목표를 선택하세요</option>
-                          {goals.map((goal: any) => (
+                          {goals.map((goal: Goal) => (
                             <option value={goal.id} key={goal.id}>{goal.title}</option>
                           ))}
                         </select>
@@ -562,7 +582,7 @@ export default function LearningManagerPage() {
                     {goals.length === 0 ? (
                       <p>설정된 목표가 없습니다.</p>
                     ) : (
-                      goals.map((goal: any) => (
+                      goals.map((goal: Goal) => (
                         <div className="goal-progress-item" key={goal.id}>
                           <div className="goal-progress-info">
                             <h4>{goal.title}</h4>

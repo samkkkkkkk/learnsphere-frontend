@@ -1,34 +1,22 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './Header.css';
 
-const navItems = [
-  { to: '/', label: '홈' },
-  { to: '/roadmap', label: '로드맵' },
-  { to: '/learning-manager', label: '학습매니저' },
-];
-
-export default function Header() {
-  const location = useLocation();
+const Header: React.FC = () => {
   return (
-    <header className="global-header">
-      <div className="header-inner">
-        <Link to="/" className="header-logo">
-          <span className="logo-icon"><i className="fas fa-brain"></i></span>
-          <span className="logo-text">LearnSphere</span>
+    <header className="header">
+      <div className="header-content">
+        <Link to="/" className="logo">
+          <i className="fas fa-graduation-cap"></i>
+          <h1>LearnSphere</h1>
         </Link>
-        <nav className="header-nav">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`nav-link${location.pathname === item.to ? ' active' : ''}`}
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav className="nav">
+          <Link to="/" className="nav-link">홈</Link>
+          <Link to="/roadmap" className="nav-link">로드맵</Link>
+          <Link to="/learning-manager" className="nav-link">학습관리</Link>
         </nav>
       </div>
     </header>
   );
-} 
+};
+
+export default Header; 

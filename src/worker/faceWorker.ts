@@ -1,22 +1,17 @@
 // src/worker/faceWorker.ts
 // Web Worker for face/eye analysis using MediaPipe (ESM module)
 
-import visionModule from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/vision_bundle.mjs';
+let visionModule: any;
 
-let faceLandmarker: any = null;
-let initialized = false;
-
-async function initModel() {
-  const { FaceLandmarker, FilesetResolver } = visionModule;
-  const filesetResolver = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm");
-  faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
-    baseOptions: { modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`, delegate: "GPU" },
-    runningMode: "VIDEO",
-    numFaces: 1,
-    outputFacialTransformationMatrixes: true,
-  });
-  initialized = true;
-  self.postMessage({ type: 'ready' });
+async function loadMediaPipe() {
+  try {
+    // @ts-ignore
+    visionModule = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/vision_bundle.mjs');
+    return visionModule;
+  } catch (error) {
+    console.error('Failed to load MediaPipe:', error);
+    return null;
+  }
 }
 
 function getDistance(p1: any, p2: any) {
@@ -39,15 +34,32 @@ const ATTENTION_LAPSE_FRAMES = 60; // 2s at 30fps
 let drowsyCounter = 0, headNodCounter = 0, absenceCounter = 0, attentionLapseCounter = 0;
 let EAR_THRESHOLD = EAR_THRESHOLD_DEFAULT;
 
-self.onmessage = async (e: MessageEvent) => {
-  if (e.data.type === 'init') {
-    EAR_THRESHOLD = e.data.earThreshold || EAR_THRESHOLD_DEFAULT;
-    await initModel();
-    self.postMessage({ type: 'debug', msg: 'Model initialized' });
-    return;
+// Worker message handler
+self.onmessage = async function(e) {
+  const { type, data } = e.data;
+  
+  if (type === 'init') {
+    const module = await loadMediaPipe();
+    if (module) {
+      self.postMessage({ type: 'ready', data: { success: true } });
+    } else {
+      self.postMessage({ type: 'ready', data: { success: false, error: 'Failed to load MediaPipe' } });
+    }
   }
-  if (e.data.type === 'frame' && initialized && faceLandmarker) {
-    const imageData = e.data.imageData;
+  
+  if (type === 'detect') {
+    if (!visionModule) {
+      self.postMessage({ type: 'error', data: 'MediaPipe not loaded' });
+      return;
+    }
+    
+    // Face detection logic would go here
+    // For now, just acknowledge the detection request
+    self.postMessage({ type: 'detected', data: { faces: [] } });
+  }
+
+  if (type === 'frame') {
+    const imageData = data.imageData;
     if (!imageData) return;
     createImageBitmap(imageData).then(imageBitmap => {
       self.postMessage({ type: 'debug', msg: `Received frame: ${imageBitmap.width}x${imageBitmap.height}` });

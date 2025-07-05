@@ -1,49 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './MainPage.css';
 import { useNavigate } from 'react-router-dom';
-
-const mockRoadmapData = {
-  roadmapTitle: 'React 초보자를 위한 핵심 정복 로드맵',
-  totalDuration: '4-6주 예상',
-  steps: [
-    {
-      step: 1,
-      title: '기초 다지기: React 핵심 개념 정복',
-      explanation:
-        "가장 먼저 공식 문서를 통해 '왜 React가 필요한지', '컴포넌트가 무엇인지' 등 뼈대를 잡는 것이 중요합니다. 이 단계를 거치면 React의 철학과 기본 구조를 이해할 수 있습니다. JSX 문법, 컴포넌트의 개념, Props와 State의 차이점을 명확히 이해하는 것이 핵심입니다.",
-      resourceTitle: 'React 공식 문서 - 주요 개념',
-      resourceUrl: 'https://react.dev/learn',
-      resourceDescription:
-        'React의 가장 기본이 되는 JSX, 컴포넌트, Props, State 개념을 가장 정확하게 배울 수 있는 자료입니다.',
-      duration: '1-2주',
-      difficulty: '기초',
-    },
-    {
-      step: 2,
-      title: '실전 감각 익히기: 첫 React 프로젝트',
-      explanation:
-        '개념만 아는 것과 직접 만들어보는 것은 큰 차이가 있습니다. 이 강의는 실제 프로젝트를 만들면서 React의 작동 방식을 직관적으로 이해할 수 있게 도와줍니다. 영화 웹 서비스를 만들면서 컴포넌트 설계, 상태 관리, API 연동 등 실무에서 필요한 핵심 스킬을 익힐 수 있습니다.',
-      resourceTitle: '니코쌤의 ReactJS로 영화 웹 서비스 만들기',
-      resourceUrl: 'https://nomadcoders.co/react-for-beginners',
-      resourceDescription:
-        '실습 프로젝트를 통해 React의 작동 방식을 직관적으로 이해할 수 있는 최고의 입문 강의입니다.',
-      duration: '2-3주',
-      difficulty: '초급',
-    },
-    {
-      step: 3,
-      title: '상태 관리 맛보기: React의 핵심 이해하기',
-      explanation:
-        'React의 가장 중요한 개념인 상태(State) 관리를 깊이 있게 학습합니다. useState, useEffect 등의 Hook을 활용한 상태 관리부터 시작해서, 컴포넌트 간 데이터 전달, 상태 끌어올리기 등의 패턴을 익힙니다. 이 단계를 마스터하면 더 복잡한 애플리케이션도 자신 있게 만들 수 있습니다.',
-      resourceTitle: 'React State 관리 완벽 가이드',
-      resourceUrl: 'https://react.dev/learn/managing-state',
-      resourceDescription:
-        'React의 상태 관리 개념을 체계적으로 학습할 수 있는 공식 가이드입니다.',
-      duration: '1-2주',
-      difficulty: '초급+',
-    },
-  ],
-};
 
 const topics = [
   { key: 'react', label: 'React', desc: '프론트엔드 라이브러리', available: true },
@@ -54,7 +11,6 @@ const topics = [
 export default function MainPage() {
   const [selectedTopic, setSelectedTopic] = useState('react');
   const navigate = useNavigate();
-  const [showResults] = useState(false);
 
   const handleTopicClick = (key: string, available: boolean) => {
     if (!available) return;

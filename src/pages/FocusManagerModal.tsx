@@ -60,7 +60,6 @@ const FocusManagerModal: React.FC<FocusManagerModalProps> = ({ onClose }) => {
   }
 
   useEffect(() => {
-    let DrawingUtils: any;
     let FaceLandmarker: any;
     let FilesetResolver: any;
     let running = true;
@@ -70,7 +69,6 @@ const FocusManagerModal: React.FC<FocusManagerModalProps> = ({ onClose }) => {
         // @ts-ignore
         const visionModule = await import(/* @vite-ignore */ mediapipeUrl);
         console.log('MediaPipe vision_bundle.js loaded:', visionModule);
-        DrawingUtils = visionModule.DrawingUtils;
         FaceLandmarker = visionModule.FaceLandmarker;
         FilesetResolver = visionModule.FilesetResolver;
         const filesetResolver = await FilesetResolver.forVisionTasks(
