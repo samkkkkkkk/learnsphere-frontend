@@ -4,7 +4,7 @@ import styles from './WireframePage.module.css';
 const WireframePage: React.FC = () => (
   <div className={styles.container}>
     <div className={styles.header}>
-      <h1>🗺️ 학습로드맵 시스템</h1>
+      <h1>🗺️ 학습로드맵 관리 시스템</h1>
       <p>프론트엔드 UX/UI 설계 - 화면별 구성</p>
     </div>
     <div className={styles['screens-grid']}>
