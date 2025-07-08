@@ -5,6 +5,7 @@ import LearningManagerPage from './pages/LearningManagerPage';
 import Header from './components/Header';
 import { FocusManagerProvider } from './contexts/FocusManagerContext';
 import FocusManagerModal from './pages/FocusManagerModal';
+import WireframePage from './pages/WireframePage';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<MainPage />} />
         <Route path="/roadmap" element={<RoadmapPage />} />
         <Route path="/learning-manager" element={<LearningManagerPage />} />
+        <Route path='wireframe' element={<WireframePage />} />
       </Routes>
       <FocusManagerModal />
     </FocusManagerProvider>

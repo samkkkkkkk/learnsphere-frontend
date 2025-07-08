@@ -13,27 +13,32 @@ const Header: React.FC = () => {
           <h1>LearnSphere</h1>
         </Link>
         <nav className="nav">
-          <Link to="/" className="nav-link">홈</Link>
-          <Link to="/roadmap" className="nav-link">로드맵</Link>
-          <Link to="/learning-manager" className="nav-link">학습관리</Link>
-          <button 
-            onClick={openModal}
-            className="nav-link focus-manager-btn"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'inherit',
-              cursor: 'pointer',
-              fontSize: 'inherit',
-              padding: 'inherit',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}
-          >
-            <i className="fas fa-bolt"></i>
-            집중력 매니저
-          </button>
+          <div className="nav-group">
+            <Link to="/" className="nav-link">홈</Link>
+            <Link to="/roadmap" className="nav-link">로드맵</Link>
+            <Link to="/learning-manager" className="nav-link">학습관리</Link>
+            <button 
+              onClick={openModal}
+              className="nav-link focus-manager-btn"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'inherit',
+                cursor: 'pointer',
+                fontSize: 'inherit',
+                padding: 'inherit',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              <i className="fas fa-bolt"></i>
+              집중력 매니저
+            </button>
+          </div>
+          <div className="nav-right">
+            <Link to="/wireframe" className="nav-link">관리자 페이지</Link>
+          </div>
         </nav>
       </div>
     </header>

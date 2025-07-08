@@ -44,6 +44,19 @@
   display: flex;
   gap: 2rem;
   margin-left: auto;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-group {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  margin-left: 2rem;
 }
 
 .nav-link {
