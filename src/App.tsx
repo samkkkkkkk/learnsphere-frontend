@@ -8,6 +8,7 @@ import ReactLearnPage3 from './pages/ReactLearnPage3';
 import ReactLearnPage4 from './pages/ReactLearnPage4';
 import ReactLearnPage5 from './pages/ReactLearnPage5';
 import ReactLearnPage6 from './pages/ReactLearnPage6';
+import ReactLearnPage7 from './pages/ReactLearnPage7';
 import Header from './components/Header';
 import { FocusManagerProvider } from './contexts/FocusManagerContext';
 import FocusManagerModal from './pages/FocusManagerModal';
@@ -26,6 +27,7 @@ function App() {
         <Route path="/react-learn4" element={<ReactLearnPage4 />} />
         <Route path="/react-learn5" element={<ReactLearnPage5 />} />
         <Route path="/react-learn6" element={<ReactLearnPage6 />} />
+        <Route path="/react-learn7" element={<ReactLearnPage7 />} />
         <Route path='wireframe' element={<WireframePage />} />
       </Routes>
       <FocusManagerModal />

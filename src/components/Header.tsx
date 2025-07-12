@@ -19,9 +19,10 @@ const Header: React.FC = () => {
             <Link to="/learning-manager" className="nav-link">학습관리</Link>
             {/* <Link to="/react-learn" className="nav-link">학습하기</Link> */}
             {/* <Link to="/react-learn3" className="nav-link">학습하기3</Link> */}
-            <Link to="/react-learn4" className="nav-link">학습하기4</Link>
-            <Link to="/react-learn5" className="nav-link">학습하기5</Link>
+            {/* <Link to="/react-learn4" className="nav-link">학습하기4</Link> */}
+            {/* <Link to="/react-learn5" className="nav-link">학습하기5</Link> */}
             <Link to="/react-learn6" className="nav-link">학습하기6</Link>
+            <Link to="/react-learn7" className="nav-link">학습하기7</Link>
             <button 
               onClick={openModal}
               className="nav-link focus-manager-btn"

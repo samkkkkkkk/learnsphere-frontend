@@ -55,6 +55,7 @@ export default function ReactLearn() {
   const [selectedLessonContent, setSelectedLessonContent] = useState<LessonContent | null>(null);
   const [serverStatus, setServerStatus] = useState<ServerStatus | null>(null);
   const [serverUrl, setServerUrl] = useState<string>('http://localhost:8001');
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   /**
    * 서버 상태 확인
@@ -140,6 +141,14 @@ export default function ReactLearn() {
     setSelectedTopic(lesson.title);
     setError(null);
     await loadLessonContent(lesson.filename);
+    
+    // 콘텐츠 로딩 후 스크롤을 맨 위로 올리기
+    setTimeout(() => {
+      const contentBody = document.querySelector('.content-body');
+      if (contentBody) {
+        contentBody.scrollTop = 0;
+      }
+    }, 200);
   };
 
   /**
@@ -179,6 +188,56 @@ export default function ReactLearn() {
     } catch (err) {
       console.error('캐시 초기화 실패:', err);
       alert('캐시 초기화에 실패했습니다.');
+    }
+  };
+
+  /**
+   * 모달 열기
+   */
+  const openModal = () => {
+    setIsModalOpen(true);
+    
+    // 모달이 열린 후 스크롤을 맨 위로 올리기
+    setTimeout(() => {
+      const modalBody = document.querySelector('.modal-body');
+      if (modalBody) {
+        modalBody.scrollTop = 0;
+      }
+    }, 100);
+  };
+
+  /**
+   * 모달 닫기
+   */
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+
+
+  /**
+   * 이전 자료 학습하기
+   */
+  const goToPreviousLesson = () => {
+    if (!selectedLessonContent) return;
+    
+    const currentIndex = lessons.findIndex(lesson => lesson.title === selectedLessonContent.title);
+    if (currentIndex > 0) {
+      const previousLesson = lessons[currentIndex - 1];
+      handleTopicSelect(previousLesson);
+    }
+  };
+
+  /**
+   * 다음 자료 학습하기
+   */
+  const goToNextLesson = () => {
+    if (!selectedLessonContent) return;
+    
+    const currentIndex = lessons.findIndex(lesson => lesson.title === selectedLessonContent.title);
+    if (currentIndex < lessons.length - 1) {
+      const nextLesson = lessons[currentIndex + 1];
+      handleTopicSelect(nextLesson);
     }
   };
 
@@ -269,12 +328,30 @@ ${codeExamplesText}`;
               </div>
             );
           })}
-          <button 
-            className="complete-topic-btn"
-            onClick={() => markTopicCompleted(lessonContent.title)}
-          >
-            ✅ 이 토픽 완료하기
-          </button>
+          <div className="quiz-actions">
+            <button 
+              className="navigation-btn prev-btn"
+              onClick={goToPreviousLesson}
+              disabled={lessons.findIndex(lesson => lesson.title === lessonContent.title) === 0}
+            >
+              <i className="fas fa-chevron-left"></i>
+              이전 자료
+            </button>
+            <button 
+              className="complete-topic-btn"
+              onClick={() => markTopicCompleted(lessonContent.title)}
+            >
+              ✅ 이 토픽 완료하기
+            </button>
+            <button 
+              className="navigation-btn next-btn"
+              onClick={goToNextLesson}
+              disabled={lessons.findIndex(lesson => lesson.title === lessonContent.title) === lessons.length - 1}
+            >
+              다음 자료
+              <i className="fas fa-chevron-right"></i>
+            </button>
+          </div>
         </div>
       </>
     );
@@ -283,34 +360,25 @@ ${codeExamplesText}`;
   return (
     <div className="react-learn4-container">
       <header className="react-learn4-header">
-        <h1>React 검증된 학습 도우미 🧠✨</h1>
-        <p>다중 AI 모델 검증을 거친 고품질 React 학습 자료를 제공합니다.</p>
+        <h1>React 학습 도우미</h1>
+        <p>고품질 React 학습 자료를 제공합니다.</p>
         
-        {/* 서버 상태 표시 */}
-        {serverStatus && (
+        {/* 간단한 서버 상태 표시 */}
+        {/* {serverStatus && (
           <div className="server-status">
             <div className="status-indicator">
               <span className={`status-dot ${serverStatus.status === 'running' ? 'online' : 'offline'}`}></span>
               <span className="status-text">
                 {serverStatus.status === 'running' 
-                  ? `검증된 파일 ${serverStatus.validated_files_count}개` 
+                  ? '서버 연결됨' 
                   : serverStatus.status === 'no_validated_files'
-                  ? '검증된 파일 없음'
-                  : '서버 오류'
+                  ? '학습 자료 준비 중'
+                  : '서버 연결 중...'
                 }
               </span>
             </div>
-            {serverStatus.status === 'running' && (
-              <button 
-                className="cache-clear-btn"
-                onClick={clearServerCache}
-                title="서버 캐시 초기화"
-              >
-                🔄 캐시 초기화
-              </button>
-            )}
           </div>
-        )}
+        )} */}
       </header>
 
       <div className="react-learn4-form-container">
@@ -325,17 +393,6 @@ ${codeExamplesText}`;
             <option value="중급">중급</option>
             <option value="고급">고급</option>
           </select>
-        </div>
-        
-        <div className="react-learn4-form-group">
-          <label htmlFor="server-url">서버 URL</label>
-          <input
-            id="server-url"
-            type="text"
-            value={serverUrl}
-            onChange={(e) => setServerUrl(e.target.value)}
-            placeholder="http://localhost:8001"
-          />
         </div>
       </div>
 
@@ -353,7 +410,7 @@ ${codeExamplesText}`;
           {/* 사이드바 - 토픽 네비게이션 */}
           <aside className="react-learn4-sidebar">
             <div className="sidebar-header">
-              <h3>📚 검증된 학습 토픽</h3>
+              <h3>📚 학습 토픽</h3>
               <div className="progress-info">
                 <span>진행률: {completedTopics.size}/{lessons.length}</span>
                 <div className="progress-bar">
@@ -392,14 +449,10 @@ ${codeExamplesText}`;
                   <div className="content-actions">
                     <button 
                       className="action-btn"
-                      onClick={() => {
-                        const lesson = lessons.find(l => l.title === selectedTopic);
-                        if (lesson) {
-                          window.open(`${serverUrl}/api/lesson/${lesson.filename}`, '_blank');
-                        }
-                      }}
+                      onClick={openModal}
                     >
-                      📄 검증된 JSON 보기
+                      <i className="fas fa-expand"></i>
+                      전체화면 보기
                     </button>
                   </div>
                 </div>
@@ -410,12 +463,29 @@ ${codeExamplesText}`;
             ) : (
               <div className="no-topic-selected">
                 <div className="empty-state">
-                  <h3>🎯 검증된 학습 토픽을 선택하세요</h3>
+                  <h3>🎯 학습할 토픽을 선택하세요</h3>
                   <p>왼쪽 사이드바에서 학습하고 싶은 토픽을 클릭하세요.</p>
                 </div>
               </div>
             )}
           </main>
+        </div>
+      )}
+
+      {/* 전체화면 모달 */}
+      {isModalOpen && selectedLessonContent && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{selectedLessonContent.title}</h2>
+              <button className="modal-close-btn" onClick={closeModal}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="modal-body">
+              {renderLessonContent(selectedLessonContent)}
+            </div>
+          </div>
         </div>
       )}
     </div>
