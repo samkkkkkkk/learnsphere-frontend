@@ -31,3 +31,12 @@ coverage/
 *.test.js.snap
 *.test.ts.snap
 jest-*.json
+
+# LMS Generator - RAG 데이터 (저작권 보호)
+lms_generator/subjects/*/data/
+lms_generator/.env
+lms_generator/**/__pycache__/
+lms_generator/**/*.pyc
+
+# 생성된 강의는 포함 (우리가 만든 결과물)
+# lms_generator/subjects/*/generated/ 는 포함됨
