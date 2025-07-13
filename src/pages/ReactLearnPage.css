@@ -3,7 +3,7 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     color: #333;
     line-height: 1.6;
-    max-width: 800px;
+    max-width: 1200px;
     margin: 2rem auto;
     padding: 2rem;
     background-color: #fff;
@@ -31,99 +31,237 @@
     font-size: 1.1rem;
   }
   
-  /* 폼 컨테이너 및 그룹 스타일 */
-  .react-learn-form-container {
+  /* 컨트롤 영역 */
+  .react-learn-controls {
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
   }
   
-  .react-learn-form-group {
+  .level-selector {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
   
-  .react-learn-form-group label {
+  .level-selector label {
     font-weight: 600;
-    margin-bottom: 0.5rem;
     color: #334;
   }
   
-  .react-learn-form-group input, 
-  .react-learn-form-group select {
-    padding: 0.8rem 1rem;
+  .level-selector select {
+    padding: 0.5rem 1rem;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: white;
+    cursor: pointer;
   }
   
-  .react-learn-form-group input:focus, 
-  .react-learn-form-group select:focus {
-    outline: none;
-    border-color: #0d82d9;
-    box-shadow: 0 0 0 3px rgba(13, 130, 217, 0.2);
-  }
-  
-  /* 버튼 스타일 */
-  .react-learn-submit-btn {
-    padding: 0.8rem 1.5rem;
-    background: linear-gradient(135deg, #0d82d9, #005f9e);
+  .refresh-btn {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #28a745, #20c997);
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+    transition: all 0.2s ease;
   }
   
-  .react-learn-submit-btn:disabled {
+  .refresh-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  }
+  
+  .refresh-btn:disabled {
     background: #a0b0c0;
     cursor: not-allowed;
-    box-shadow: none;
   }
   
-  .react-learn-submit-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+  /* 메인 콘텐츠 영역 */
+  .react-learn-content {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
   }
   
-  /* 학습 자료 컨테이너 스타일 */
-  .react-learn-lesson-container {
-    margin-top: 2rem;
-    padding: 2rem;
-    border: 1px solid #e0e6f0;
-    border-radius: 12px;
-    background-color: #fbfdff;
-    min-height: 150px;
-  }
-  
-  .react-learn-lesson-container h2, 
-  .react-learn-lesson-container h3 {
-    border-bottom: 2px solid #e0e6f0;
-    padding-bottom: 0.5rem;
-    margin-top: 1.5rem;
-    color: #005f9e;
-  }
-  
-  .react-learn-lesson-container code {
-    background-color: #eef2f7;
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-    font-family: 'Fira Code', 'D2Coding', monospace;
-  }
-  
-  /* react-syntax-highlighter가 제공하는 스타일을 사용하므로 기존 pre 스타일 제거 */
-  .react-learn-lesson-container pre {
-    margin: 0;
+  /* 레슨 목록 */
+  .lesson-list {
+    flex: 0 0 30%;
+    min-width: 200px;
+    max-width: 350px;
+    background-color: #f8f9fa;
     border-radius: 8px;
+    padding: 1.5rem;
+    height: fit-content;
+  }
+  
+  .lesson-list h3 {
+    margin-bottom: 1rem;
+    color: #0d82d9;
+    font-size: 1.2rem;
+  }
+  
+  .lesson-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .lesson-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: white;
+    border: 1px solid #e0e6f0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 4rem;
+    width: 100%;
+    box-sizing: border-box;
     overflow: hidden;
   }
   
-  /* 오류 및 로딩 메시지 스타일 */
+  .lesson-card:hover {
+    border-color: #0d82d9;
+    box-shadow: 0 2px 8px rgba(13, 130, 217, 0.15);
+  }
+  
+  .lesson-card.active {
+    border-color: #0d82d9;
+    background-color: #e3f2fd;
+  }
+  
+  .lesson-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background-color: #0d82d9;
+    color: white;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    flex-grow: 0;
+  }
+  
+  .lesson-title {
+    flex: 1;
+    font-weight: 500;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: calc(100% - 3rem);
+  }
+  
+  /* 긴 텍스트를 위한 대안 스타일 */
+  .lesson-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 1.4em;
+    background: linear-gradient(to right, transparent, white);
+    pointer-events: none;
+  }
+  
+  .no-lessons {
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+    font-style: italic;
+  }
+  
+  .loading-spinner {
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+  }
+  
+  /* 레슨 상세 내용 */
+  .lesson-detail {
+    flex: 0 0 70%;
+    min-width: 0;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    margin-left: 0;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 2rem;
+    word-break: break-word;
+  }
+  
+  .lesson-detail h2 {
+    color: #0d82d9;
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+  }
+  
+  .lesson-level {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    padding: 0.5rem 1rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  
+  .lesson-section {
+    overflow-x: auto;
+    word-break: break-word;
+  }
+  
+  .lesson-section h3 {
+    color: #0d82d9;
+    border-bottom: 2px solid #e0e6f0;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+  }
+  
+  .core-concepts {
+    line-height: 1.7;
+    color: #333;
+  }
+  
+  .code-example {
+    margin-bottom: 1.5rem;
+  }
+  
+  .code-example h4 {
+    color: #555;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .code-example pre,
+  .code-example code {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  
+  /* 오류 메시지 */
   .react-learn-error-message {
     color: #d9534f;
     background-color: #fdf2f2;
@@ -131,31 +269,7 @@
     padding: 1rem;
     border-radius: 8px;
     text-align: center;
-    margin-top: 1rem;
-  }
-  
-  .react-learn-loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    color: #556;
-  }
-  
-  .react-learn-loading-spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #0d82d9;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: react-learn-spin 1s linear infinite;
     margin-bottom: 1rem;
-  }
-  
-  @keyframes react-learn-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
   }
   
   /* 퀴즈 스타일 */
@@ -199,8 +313,7 @@
   }
   
   .quiz-toggle-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    background: linear-gradient(135deg, #218838, #1e7e34);
   }
   
   .quiz-answer {
@@ -211,13 +324,88 @@
     border-radius: 4px;
   }
   
-  .quiz-answer-content {
-    margin-top: 0.5rem;
-    padding: 0.5rem;
-    background-color: #e8f5e8;
-    border-left: 3px solid #28a745;
-    border-radius: 4px;
-    color: #155724;
-    line-height: 1.5;
+  /* 반응형 디자인 */
+  @media (max-width: 768px) {
+    .react-learn-content {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
+    .react-learn-controls {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch;
+    }
+    
+    .level-selector {
+      justify-content: space-between;
+    }
   }
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  padding: 2.5rem 2rem 2rem 2rem;
+  max-width: 900px;
+  width: 90vw;
+  max-height: 95vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  background: #e0e6f0;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.modal-lesson-detail {
+  overflow-y: auto !important;
+  max-height: 85vh;
+  min-height: 40vh;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+}
+
+.modal-btn {
+  margin-left: 1rem;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-btn:disabled {
+  background: #bcd0ee;
+  color: #fff;
+  cursor: not-allowed;
+}
   
