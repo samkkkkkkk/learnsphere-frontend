@@ -17,6 +17,10 @@ const Header: React.FC = () => {
             <Link to="/" className="nav-link">홈</Link>
             <Link to="/roadmap" className="nav-link">로드맵</Link>
             <Link to="/learning-manager" className="nav-link">학습관리</Link>
+            <Link to="/lms" className="nav-link">
+              <i className="fas fa-book"></i>
+              LMS
+            </Link>
             <button 
               onClick={openModal}
               className="nav-link focus-manager-btn"

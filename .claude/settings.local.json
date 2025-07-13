@@ -7,7 +7,9 @@
       "Bash(python:*)",
       "Bash(mkdir:*)",
       "Bash(mv:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(git checkout:*)",
+      "Bash(npm install:*)"
     ],
     "deny": []
   }
