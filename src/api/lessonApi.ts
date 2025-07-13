@@ -38,10 +38,10 @@ export const fetchLessonIndex = async (): Promise<LessonIndex> => {
 };
 
 // 특정 레슨의 상세 내용(JSON)을 가져오는 API
-export const fetchLessonDetail = async (filename: string): Promise<LessonContent> => {
+export const fetchLessonDetail = async (filename: string): Promise<LessonContent & { filename: string }> => {
   try {
     const response = await axios.get(`${API_BASE_URL}/api/v1/lesson/${filename}`);
-    return response.data;
+    return { ...response.data, filename };
   } catch (error) {
     console.error('레슨 상세 조회 실패:', error);
     throw new Error('레슨 내용을 가져오는데 실패했습니다.');
@@ -80,3 +80,39 @@ export const checkServerHealth = async (): Promise<{ status: string }> => {
     throw new Error('서버 연결에 실패했습니다.');
   }
 };
+
+// 백업 목록 조회
+export async function fetchLessonBackups(lessonFilename: string) {
+  const res = await fetch(`/api/v1/admin/lesson-backups?lesson_filename=${encodeURIComponent(lessonFilename)}`);
+  if (!res.ok) throw new Error('백업 목록을 불러오지 못했습니다');
+  return res.json();
+}
+
+// 백업 복원
+export async function restoreLessonBackup(backupId: number, restoredBy?: string) {
+  const res = await fetch('/api/v1/admin/restore-lesson-backup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ backup_id: backupId, restored_by: restoredBy }),
+  });
+  if (!res.ok) throw new Error('복원에 실패했습니다');
+  return res.json();
+}
+
+// 날짜별 백업 파일 목록 조회
+export async function fetchBackupList() {
+  const res = await fetch('/api/v1/admin/backup-list');
+  if (!res.ok) throw new Error('백업 폴더 목록을 불러오지 못했습니다');
+  return res.json();
+}
+
+// 특정 날짜 전체 복원
+export async function restoreBackupDate(date: string) {
+  const res = await fetch('/api/v1/admin/restore-backup-date', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ date }),
+  });
+  if (!res.ok) throw new Error('전체 복원에 실패했습니다');
+  return res.json();
+}

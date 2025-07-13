@@ -17,7 +17,7 @@ export default function ReactLearn() {
   // 컴포넌트의 상태 관리
   const [level, setLevel] = useState<Level>('초급');
   const [lessonIndex, setLessonIndex] = useState<LessonIndex | null>(null);
-  const [selectedLesson, setSelectedLesson] = useState<LessonContent | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<(LessonContent & { filename: string }) | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showAnswers, setShowAnswers] = useState<Set<string>>(new Set()); // 정답을 보여줄 퀴즈들을 추적
@@ -167,7 +167,7 @@ export default function ReactLearn() {
               {lessonIndex[level].map((lesson, index) => (
                 <div 
                   key={lesson.filename}
-                  className={`lesson-card ${selectedLesson?.title === lesson.title ? 'active' : ''}`}
+                  className={`lesson-card ${selectedLesson && selectedLesson.filename === lesson.filename ? 'active' : ''}`}
                   onClick={() => loadLessonDetail(lesson.filename)}
                 >
                   <div className="lesson-number">{lesson.number}</div>
