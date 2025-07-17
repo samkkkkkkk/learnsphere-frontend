@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 const topics = [
   { key: 'react', label: 'React', desc: '프론트엔드 라이브러리', available: true },
-  { key: 'ml', label: 'Machine Learning', desc: '머신러닝 기초', available: true },
-  { key: 'python', label: 'Python', desc: '프로그래밍 언어', available: true },
+  { key: 'UniTask', label: 'UniTask', desc: '비동기 프로그래밍', available: false },
+  // { key: 'ml', label: 'Machine Learning', desc: '머신러닝 기초', available: false },
+  { key: 'python', label: 'Python', desc: '프로그래밍 언어', available: false },
 ];
 
 export default function MainPage() {

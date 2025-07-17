@@ -31,8 +31,13 @@ export default function RoadmapPage() {
   if (topic === 'ml') topicLabel = 'Machine Learning';
   else if (topic === 'python') topicLabel = 'Python';
   else if (topic === 'react') topicLabel = 'React';
-  const [mainBranchesVisible, setMainBranchesVisible] = useState(false);
-  const [expandedBranches, setExpandedBranches] = useState<{ [key: string]: boolean }>({});
+  const [mainBranchesVisible, setMainBranchesVisible] = useState(true);
+  const [expandedBranches, setExpandedBranches] = useState<{ [key: string]: boolean }>({
+    beginner: true,
+    intermediate: true,
+    advanced: true,
+    community: true
+  });
   const [expandedSubBranches, setExpandedSubBranches] = useState<{ [key: string]: boolean }>({});
 
   const toggleAllBranches = () => {

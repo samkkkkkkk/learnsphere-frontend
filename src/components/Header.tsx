@@ -15,14 +15,9 @@ const Header: React.FC = () => {
         <nav className="nav">
           <div className="nav-group">
             <Link to="/" className="nav-link">홈</Link>
-            <Link to="/react-learn" className="nav-link">학습하기</Link>
             <Link to="/roadmap" className="nav-link">로드맵</Link>
-            <Link to="/learning-manager" className="nav-link">학습관리</Link>
-            {/* <Link to="/react-learn3" className="nav-link">학습하기3</Link> */}
-            {/* <Link to="/react-learn4" className="nav-link">학습하기4</Link> */}
-            {/* <Link to="/react-learn5" className="nav-link">학습하기5</Link> */}
-            {/* <Link to="/react-learn6" className="nav-link">학습하기6</Link> */}
-            {/* <Link to="/react-learn7" className="nav-link">학습하기7</Link> */}
+            <Link to="/react-learn" className="nav-link">학습하기</Link>
+            {/* <Link to="/learning-manager" className="nav-link">학습관리</Link> */}
             <button 
               onClick={openModal}
               className="nav-link focus-manager-btn"
@@ -41,6 +36,8 @@ const Header: React.FC = () => {
               <i className="fas fa-bolt"></i>
               집중력 매니저
             </button>
+            <Link to="/wireframe" className="nav-link">와이어프레임</Link>
+            <Link to="/admin" className="nav-link">관리자</Link>
           </div>
         </nav>
       </div>
