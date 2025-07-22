@@ -57,6 +57,16 @@ const FocusManagerModal: React.FC = () => {
   }
 
   useEffect(() => {
+    if (!isOpen) {
+      // 모달이 닫힐 때 자원 해제
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+      window.speechSynthesis.cancel();
+      return;
+    }
     let FaceLandmarker: any;
     let FilesetResolver: any;
     let running = true;
@@ -93,15 +103,12 @@ const FocusManagerModal: React.FC = () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         streamRef.current = stream;
-        
-        // 비디오 요소가 준비될 때까지 대기
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.onloadeddata = () => {
             predictWebcam();
           };
         } else {
-          // 비디오 ref가 준비될 때까지 대기
           const checkVideoRef = () => {
             if (videoRef.current) {
               videoRef.current.srcObject = stream;
@@ -196,7 +203,7 @@ const FocusManagerModal: React.FC = () => {
       }
       window.speechSynthesis.cancel();
     };
-  }, []); // earThreshold 의존성 제거
+  }, [isOpen]); // isOpen 의존성 추가
 
   // 복원 시 predictWebcam 재시작
   useEffect(() => {
@@ -218,12 +225,12 @@ const FocusManagerModal: React.FC = () => {
     <>
       <div style={{ display: isMinimized ? 'none' : 'block' }}>
         <div className="modal active" style={{ zIndex: 1000 }}>
-          <div className="modal-content" style={{ position: 'relative', background: '#34495e', color: 'white', borderRadius: 10, padding: 24, minWidth: 400 }}>
+          <div className="modal-content" style={{ position: 'relative', background: '#34495e', color: 'white', borderRadius: 10, padding: 12, width: 680, maxWidth: '95vw' }}>
             <button onClick={closeModal} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: '#fff', fontSize: 28, cursor: 'pointer', zIndex: 10 }}>&times;</button>
             <button onClick={minimizeModal} style={{ position: 'absolute', top: 16, right: 56, background: 'none', border: 'none', color: '#fff', fontSize: 24, cursor: 'pointer', zIndex: 10 }} title="최소화">&#8211;</button>
             <h2 style={{ marginBottom: 16 }}>AI 집중력 매니저</h2>
-            <div style={{ position: 'relative', width: 400, height: 300, margin: '0 auto 16px auto', border: '4px solid #3498db', borderRadius: 10, overflow: 'hidden' }}>
-              <video ref={videoRef} width={400} height={300} autoPlay playsInline style={{ display: 'block', transform: 'scaleX(-1)' }} />
+            <div style={{ position: 'relative', width: 640, height: 480, margin: '0 auto 16px auto', border: '4px solid #3498db', borderRadius: 10, overflow: 'visible' }}>
+              <video ref={videoRef} width={640} height={480} autoPlay playsInline style={{ display: 'block', transform: 'scaleX(-1)', objectFit: 'contain', width: '100%', height: '100%' }} />
               {/* 알림 */}
               {alerts.drowsy && <div style={{ position: 'absolute', top: 20, left: '50%', transform: 'translateX(-50%)', background: '#e74c3c', color: 'white', padding: '10px 20px', borderRadius: 5, fontSize: '1.5em', fontWeight: 'bold', zIndex: 10 }}>졸음 감지!</div>}
               {alerts.absence && <div style={{ position: 'absolute', top: 60, left: '50%', transform: 'translateX(-50%)', background: '#3498db', color: 'white', padding: '10px 20px', borderRadius: 5, fontSize: '1.5em', fontWeight: 'bold', zIndex: 10 }}>자리를 비우셨나요?</div>}

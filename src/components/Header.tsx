@@ -36,8 +36,8 @@ const Header: React.FC = () => {
               <i className="fas fa-bolt"></i>
               집중력 매니저
             </button>
-            <Link to="/wireframe" className="nav-link">와이어프레임</Link>
-            <Link to="/admin" className="nav-link">관리자</Link>
+            {/* <Link to="/wireframe" className="nav-link">와이어프레임</Link>
+            <Link to="/admin" className="nav-link">관리자</Link> */}
           </div>
         </nav>
       </div>
