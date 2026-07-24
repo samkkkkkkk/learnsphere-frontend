@@ -8,20 +8,25 @@ import Header from './components/Header';
 import { FocusManagerProvider } from './contexts/FocusManagerContext';
 import FocusManagerModal from './pages/FocusManagerModal';
 import WireframePage from './pages/WireframePage';
+import { ChatWidgetProvider } from './contexts/ChatWidgetContext';
+import ChatWidget from './components/chat/ChatWidget';
 
 function App() {
   return (
     <FocusManagerProvider>
-      <Header />
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/roadmap" element={<RoadmapPage />} />
-        <Route path="/learning-manager" element={<LearningManagerPage />} />
-        <Route path="/react-learn" element={<ReactLearnPage />} />
-        <Route path="/admin" element={<AdminPanel />} />
-        <Route path='/wireframe' element={<WireframePage />} />
-      </Routes>
-      <FocusManagerModal />
+      <ChatWidgetProvider>
+        <Header />
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/roadmap" element={<RoadmapPage />} />
+          <Route path="/learning-manager" element={<LearningManagerPage />} />
+          <Route path="/react-learn" element={<ReactLearnPage />} />
+          <Route path="/admin" element={<AdminPanel />} />
+          <Route path='/wireframe' element={<WireframePage />} />
+        </Routes>
+        <FocusManagerModal />
+        <ChatWidget />
+      </ChatWidgetProvider>
     </FocusManagerProvider>
   );
 }

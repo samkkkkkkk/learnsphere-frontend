@@ -249,7 +249,8 @@ const FocusManagerModal: React.FC = () => {
           style={{
             position: 'fixed',
             bottom: 32,
-            right: 32,
+            // 우측 하단은 튜터 챗 버튼이 쓰므로 한 칸 왼쪽에 놓는다
+            right: 104,
             zIndex: 1100,
             background: '#3498db',
             color: 'white',
