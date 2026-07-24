@@ -31,8 +31,8 @@ const ChatWidget: React.FC = () => {
     setIsSending(true);
 
     try {
-      const answer = await sendMessage(question, history);
-      setMessages(prev => [...prev, { role: 'assistant', content: answer }]);
+      const { answer, sources } = await sendMessage(question, history);
+      setMessages(prev => [...prev, { role: 'assistant', content: answer, sources }]);
     } catch {
       setError('답변을 가져오지 못했습니다. 잠시 후 다시 시도해주세요.');
     } finally {
@@ -77,6 +77,17 @@ const ChatWidget: React.FC = () => {
                   <MarkdownRenderer>{message.content}</MarkdownRenderer>
                 ) : (
                   message.content
+                )}
+
+                {message.sources && message.sources.length > 0 && (
+                  <div className="chat-message__sources">
+                    <span className="chat-message__sources-label">참고 문서</span>
+                    {message.sources.map(source => (
+                      <span key={source} className="chat-message__source">
+                        {source}
+                      </span>
+                    ))}
+                  </div>
                 )}
               </div>
             ))}

@@ -159,6 +159,31 @@
   font-size: 0.85rem;
 }
 
+/* --- 답변 근거 문서 --- */
+
+.chat-message__sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #efedf7;
+}
+
+.chat-message__sources-label {
+  color: #8b8b9e;
+  font-size: 0.72rem;
+}
+
+.chat-message__source {
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #f0eef8;
+  color: #5b21b6;
+  font-size: 0.72rem;
+}
+
 .chat-panel__form {
   display: flex;
   gap: 8px;
