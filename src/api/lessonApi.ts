@@ -1,68 +1,94 @@
-import axios from 'axios';
+import api, { setAdminApiKey, getAdminApiKey } from './axios';
 
-// FastAPI 서버의 기본 URL
-const API_BASE_URL = 'http://127.0.0.1:8000';
+export { setAdminApiKey, getAdminApiKey };
 
-// API 응답 타입 정의
-export interface LessonContent {
+// --- API 응답 타입 정의 ---
+
+export interface CodeExample {
+  description: string;
+  code: string;
+}
+
+export interface Quiz {
+  question: string;
+  answer: string;
+  explanation?: string;
+}
+
+export interface LessonSummary {
+  id: number;
   title: string;
-  level: string;
-  core_concepts: string;
-  code_examples: Array<{
-    description: string;
-    code: string;
-  }>;
-  quizzes: Array<{
-    question: string;
-    answer: string;
-  }>;
+  number: number;
 }
 
 export interface LessonIndex {
-  [level: string]: Array<{
-    filename: string;
-    title: string;
-    number: number;
-  }>;
+  [level: string]: LessonSummary[];
 }
 
-// 생성된 레슨 목록(index.json)을 가져오는 API
+export interface LessonDetail {
+  id: number;
+  level: string;
+  title: string;
+  core_concepts: string;
+  code_examples: CodeExample[];
+  quizzes: Quiz[];
+  version_id: number;
+  updated_at?: string;
+}
+
+export interface GenerationSummary {
+  id: number;
+  source: string;
+  status: string;
+  created_by?: string | null;
+  started_at?: string | null;
+  completed_at?: string | null;
+  total_topics?: number | null;
+  succeeded?: number | null;
+  failed_count: number;
+}
+
+export interface GenerationDetail extends GenerationSummary {
+  failed_topics: { level: string; topic: string; error: string }[];
+}
+
+export interface LessonVersionInfo {
+  version_id: number;
+  generation_id: number;
+  title: string;
+  created_at?: string | null;
+  is_current: boolean;
+  source?: string | null;
+}
+
+// --- 공개 레슨 조회 ---
+
+// 레벨별 레슨 목록을 가져오는 API
 export const fetchLessonIndex = async (): Promise<LessonIndex> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/v1/lesson/index`);
+    const response = await api.get('/api/v1/lessons');
     return response.data;
   } catch (error) {
-    console.error('레슨 인덱스 조회 실패:', error);
+    console.error('레슨 목록 조회 실패:', error);
     throw new Error('레슨 목록을 가져오는데 실패했습니다.');
   }
 };
 
-// 특정 레슨의 상세 내용(JSON)을 가져오는 API
-export const fetchLessonDetail = async (filename: string): Promise<LessonContent & { filename: string }> => {
+// 특정 레슨의 상세 내용을 가져오는 API
+export const fetchLessonDetail = async (lessonId: number): Promise<LessonDetail> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/v1/lesson/${filename}`);
-    return { ...response.data, filename };
+    const response = await api.get(`/api/v1/lessons/${lessonId}`);
+    return response.data;
   } catch (error) {
     console.error('레슨 상세 조회 실패:', error);
     throw new Error('레슨 내용을 가져오는데 실패했습니다.');
   }
 };
 
-// [관리자용] 전체 콘텐츠 생성을 시작시키는 API
-export const triggerFullContentGeneration = async (): Promise<{ message: string }> => {
-  try {
-    const response = await axios.post(`${API_BASE_URL}/api/v1/admin/generate-all-content`);
-    return response.data;
-  } catch (error) {
-    console.error('콘텐츠 생성 요청 실패:', error);
-    throw new Error('콘텐츠 생성 요청에 실패했습니다.');
-  }
-};
-
 // PostgreSQL DB에서 주제별 콘텐츠 목록을 가져오는 API
 export const fetchContentsBySubject = async (subjectName: string) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/v1/contents/${subjectName}`);
+    const response = await api.get(`/api/v1/contents/${subjectName}`);
     return response.data;
   } catch (error) {
     console.error('주제별 콘텐츠 조회 실패:', error);
@@ -73,7 +99,7 @@ export const fetchContentsBySubject = async (subjectName: string) => {
 // 서버 헬스 체크
 export const checkServerHealth = async (): Promise<{ status: string }> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/health`);
+    const response = await api.get('/api/health');
     return response.data;
   } catch (error) {
     console.error('서버 헬스 체크 실패:', error);
@@ -81,38 +107,52 @@ export const checkServerHealth = async (): Promise<{ status: string }> => {
   }
 };
 
-// 백업 목록 조회
-export async function fetchLessonBackups(lessonFilename: string) {
-  const res = await fetch(`/api/v1/admin/lesson-backups?lesson_filename=${encodeURIComponent(lessonFilename)}`);
-  if (!res.ok) throw new Error('백업 목록을 불러오지 못했습니다');
-  return res.json();
-}
+// --- 관리자 API (X-Admin-API-Key 헤더는 axios 인터셉터가 자동 첨부) ---
 
-// 백업 복원
-export async function restoreLessonBackup(backupId: number, restoredBy?: string) {
-  const res = await fetch('/api/v1/admin/restore-lesson-backup', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ backup_id: backupId, restored_by: restoredBy }),
+// [관리자용] 전체 콘텐츠 생성을 시작시키는 API
+export const triggerFullContentGeneration = async (): Promise<{ message: string; generation_id: number }> => {
+  try {
+    const response = await api.post('/api/v1/admin/generate-all-content');
+    return response.data;
+  } catch (error) {
+    console.error('콘텐츠 생성 요청 실패:', error);
+    throw new Error('콘텐츠 생성 요청에 실패했습니다.');
+  }
+};
+
+// 생성 세대 목록 조회
+export const fetchGenerations = async (): Promise<GenerationSummary[]> => {
+  const response = await api.get('/api/v1/admin/generations');
+  return response.data;
+};
+
+// 생성 세대 상세 조회 (실패 토픽 포함)
+export const fetchGenerationDetail = async (generationId: number): Promise<GenerationDetail> => {
+  const response = await api.get(`/api/v1/admin/generations/${generationId}`);
+  return response.data;
+};
+
+// 특정 세대의 레슨으로 일괄 전환
+export const activateGeneration = async (generationId: number): Promise<{ message: string }> => {
+  const response = await api.post(`/api/v1/admin/generations/${generationId}/activate`);
+  return response.data;
+};
+
+// 특정 레슨의 버전 목록 조회
+export const fetchLessonVersions = async (lessonId: number): Promise<LessonVersionInfo[]> => {
+  const response = await api.get(`/api/v1/admin/lessons/${lessonId}/versions`);
+  return response.data;
+};
+
+// 특정 버전으로 레슨 복원
+export const restoreLessonVersion = async (
+  lessonId: number,
+  versionId: number,
+  restoredBy?: string,
+): Promise<{ message: string }> => {
+  const response = await api.post(`/api/v1/admin/lessons/${lessonId}/restore`, {
+    version_id: versionId,
+    restored_by: restoredBy,
   });
-  if (!res.ok) throw new Error('복원에 실패했습니다');
-  return res.json();
-}
-
-// 날짜별 백업 파일 목록 조회
-export async function fetchBackupList() {
-  const res = await fetch('/api/v1/admin/backup-list');
-  if (!res.ok) throw new Error('백업 폴더 목록을 불러오지 못했습니다');
-  return res.json();
-}
-
-// 특정 날짜 전체 복원
-export async function restoreBackupDate(date: string) {
-  const res = await fetch('/api/v1/admin/restore-backup-date', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ date }),
-  });
-  if (!res.ok) throw new Error('전체 복원에 실패했습니다');
-  return res.json();
-}
+  return response.data;
+};

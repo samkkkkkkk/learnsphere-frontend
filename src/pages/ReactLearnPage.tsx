@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { fetchLessonIndex, fetchLessonDetail } from '../api/lessonApi';
-import type { LessonContent, LessonIndex } from '../api/lessonApi';
+import type { LessonDetail, LessonIndex } from '../api/lessonApi';
 import './ReactLearnPage.css';
 import LMSPage from './LMSPage';
 
@@ -25,7 +24,7 @@ export default function ReactLearn() {
   const [selectedTopic, setSelectedTopic] = useState<string>('react');
   const [level, setLevel] = useState<Level>('초급');
   const [lessonIndex, setLessonIndex] = useState<LessonIndex | null>(null);
-  const [selectedLesson, setSelectedLesson] = useState<(LessonContent & { filename: string }) | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<LessonDetail | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showAnswers, setShowAnswers] = useState<Set<string>>(new Set()); // 정답을 보여줄 퀴즈들을 추적
@@ -63,11 +62,11 @@ export default function ReactLearn() {
   /**
    * 특정 레슨을 로드하는 함수
    */
-  const loadLessonDetail = async (filename: string) => {
+  const loadLessonDetail = async (lessonId: number) => {
     try {
       setIsLoading(true);
       setError(null);
-      const lesson = await fetchLessonDetail(filename);
+      const lesson = await fetchLessonDetail(lessonId);
       setSelectedLesson(lesson);
     } catch (err) {
       setError('레슨 내용을 불러오는데 실패했습니다.');
@@ -129,7 +128,7 @@ export default function ReactLearn() {
     // 레슨 인덱스가 로드되어 있고, 해당 레벨에 레슨이 있으면 첫 번째 레슨을 자동으로 로드
     if (lessonIndex && lessonIndex[newLevel] && lessonIndex[newLevel].length > 0) {
       const firstLesson = lessonIndex[newLevel][0];
-      loadLessonDetail(firstLesson.filename);
+      loadLessonDetail(firstLesson.id);
     }
   };
 
@@ -148,7 +147,7 @@ export default function ReactLearn() {
   useEffect(() => {
     if (lessonIndex && lessonIndex[level] && lessonIndex[level].length > 0 && !selectedLesson) {
       const firstLesson = lessonIndex[level][0];
-      loadLessonDetail(firstLesson.filename);
+      loadLessonDetail(firstLesson.id);
     }
   }, [lessonIndex, level, selectedLesson]);
 
@@ -212,11 +211,11 @@ export default function ReactLearn() {
               <div className="loading-spinner">로딩 중...</div>
             ) : lessonIndex && lessonIndex[level] ? (
               <div className="lesson-grid">
-                {lessonIndex[level].map((lesson, index) => (
-                  <div 
-                    key={lesson.filename}
-                    className={`lesson-card ${selectedLesson && selectedLesson.filename === lesson.filename ? 'active' : ''}`}
-                    onClick={() => loadLessonDetail(lesson.filename)}
+                {lessonIndex[level].map((lesson) => (
+                  <div
+                    key={lesson.id}
+                    className={`lesson-card ${selectedLesson && selectedLesson.id === lesson.id ? 'active' : ''}`}
+                    onClick={() => loadLessonDetail(lesson.id)}
                   >
                     <div className="lesson-number">{lesson.number}</div>
                     <div className="lesson-title">{lesson.title}</div>
@@ -302,6 +301,11 @@ export default function ReactLearn() {
                         {isAnswerVisible && (
                           <div className="quiz-answer">
                             <strong>정답:</strong> {quiz.answer}
+                            {quiz.explanation && (
+                              <div className="quiz-explanation">
+                                <strong>해설:</strong> {quiz.explanation}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -381,6 +385,11 @@ export default function ReactLearn() {
                           {isAnswerVisible && (
                             <div className="quiz-answer">
                               <strong>정답:</strong> {quiz.answer}
+                              {quiz.explanation && (
+                                <div className="quiz-explanation">
+                                  <strong>해설:</strong> {quiz.explanation}
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
