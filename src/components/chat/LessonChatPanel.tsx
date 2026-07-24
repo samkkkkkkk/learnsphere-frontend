@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import * as chatApi from '../../api/chatApi';
 import { useChatConversation } from './useChatConversation';
 import ChatMessages from './ChatMessages';
 import ChatComposer from './ChatComposer';
@@ -14,16 +17,42 @@ interface LessonChatPanelProps {
 /**
  * 레슨 상세 옆에 붙는 질문 패널.
  *
- * 전역 위젯과 달리 lessonId를 함께 보내므로, 보고 있는 레슨 본문이
- * 답변의 우선 근거가 된다.
+ * 세션이 레슨에 묶이므로, 이 대화의 모든 질문은 해당 레슨 본문을
+ * 우선 근거로 삼는다. 같은 레슨에 기존 대화가 있으면 이어간다.
  */
 const LessonChatPanel: React.FC<LessonChatPanelProps> = ({
   lessonId,
   lessonTitle,
   onClose,
 }) => {
-  // lessonId가 바뀌면 훅 상태가 새로 잡히도록 부모에서 key를 준다
-  const { messages, isSending, error, send } = useChatConversation(lessonId);
+  const { user } = useAuth();
+  const [sessionId, setSessionId] = useState<number | null>(null);
+  const [sessionError, setSessionError] = useState<string | null>(null);
+  const { messages, isSending, isLoading, error, send } = useChatConversation(sessionId);
+
+  // 이 레슨의 기존 대화를 찾고, 없으면 새로 만든다
+  useEffect(() => {
+    if (!user) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const sessions = await chatApi.fetchSessions();
+        if (cancelled) return;
+
+        const existing = sessions.find(session => session.lesson_id === lessonId);
+        const session = existing ?? (await chatApi.createSession(lessonId));
+        if (!cancelled) setSessionId(session.id);
+      } catch {
+        if (!cancelled) setSessionError('대화를 시작하지 못했습니다.');
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [lessonId, user]);
 
   return (
     <aside className="lesson-chat-panel">
@@ -36,24 +65,37 @@ const LessonChatPanel: React.FC<LessonChatPanelProps> = ({
         </button>
       </div>
 
-      <ChatMessages
-        messages={messages}
-        isSending={isSending}
-        error={error}
-        emptyHint={
-          <>
-            이 레슨 내용을 바탕으로 답변합니다.
+      {user ? (
+        <>
+          <ChatMessages
+            messages={messages}
+            isSending={isSending || isLoading}
+            error={error ?? sessionError}
+            emptyHint={
+              <>
+                이 레슨 내용을 바탕으로 답변합니다.
+                <br />
+                예: &ldquo;여기 나온 예제 더 쉽게 설명해줘&rdquo;
+              </>
+            }
+          />
+          <ChatComposer
+            onSend={send}
+            disabled={isSending || sessionId === null}
+            placeholder="이 레슨에 대해 질문하세요"
+          />
+        </>
+      ) : (
+        <div className="chat-panel__messages">
+          <p className="chat-panel__empty">
+            튜터에게 질문하려면 로그인이 필요합니다.
             <br />
-            예: &ldquo;여기 나온 예제 더 쉽게 설명해줘&rdquo;
-          </>
-        }
-      />
-
-      <ChatComposer
-        onSend={send}
-        disabled={isSending}
-        placeholder="이 레슨에 대해 질문하세요"
-      />
+            <Link to="/login" className="chat-panel__login-link">
+              로그인하러 가기
+            </Link>
+          </p>
+        </div>
+      )}
     </aside>
   );
 };

@@ -4,7 +4,15 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   // 답변의 근거가 된 문서 제목 (assistant 메시지에만)
-  sources?: string[];
+  sources?: string[] | null;
+}
+
+export interface ChatSession {
+  id: number;
+  title: string | null;
+  lesson_id: number | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface ChatAnswer {
@@ -12,20 +20,42 @@ export interface ChatAnswer {
   sources: string[];
 }
 
-// 튜터에게 질문을 보내고 답변을 받는다. 이전 대화를 함께 실어 맥락을 잇는다.
+// --- 세션 ---
+
+export const createSession = async (lessonId?: number): Promise<ChatSession> => {
+  const response = await api.post<ChatSession>('/api/v1/chat/sessions', {
+    lesson_id: lessonId ?? null,
+  });
+  return response.data;
+};
+
+export const fetchSessions = async (): Promise<ChatSession[]> => {
+  const response = await api.get<ChatSession[]>('/api/v1/chat/sessions');
+  return response.data;
+};
+
+export const deleteSession = async (sessionId: number): Promise<void> => {
+  await api.delete(`/api/v1/chat/sessions/${sessionId}`);
+};
+
+export const fetchMessages = async (sessionId: number): Promise<ChatMessage[]> => {
+  const response = await api.get<ChatMessage[]>(
+    `/api/v1/chat/sessions/${sessionId}/messages`,
+  );
+  return response.data;
+};
+
+// --- 메시지 전송 ---
+
 export const sendMessage = async (
+  sessionId: number,
   message: string,
-  history: ChatMessage[] = [],
-  lessonId?: number,
 ): Promise<ChatAnswer> => {
   try {
-    // 서버가 필요로 하는 건 role/content뿐이므로 sources는 떼고 보낸다
-    const trimmedHistory = history.map(({ role, content }) => ({ role, content }));
-    const response = await api.post('/api/v1/chat', {
-      message,
-      history: trimmedHistory,
-      lesson_id: lessonId,
-    });
+    const response = await api.post<ChatAnswer>(
+      `/api/v1/chat/sessions/${sessionId}/messages`,
+      { message },
+    );
     return {
       answer: response.data.answer,
       sources: response.data.sources ?? [],

@@ -48,13 +48,97 @@
   font-weight: 600;
 }
 
+.chat-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chat-panel__action,
 .chat-panel__close {
   background: none;
   border: none;
   color: #fff;
-  font-size: 24px;
   line-height: 1;
   cursor: pointer;
+}
+
+.chat-panel__close {
+  font-size: 24px;
+}
+
+.chat-panel__action {
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.chat-panel__action:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.chat-panel__login-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #5b21b6;
+  font-weight: 600;
+}
+
+/* --- 대화 목록 --- */
+
+.chat-session-list {
+  max-height: 180px;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
+  border-bottom: 1px solid #e6e4f0;
+  background: #fff;
+}
+
+.chat-session-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 6px;
+}
+
+.chat-session-item.active {
+  background: #f0eef8;
+}
+
+.chat-session-item--empty {
+  padding: 8px 10px;
+  color: #8b8b9e;
+  font-size: 0.82rem;
+}
+
+.chat-session-item__open {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  color: #2d2d3a;
+  font-size: 0.85rem;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-session-item__delete {
+  padding: 0 8px;
+  border: none;
+  background: none;
+  color: #b0aec4;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.chat-session-item__delete:hover {
+  color: #b3261e;
 }
 
 .chat-panel__messages {
