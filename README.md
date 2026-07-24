@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Vite-7-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />
   <img src="https://img.shields.io/badge/React_Router-7-CA4245?style=flat-square&logo=reactrouter&logoColor=white" alt="React Router" />
-  <img src="https://img.shields.io/badge/Node.js-20.19.3-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Node.js-%3E%3D20.19.3-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js" />
   <img src="https://img.shields.io/badge/Docker-Supported-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker" />
 </p>
 
@@ -104,7 +104,7 @@
 
 ### 사전 요구 사항
 
-- **Node.js `20.19.3`** (`package.json`의 `engines` 필드 기준 — [nvm](https://github.com/nvm-sh/nvm) 또는 [nvm-windows](https://github.com/coreybutler/nvm-windows) 사용 권장)
+- **Node.js `20.19.3` 이상** (`package.json`의 `engines` 필드 기준)
 - **npm** (Node.js에 포함)
 - (선택) **Docker** — 컨테이너 환경에서 실행할 경우
 - (선택) **FastAPI 백엔드 서버** — 레슨 데이터 조회 등 API 기능을 사용하려면 `http://127.0.0.1:8000`에서 실행 중이어야 합니다.
