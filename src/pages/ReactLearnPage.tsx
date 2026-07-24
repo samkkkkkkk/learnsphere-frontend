@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import LessonChatPanel from '../components/chat/LessonChatPanel';
 import { fetchLessonIndex, fetchLessonDetail } from '../api/lessonApi';
 import type { LessonDetail, LessonIndex } from '../api/lessonApi';
 import './ReactLearnPage.css';
@@ -27,6 +28,7 @@ export default function ReactLearn() {
   const [error, setError] = useState<string | null>(null);
   const [showAnswers, setShowAnswers] = useState<Set<string>>(new Set()); // 정답을 보여줄 퀴즈들을 추적
   const [showModal, setShowModal] = useState(false);
+  const [isLessonChatOpen, setIsLessonChatOpen] = useState(false);
 
   // 모달 열릴 때 body 스크롤 방지
   useEffect(() => {
@@ -229,10 +231,20 @@ export default function ReactLearn() {
 
           {/* 선택된 레슨 상세 내용 */}
           {selectedLesson && (
+            <div className="lesson-with-chat">
             <div className="lesson-detail">
               <h2>{selectedLesson.title}</h2>
               <div className="lesson-level">레벨: {selectedLesson.level}</div>
-              
+
+              {!isLessonChatOpen && (
+                <button
+                  className="lesson-chat-open-button"
+                  onClick={() => setIsLessonChatOpen(true)}
+                >
+                  💬 이 레슨에 대해 질문하기
+                </button>
+              )}
+
               {/* 핵심 개념 */}
               <section className="lesson-section">
                 <h3>핵심 개념</h3>
@@ -289,6 +301,17 @@ export default function ReactLearn() {
                   })}
                 </section>
               )}
+            </div>
+
+            {isLessonChatOpen && (
+              // key로 레슨이 바뀌면 대화를 새로 시작한다
+              <LessonChatPanel
+                key={selectedLesson.id}
+                lessonId={selectedLesson.id}
+                lessonTitle={selectedLesson.title}
+                onClose={() => setIsLessonChatOpen(false)}
+              />
+            )}
             </div>
           )}
         </div>

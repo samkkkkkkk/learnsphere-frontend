@@ -16,6 +16,7 @@ export interface ChatAnswer {
 export const sendMessage = async (
   message: string,
   history: ChatMessage[] = [],
+  lessonId?: number,
 ): Promise<ChatAnswer> => {
   try {
     // 서버가 필요로 하는 건 role/content뿐이므로 sources는 떼고 보낸다
@@ -23,6 +24,7 @@ export const sendMessage = async (
     const response = await api.post('/api/v1/chat', {
       message,
       history: trimmedHistory,
+      lesson_id: lessonId,
     });
     return {
       answer: response.data.answer,

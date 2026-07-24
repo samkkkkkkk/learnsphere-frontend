@@ -1,0 +1,61 @@
+/* 레슨 상세 옆 질문 패널 — 챗 위젯의 말풍선 스타일(ChatWidget.css)을 함께 쓴다 */
+
+.lesson-chat-panel {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  width: 380px;
+  flex-shrink: 0;
+  height: calc(100vh - 120px);
+  background: #fff;
+  border: 1px solid #e6e4f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.lesson-chat-panel__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 레슨 본문과 패널을 가로로 배치 */
+.lesson-with-chat {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.lesson-with-chat > .lesson-detail {
+  flex: 1;
+  min-width: 0;
+}
+
+.lesson-chat-open-button {
+  margin-bottom: 16px;
+  padding: 8px 16px;
+  border: 1px solid #5b21b6;
+  border-radius: 8px;
+  background: #fff;
+  color: #5b21b6;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lesson-chat-open-button:hover {
+  background: #f5f3ff;
+}
+
+@media (max-width: 1200px) {
+  .lesson-with-chat {
+    flex-direction: column;
+  }
+
+  .lesson-chat-panel {
+    position: static;
+    width: 100%;
+    height: 480px;
+  }
+}
