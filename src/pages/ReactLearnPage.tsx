@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import { fetchLessonIndex, fetchLessonDetail } from '../api/lessonApi';
 import type { LessonDetail, LessonIndex } from '../api/lessonApi';
 import './ReactLearnPage.css';
@@ -239,7 +237,7 @@ export default function ReactLearn() {
               <section className="lesson-section">
                 <h3>핵심 개념</h3>
                 <div className="core-concepts">
-                  <ReactMarkdown>{selectedLesson.core_concepts}</ReactMarkdown>
+                  <MarkdownRenderer>{selectedLesson.core_concepts}</MarkdownRenderer>
                 </div>
               </section>
 
@@ -250,29 +248,7 @@ export default function ReactLearn() {
                   {selectedLesson.code_examples.map((example, index) => (
                     <div key={index} className="code-example">
                       <h4>{example.description}</h4>
-                      <ReactMarkdown
-                        components={{
-                          code({ className, children, ...props }: any) {
-                            const match = /language-(\w+)/.exec(className || '');
-                            const isInline = !match;
-                            return !isInline ? (
-                              <SyntaxHighlighter
-                                style={tomorrow}
-                                language={match?.[1] || 'javascript'}
-                                PreTag="div"
-                              >
-                                {String(children).replace(/\n$/, '')}
-                              </SyntaxHighlighter>
-                            ) : (
-                              <code className={className} {...props}>
-                                {children}
-                              </code>
-                            );
-                          },
-                        }}
-                      >
-                        {example.code}
-                      </ReactMarkdown>
+                      <MarkdownRenderer>{example.code}</MarkdownRenderer>
                     </div>
                   ))}
                 </section>
@@ -328,7 +304,7 @@ export default function ReactLearn() {
                 <section className="lesson-section">
                   <h3>핵심 개념</h3>
                   <div className="core-concepts">
-                    <ReactMarkdown>{selectedLesson.core_concepts}</ReactMarkdown>
+                    <MarkdownRenderer>{selectedLesson.core_concepts}</MarkdownRenderer>
                   </div>
                 </section>
                 {selectedLesson.code_examples.length > 0 && (
@@ -337,29 +313,7 @@ export default function ReactLearn() {
                     {selectedLesson.code_examples.map((example, index) => (
                       <div key={index} className="code-example">
                         <h4>{example.description}</h4>
-                        <ReactMarkdown
-                          components={{
-                            code({ className, children, ...props }: any) {
-                              const match = /language-(\w+)/.exec(className || '');
-                              const isInline = !match;
-                              return !isInline ? (
-                                <SyntaxHighlighter
-                                  style={tomorrow}
-                                  language={match?.[1] || 'javascript'}
-                                  PreTag="div"
-                                >
-                                  {String(children).replace(/\n$/, '')}
-                                </SyntaxHighlighter>
-                              ) : (
-                                <code className={className} {...props}>
-                                  {children}
-                                </code>
-                              );
-                            },
-                          }}
-                        >
-                          {example.code}
-                        </ReactMarkdown>
+                        <MarkdownRenderer>{example.code}</MarkdownRenderer>
                       </div>
                     ))}
                   </section>

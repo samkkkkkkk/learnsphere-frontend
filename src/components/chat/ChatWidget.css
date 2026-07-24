@@ -98,6 +98,57 @@
   color: #2d2d3a;
   border: 1px solid #e6e4f0;
   border-bottom-left-radius: 4px;
+  /* 마크다운으로 렌더되므로 pre-wrap을 끈다 (빈 줄이 두 배로 벌어짐) */
+  white-space: normal;
+}
+
+/* --- 답변 내 마크다운 요소 --- */
+
+.chat-message--assistant > :first-child {
+  margin-top: 0;
+}
+
+.chat-message--assistant > :last-child {
+  margin-bottom: 0;
+}
+
+.chat-message--assistant p {
+  margin: 0 0 8px;
+}
+
+.chat-message--assistant ul,
+.chat-message--assistant ol {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+
+.chat-message--assistant pre,
+.chat-message--assistant pre > div {
+  max-width: 100%;
+  overflow-x: auto;
+  font-size: 0.82rem;
+  border-radius: 6px;
+}
+
+.chat-message--assistant :not(pre) > code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #f0eef8;
+  font-size: 0.85em;
+}
+
+.chat-message--assistant table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.chat-message--assistant th,
+.chat-message--assistant td {
+  border: 1px solid #e6e4f0;
+  padding: 4px 8px;
 }
 
 .chat-message--error {

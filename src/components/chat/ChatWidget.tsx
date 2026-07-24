@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useChatWidget } from '../../contexts/ChatWidgetContext';
 import { sendMessage } from '../../api/chatApi';
 import type { ChatMessage } from '../../api/chatApi';
+import MarkdownRenderer from '../MarkdownRenderer';
 import './ChatWidget.css';
 
 const ChatWidget: React.FC = () => {
@@ -22,13 +23,15 @@ const ChatWidget: React.FC = () => {
     const question = input.trim();
     if (!question || isSending) return;
 
+    // 이번 질문을 붙이기 전의 대화가 서버로 보낼 history가 된다
+    const history = messages;
     setMessages(prev => [...prev, { role: 'user', content: question }]);
     setInput('');
     setError(null);
     setIsSending(true);
 
     try {
-      const answer = await sendMessage(question);
+      const answer = await sendMessage(question, history);
       setMessages(prev => [...prev, { role: 'assistant', content: answer }]);
     } catch {
       setError('답변을 가져오지 못했습니다. 잠시 후 다시 시도해주세요.');
@@ -70,7 +73,11 @@ const ChatWidget: React.FC = () => {
                 key={index}
                 className={`chat-message chat-message--${message.role}`}
               >
-                {message.content}
+                {message.role === 'assistant' ? (
+                  <MarkdownRenderer>{message.content}</MarkdownRenderer>
+                ) : (
+                  message.content
+                )}
               </div>
             ))}
 
