@@ -10,9 +10,12 @@ import FocusManagerModal from './pages/FocusManagerModal';
 import WireframePage from './pages/WireframePage';
 import { ChatWidgetProvider } from './contexts/ChatWidgetContext';
 import ChatWidget from './components/chat/ChatWidget';
+import { AuthProvider } from './contexts/AuthContext';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   return (
+    <AuthProvider>
     <FocusManagerProvider>
       <ChatWidgetProvider>
         <Header />
@@ -23,11 +26,13 @@ function App() {
           <Route path="/react-learn" element={<ReactLearnPage />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path='/wireframe' element={<WireframePage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
         <FocusManagerModal />
         <ChatWidget />
       </ChatWidgetProvider>
     </FocusManagerProvider>
+    </AuthProvider>
   );
 }
 

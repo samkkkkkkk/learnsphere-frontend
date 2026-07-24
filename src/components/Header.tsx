@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useFocusManager } from '../contexts/FocusManagerContext';
+import { useAuth } from '../contexts/AuthContext';
 import './Header.css';
 
 const Header: React.FC = () => {
   const { openModal } = useFocusManager();
+  const { user, isLoading, logout } = useAuth();
 
   return (
     <header className="header">
@@ -39,6 +41,24 @@ const Header: React.FC = () => {
             {/* <Link to="/wireframe" className="nav-link">와이어프레임</Link>
             <Link to="/admin" className="nav-link">관리자</Link> */}
           </div>
+
+          {/* 복원 중에는 로그인/닉네임이 깜빡이지 않도록 아무것도 보여주지 않는다 */}
+          {!isLoading && (
+            <div className="nav-group nav-auth">
+              {user ? (
+                <>
+                  <span className="nav-nickname">{user.nickname}님</span>
+                  <button className="nav-link nav-auth-btn" onClick={logout}>
+                    로그아웃
+                  </button>
+                </>
+              ) : (
+                <Link to="/login" className="nav-link">
+                  로그인
+                </Link>
+              )}
+            </div>
+          )}
         </nav>
       </div>
     </header>
