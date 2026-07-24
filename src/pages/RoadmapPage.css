@@ -7,7 +7,7 @@
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, var(--color-main-gradient-from) 0%, var(--color-main-gradient-to) 100%);
+    background: var(--color-bg-page);
     min-height: 100vh;
 }
 
@@ -30,7 +30,7 @@
     text-align: center;
     font-size: 2.5em;
     font-weight: bold;
-    color: #2c3e50;
+    color: #33312a;
     margin-bottom: 30px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -44,13 +44,13 @@
 }
 
 .root-node {
-    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+    background: linear-gradient(135deg, #c47a5a, #d08d6e);
     color: white;
     padding: 20px 40px;
     border-radius: 25px;
     font-size: 1.8em;
     font-weight: bold;
-    box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 10px 25px rgba(160, 106, 74, 0.3);
     cursor: pointer;
     transition: all 0.3s ease;
     margin: 0 auto;
@@ -59,7 +59,7 @@
 
 .root-node:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+    box-shadow: 0 15px 35px rgba(160, 106, 74, 0.4);
 }
 
 .main-branches {
@@ -94,22 +94,22 @@
 }
 
 .beginner {
-    background: linear-gradient(135deg, #4ECDC4, #44A08D);
+    background: linear-gradient(135deg, #8fa07e, #6d7a5e);
     color: white;
 }
 
 .intermediate {
-    background: linear-gradient(135deg, #FDBB2D, #22C1C3);
+    background: linear-gradient(135deg, #d9a441, #b3812e);
     color: white;
 }
 
 .advanced {
-    background: linear-gradient(135deg, #FA8072, #FF6347);
+    background: linear-gradient(135deg, #c26b52, #a9502e);
     color: white;
 }
 
 .community {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #c47a5a, #a55f42);
     color: white;
 }
 
@@ -142,7 +142,7 @@
 
 .sub-node {
     background: rgba(255, 255, 255, 0.9);
-    border-left: 4px solid #3498db;
+    border-left: 4px solid #c47a5a;
     padding: 12px 20px;
     margin: 8px 0;
     border-radius: 8px;
@@ -153,56 +153,56 @@
 }
 
 .sub-node:hover {
-    background: rgba(52, 152, 219, 0.1);
+    background: rgba(160, 106, 74, 0.1);
     transform: translateX(5px);
 }
 
 .detail-node {
     background: rgba(255, 255, 255, 0.7);
-    border-left: 3px solid #95a5a6;
+    border-left: 3px solid #a89c8e;
     padding: 8px 15px;
     margin: 5px 0 5px 20px;
     border-radius: 5px;
     font-size: 0.85em;
-    color: #2c3e50;
+    color: #33312a;
 }
 
 .resource-node {
-    background: rgba(46, 204, 113, 0.1);
-    border-left: 3px solid #2ecc71;
+    background: rgba(47, 107, 79, 0.1);
+    border-left: 3px solid #6d7a5e;
     padding: 8px 15px;
     margin: 5px 0 5px 20px;
     border-radius: 5px;
     font-size: 0.85em;
-    color: #27ae60;
+    color: #2b5f45;
 }
 
 .book-node {
-    background: rgba(155, 89, 182, 0.1);
-    border-left: 3px solid #9b59b6;
+    background: rgba(139, 111, 78, 0.1);
+    border-left: 3px solid #8b6f4e;
     padding: 8px 15px;
     margin: 5px 0 5px 20px;
     border-radius: 5px;
     font-size: 0.85em;
-    color: #8e44ad;
+    color: #6f5636;
 }
 
 .resource-node a {
-    color: #2980b9;
+    color: #c47a5a;
     text-decoration: underline;
     font-weight: 500;
     transition: all 0.2s ease;
     padding: 2px 4px;
     border-radius: 3px;
-    background: rgba(41, 128, 185, 0.1);
+    background: rgba(160, 106, 74, 0.1);
 }
 
 .resource-node a:hover {
     color: #ffffff;
-    background: #3498db;
+    background: #c47a5a;
     text-decoration: none;
     transform: translateX(3px);
-    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 2px 8px rgba(160, 106, 74, 0.3);
 }
 
 .expand-icon {
@@ -220,7 +220,7 @@
 }
 
 .btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #c47a5a, #a55f42);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -233,5 +233,5 @@
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgba(160, 106, 74, 0.4);
 } 

@@ -1,20 +1,95 @@
-/* 색상 변수 */
+/* ─────────────────────────────────────────────────────────────
+   Cream & Earth — 아날로그 공방 테마
+   티크 원목 책상 위, 노끈으로 묶인 수제 종이 카드
+   팔레트: 티크 우드 · 크림 종이 · 웜 그레이지 · 올리브 세이지 · 테라코타
+   ───────────────────────────────────────────────────────────── */
 :root {
-  --color-main-gradient-from: #667eea;
-  --color-main-gradient-to: #764ba2;
-  --color-point: #28a745;
-  --color-danger: #ff6b6b;
-  --color-bg-light: #f8f9fa;
-  --color-bg-card: rgba(255,255,255,0.95);
-  --color-text-main: #222;
-  --color-text-sub: #666;
-  --color-border: #e9ecef;
+  /* 악센트: 테라코타 (전체의 10~20%만 — CTA·활성 상태 전용) */
+  --color-main-gradient-from: #c47a5a; /* terracotta rgb(196,122,90) */
+  --color-main-gradient-to: #a55f42;   /* terracotta deep */
+
+  /* 구조: 웜 그레이지 (톤온톤 깊이 — 제목·테이블·구조 요소) */
+  --color-primary: #6b6156;            /* greige deep */
+  --color-secondary: #554c42;
+  --color-greige: #a89c8e;             /* warm greige rgb(168,156,142) */
+
+  /* 포인트: 올리브 세이지 (은은한 색감 포인트) */
+  --color-point: #6d7a5e;              /* sage deep */
+  --color-sage: #9ca891;               /* sage green rgb(156,168,145) */
+
+  --color-danger: #b3543f;
+
+  /* 티크 원목 — 결·나이테·창가 확산광을 레이어로 합성 */
+  --wood-grain: repeating-linear-gradient(
+      93deg,
+      rgba(58, 30, 10, 0.16) 0 1px,
+      rgba(255, 226, 178, 0.05) 1px 3px,
+      transparent 3px 11px,
+      rgba(58, 30, 10, 0.10) 11px 12px,
+      transparent 12px 26px
+    );
+  --wood-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02 0.6' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.22 0 0 0 0 0.12 0 0 0 0 0.04 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23w)' opacity='0.5'/%3E%3C/svg%3E");
+  --window-light: radial-gradient(140% 90% at 12% -15%, rgba(255, 246, 219, 0.30) 0%, rgba(255, 240, 210, 0.10) 38%, transparent 70%);
+
+  --color-bg-page:
+    var(--window-light),
+    var(--wood-grain),
+    var(--wood-fiber),
+    linear-gradient(97deg, #7b4c29 0%, #96643c 22%, #855435 48%, #9c6c44 72%, #7d4e2a 100%)
+    #8a5733;
+
+  /* 손으로 뜬 종이 — 크림 바탕에 섬유 결 */
+  --paper-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.40 0 0 0 0 0.32 0 0 0 0 0.20 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23p)'/%3E%3C/svg%3E");
+
+  --color-bg-light: #f0e7d3;
+  --color-bg-card: var(--paper-fiber), linear-gradient(168deg, #faf4e6 0%, #f1e7d2 100%) #f4ecda;
+  --color-bg-hover: #eae0c9;
+  --color-border: #d8cbaf;
+
+  /* 텍스트 (따뜻한 잉크 톤) */
+  --color-text-main: #3a352c;
+  --color-text-sub: #7a7163;
+  --color-text-secondary: #7a7163;
+
+  /* 종이에 눌러 찍은 활자 */
+  --deboss: 0 1px 0 rgba(255, 253, 244, 0.9), 0 -1px 1px rgba(94, 68, 38, 0.22);
 }
 
 body {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background: linear-gradient(135deg, var(--color-main-gradient-from) 0%, var(--color-main-gradient-to) 100%);
+  background: var(--color-bg-page);
+  background-attachment: fixed;
   color: var(--color-text-main);
   margin: 0;
   min-height: 100vh;
+}
+
+/* 키보드 포커스 가시성 (개별 outline: none 규칙보다 우선하도록 명시도 확보) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #f0dcae;
+  outline-offset: 2px;
+}
+
+/* 모바일에서는 고정 배경이 스크롤 성능을 해치므로 해제 */
+@media (max-width: 900px), (hover: none) {
+  body {
+    background-attachment: scroll;
+  }
+}
+
+/* 모션 최소화 설정 존중 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

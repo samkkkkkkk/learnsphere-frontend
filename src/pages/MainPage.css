@@ -1,7 +1,7 @@
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, var(--color-main-gradient-from) 0%, var(--color-main-gradient-to) 100%);
+  background: var(--color-bg-page);
   min-height: 100vh;
   margin: 0;
   color: var(--color-text-main);
@@ -17,7 +17,7 @@ body {
 }
 .header {
   background: var(--color-bg-card);
-  box-shadow: 0 2px 32px rgba(0,0,0,0.10);
+  box-shadow: 0 2px 32px rgba(84, 66, 39, 0.12);
   border-radius: 0 0 32px 32px;
   margin-bottom: 48px;
 }
@@ -55,45 +55,189 @@ body {
   font-size: 1.1rem;
   font-weight: 700;
 }
+/* ── 히어로: 티크 책상 위에 놓인 작업물 ───────────────────── */
 .hero-section {
   text-align: center;
   margin-bottom: 3.5rem;
 }
+/* 원목에 새긴 듯한 표제 */
 .hero-section h2 {
   font-size: 3.2rem;
   font-weight: 800;
-  color: white;
+  color: #f5e9d0;
+  letter-spacing: -0.01em;
   margin-bottom: 1.5rem;
-  text-shadow: 0 2px 18px rgba(0,0,0,0.13);
+  text-shadow:
+    0 1px 0 rgba(255, 248, 226, 0.22),
+    0 -1px 1px rgba(48, 25, 8, 0.6),
+    0 3px 10px rgba(38, 20, 6, 0.45);
 }
 .hero-description {
   font-size: 1.35rem;
-  color: rgba(255,255,255,0.97);
-  margin-bottom: 2.2rem;
+  color: rgba(244, 231, 206, 0.88);
+  margin-bottom: 2.6rem;
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+  text-shadow: 0 1px 3px rgba(38, 20, 6, 0.5);
 }
 .hero-features {
   display: flex;
   justify-content: center;
-  gap: 3.5rem;
+  align-items: stretch;
+  gap: 2rem;
   flex-wrap: wrap;
 }
+
+/* ── 손으로 뜬 두꺼운 종이 카드 ─────────────────────────── */
 .feature-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 252px;
+  padding: 3.6rem 1.6rem 1.9rem 1.6rem;
+  background: var(--color-bg-card);
+  /* 손으로 뜬 종이의 불규칙한 가장자리 */
+  border-radius: 4px 7px 5px 8px / 7px 4px 8px 5px;
+  color: #5c4a33;
+  font-weight: 700;
+  font-size: 1.16rem;
+  text-align: center;
+  text-shadow: var(--deboss);
+  /* 종이의 두께(적층 단면) + 확산광이 만드는 부드러운 그림자 */
+  box-shadow:
+    0 1px 0 #ece0c6,
+    0 2px 0 #e2d4b6,
+    0 3px 0 #d8c8a7,
+    0 4px 0 #cdbb97,
+    0 5px 0 #c2ae88,
+    0 10px 16px rgba(48, 25, 8, 0.34),
+    0 22px 40px rgba(38, 20, 6, 0.3);
+}
+/* 낱장마다 미세하게 다른 각도 — 손으로 놓은 흔적 */
+.feature-item:nth-child(1) { transform: rotate(-0.9deg); }
+.feature-item:nth-child(2) { transform: rotate(0.4deg) translateY(3px); }
+.feature-item:nth-child(3) { transform: rotate(0.8deg); }
+
+/* 카드를 묶은 노끈 */
+.feature-item::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  right: -12px;
+  top: 24px;
+  height: 10px;
+  background:
+    repeating-linear-gradient(
+      118deg,
+      #a98a58 0 3px,
+      #7e6437 3px 5px,
+      #c9ad78 5px 8px,
+      #8d7043 8px 10px
+    );
+  box-shadow:
+    inset 0 2px 2px rgba(255, 240, 205, 0.4),
+    inset 0 -2px 3px rgba(52, 34, 12, 0.45),
+    0 3px 5px rgba(44, 24, 8, 0.4);
+  border-radius: 2px;
+}
+/* 종이에 눌린 안쪽 테두리 */
+.feature-item::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border: 1px solid rgba(150, 122, 78, 0.28);
+  border-radius: 3px 5px 4px 6px / 5px 3px 6px 4px;
+  box-shadow: inset 0 1px 0 rgba(255, 252, 240, 0.7);
+  pointer-events: none;
+}
+
+/* ── 아이콘: 밀랍 인장 · 나무 조각상 · 잎맥 두뇌 ──────────── */
+.feature-item i {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  color: white;
-  font-weight: 600;
-  font-size: 1.18rem;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  margin-bottom: 0.6rem;
+  font-size: 1.7rem;
+  color: #f3e6cd;
+  text-shadow: 0 1px 1px rgba(40, 22, 6, 0.45);
 }
-.feature-item i { color: var(--color-point); font-size: 1.4rem; }
+
+/* 1. 밀랍 인장과 리본 */
+.feature-seal i {
+  background: radial-gradient(circle at 34% 28%, #d98a63 0%, #c4703f 45%, #9d4f27 100%);
+  /* 흘러 굳은 밀랍의 불규칙한 윤곽 */
+  border-radius: 47% 53% 44% 56% / 54% 45% 55% 46%;
+  transform: rotate(-6deg);
+  box-shadow:
+    inset 0 2px 4px rgba(255, 214, 178, 0.55),
+    inset 0 -3px 6px rgba(96, 40, 14, 0.6),
+    0 3px 7px rgba(52, 26, 8, 0.4);
+}
+
+/* 2. 나무를 깎아 만든 인물상 */
+.feature-carved i {
+  background: linear-gradient(155deg, #a97c4e 0%, #855c33 55%, #6d4826 100%);
+  border-radius: 50% 50% 46% 54% / 52% 48% 52% 48%;
+  color: #f6ead0;
+  box-shadow:
+    inset 0 2px 3px rgba(255, 226, 184, 0.4),
+    inset 0 -3px 6px rgba(58, 32, 12, 0.55),
+    0 3px 7px rgba(52, 26, 8, 0.38);
+  text-shadow: 0 1px 0 rgba(255, 235, 198, 0.35), 0 -1px 1px rgba(46, 26, 8, 0.7);
+}
+
+/* 3. 잎맥이 자란 두뇌 */
+.feature-leaf i {
+  background:
+    repeating-linear-gradient(58deg, rgba(240, 248, 225, 0.16) 0 1px, transparent 1px 7px),
+    radial-gradient(circle at 32% 26%, #97a879 0%, #74855c 48%, #4f5e3c 100%);
+  /* 잎사귀 실루엣 */
+  border-radius: 58% 42% 55% 45% / 45% 55% 45% 55%;
+  transform: rotate(4deg);
+  box-shadow:
+    inset 0 2px 4px rgba(233, 245, 213, 0.45),
+    inset 0 -3px 6px rgba(38, 50, 24, 0.55),
+    0 3px 7px rgba(40, 46, 22, 0.38);
+}
+
+.feature-sub {
+  color: #7d6a4e;
+  font-weight: 500;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-shadow: 0 1px 0 rgba(255, 253, 244, 0.8);
+}
+
+/* ── 금박으로 눌러 찍은 서명 ───────────────────────────── */
+.hero-signature {
+  margin-top: 2.6rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  background: linear-gradient(101deg, #8a6a2f 0%, #d9b871 26%, #f6e6b6 44%, #cda75e 62%, #8a6a2f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(255, 246, 220, 0.28)) drop-shadow(0 -1px 1px rgba(48, 30, 8, 0.55));
+}
+/* 책상 위에 펼쳐 놓은 두꺼운 종이 — 카드보다 한 단계 큰 낱장 */
 .selection-card {
   background: var(--color-bg-card);
-  border-radius: 32px;
+  border-radius: 5px 9px 6px 10px / 9px 5px 10px 6px;
   padding: 3.2rem 2.5rem 3.5rem 2.5rem;
-  box-shadow: 0 16px 64px rgba(0,0,0,0.13);
+  box-shadow:
+    0 1px 0 #ece0c6,
+    0 2px 0 #e2d4b6,
+    0 3px 0 #d6c5a3,
+    0 4px 0 #c9b693,
+    0 14px 22px rgba(48, 25, 8, 0.32),
+    0 30px 56px rgba(38, 20, 6, 0.28);
   max-width: 1000px;
   margin: 0 auto 3.5rem auto;
 }
@@ -104,7 +248,7 @@ body {
   margin-bottom: 0.7rem;
   display: flex; align-items: center; justify-content: center; gap: 0.7rem;
 }
-.card-header h3 i { color: var(--color-main-gradient-from); font-size: 1.5rem; }
+.card-header h3 i { color: var(--color-primary); font-size: 1.5rem; }
 .card-header p { color: var(--color-text-sub); font-size: 1.18rem; }
 .form-section { margin-bottom: 2.2rem; }
 .section-label { font-size: 1.25rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.7rem; display: block; }
@@ -120,12 +264,12 @@ body {
   transition: all 0.3s;
   font-size: 1.15rem;
 }
-.topic-option.active { border-color: var(--color-main-gradient-from); background: #f0f4ff; }
+.topic-option.active { border-color: var(--color-main-gradient-from); background: #f3eee2; }
 .topic-option.disabled { background: var(--color-bg-light); opacity: 0.6; cursor: not-allowed; }
 .topic-content h4 { font-size: 1.25rem; color: var(--color-text-main); margin-bottom: 0.3rem; }
 .topic-content p { color: var(--color-text-sub); font-size: 1.05rem; }
 .topic-badge { padding: 0.7rem 1.5rem; border-radius: 24px; font-size: 1rem; font-weight: 700; }
-.topic-badge.available { background: var(--color-main-gradient-from); color: white; }
+.topic-badge.available { background: var(--color-point); color: white; }
 .topic-badge.coming-soon { background: #6c757d; color: white; }
 .level-grid { display: flex; gap: 2rem; }
 .level-option {
@@ -139,7 +283,7 @@ body {
   transition: all 0.3s;
   font-size: 1.15rem;
 }
-.level-option.active { border-color: var(--color-point); background: #f0fff4; }
+.level-option.active { border-color: var(--color-point); background: #f0f2e9; }
 .level-option.disabled { background: var(--color-bg-light); opacity: 0.6; cursor: not-allowed; }
 .level-title { font-size: 1.18rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 0.3rem; }
 .level-subtitle { font-size: 1.05rem; color: var(--color-text-sub); }
@@ -156,17 +300,17 @@ body {
   display: flex; align-items: center; justify-content: center; gap: 1.1rem;
   margin: 2.2rem auto 0 auto;
 }
-.generate-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(102,126,234,0.18); }
+.generate-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(160,106,74,0.18); }
 .results-section { max-width: 900px; margin: 0 auto; display: none; }
 .results-header { text-align: center; margin-bottom: 3.2rem; }
 .results-header h2 { font-size: 2.2rem; color: #222; margin-bottom: 0.7rem; }
 .duration-info { color: #555; font-size: 1.18rem; }
 .roadmap-steps { display: flex; flex-direction: column; gap: 2.2rem; margin-bottom: 3.5rem; }
 .roadmap-step {
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 28px;
   padding: 2.5rem 2.2rem;
-  box-shadow: 0 10px 40px rgba(102,126,234,0.10);
+  box-shadow: 0 10px 40px rgba(160,106,74,0.10);
   opacity: 0;
   transform: translateY(40px);
   animation: none;
@@ -185,7 +329,7 @@ body {
 .step-header { display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 1.5rem; }
 .step-number {
   width: 54px; height: 54px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #a89c8e, #6b6156);
   color: white;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -194,21 +338,21 @@ body {
 .step-info h3 { font-size: 1.45rem; color: #333; margin-bottom: 0.6rem; }
 .step-badges { display: flex; gap: 0.7rem; flex-wrap: wrap; }
 .step-badge { padding: 0.35rem 1.1rem; border-radius: 18px; font-size: 1.05rem; font-weight: 700; }
-.step-badge.difficulty { background: #e3f2fd; color: #1976d2; border: 1.5px solid #bbdefb; }
-.step-badge.duration { background: #f3e5f5; color: #7b1fa2; border: 1.5px solid #e1bee7; }
+.step-badge.difficulty { background: #eae4da; color: #6b6156; border: 1.5px solid #d4cabb; }
+.step-badge.duration { background: #eaeee2; color: #58644c; border: 1.5px solid #dde2d3; }
 .step-explanation { color: #555; line-height: 1.8; margin-bottom: 1.5rem; font-size: 1.13rem; }
-.step-divider { height: 1.5px; background: #e9ecef; margin: 1.5rem 0; }
-.step-resource { background: #f0f4ff; padding: 1.7rem; border-radius: 16px; border-left: 6px solid #667eea; }
+.step-divider { height: 1.5px; background: #e3dbcb; margin: 1.5rem 0; }
+.step-resource { background: #f3eee2; padding: 1.7rem; border-radius: 16px; border-left: 6px solid #6d7a5e; }
 .resource-header { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.1rem; }
 .resource-header h4 { color: #333; font-size: 1.18rem; }
-.resource-header i { color: #667eea; font-size: 1.25rem; }
+.resource-header i { color: #6d7a5e; font-size: 1.25rem; }
 .resource-content { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; }
-.resource-info h5 { color: #1a365d; font-size: 1.18rem; margin-bottom: 0.25rem; }
+.resource-info h5 { color: #5a5245; font-size: 1.18rem; margin-bottom: 0.25rem; }
 .resource-info p { color: #4a5568; font-size: 1.05rem; }
 .resource-link {
-  background: white;
-  color: #667eea;
-  border: 2.5px solid #667eea;
+  background: var(--color-bg-card);
+  color: #c47a5a;
+  border: 2.5px solid #c47a5a;
   padding: 0.8rem 1.5rem;
   border-radius: 12px;
   text-decoration: none;
@@ -217,9 +361,9 @@ body {
   transition: all 0.3s;
   display: flex; align-items: center; gap: 0.7rem; white-space: nowrap;
 }
-.resource-link:hover { background: #667eea; color: white; }
+.resource-link:hover { background: #c47a5a; color: white; }
 .success-card {
-  background: linear-gradient(135deg, #28a745, #20c997);
+  background: linear-gradient(135deg, #6d7a5e, #66735a);
   border-radius: 24px;
   padding: 3rem 2.2rem;
   text-align: center;
@@ -264,7 +408,7 @@ body {
   text-align: center;
   margin-bottom: 3rem;
   padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #a89c8e 0%, #6b6156 100%);
   color: white;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -285,9 +429,9 @@ body {
 .status-section {
   margin-bottom: 3rem;
   padding: 1.5rem;
-  background-color: #f8f9fa;
+  background-color: #f8f4ea;
   border-radius: 8px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #e3dbcb;
 }
 
 .status-section h2 {
@@ -350,8 +494,8 @@ body {
 }
 
 .feature-card {
-  background: white;
-  border: 1px solid #e9ecef;
+  background: var(--color-bg-card);
+  border: 1px solid #e3dbcb;
   border-radius: 12px;
   padding: 2rem;
   text-align: center;
@@ -362,7 +506,7 @@ body {
 .feature-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-color: #667eea;
+  border-color: #c47a5a;
 }
 
 .feature-card h3 {
@@ -380,7 +524,7 @@ body {
 .feature-link {
   display: inline-block;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #c47a5a, #a55f42);
   color: white;
   text-decoration: none;
   border-radius: 6px;
@@ -390,15 +534,15 @@ body {
 
 .feature-link:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(160, 106, 74, 0.3);
 }
 
 /* 정보 섹션 */
 .info-section {
-  background-color: #f8f9fa;
+  background-color: #f8f4ea;
   border-radius: 12px;
   padding: 2rem;
-  border: 1px solid #e9ecef;
+  border: 1px solid #e3dbcb;
 }
 
 .info-section h2 {
@@ -418,7 +562,7 @@ body {
   padding: 1rem;
   background-color: white;
   border-radius: 6px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #e3dbcb;
 }
 
 .info-item strong {

@@ -30,10 +30,20 @@ export default function MainPage() {
             <h2>AI가 만드는 맞춤형 학습 로드맵</h2>
             <p className="hero-description">검증된 고품질 자료만을 엄선하여, AI가 당신만을 위한 완벽한 학습 경로를 설계합니다.</p>
             <div className="hero-features">
-              <div className="feature-item"><i className="fas fa-check-circle"></i> <span>100% 검증된 자료</span></div>
-              <div className="feature-item"><i className="fas fa-bullseye"></i> <span>개인 맞춤형</span></div>
-              <div className="feature-item"><i className="fas fa-bolt"></i> <span>AI 기반 설명</span></div>
+              <div className="feature-item feature-seal">
+                <i className="fas fa-stamp"></i> <span>100% 검증된 자료</span>
+                <small className="feature-sub">신뢰할 수 있는 소스에서 엄선됨</small>
+              </div>
+              <div className="feature-item feature-carved">
+                <i className="fas fa-street-view"></i> <span>개인 맞춤형</span>
+                <small className="feature-sub">당신의 학습 속도와 목표에 맞춤</small>
+              </div>
+              <div className="feature-item feature-leaf">
+                <i className="fas fa-brain"></i> <span>AI 기반 설명</span>
+                <small className="feature-sub">복잡한 개념을 명쾌하게 정리</small>
+              </div>
             </div>
+            <p className="hero-signature">Learning Hub 2024</p>
           </div>
           <div className="selection-card">
             <div className="card-header">

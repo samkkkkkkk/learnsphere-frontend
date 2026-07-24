@@ -3,7 +3,7 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   color: var(--color-text-main);
-  background: linear-gradient(135deg, var(--color-main-gradient-from) 0%, var(--color-main-gradient-to) 100%);
+  background: var(--color-bg-page);
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
@@ -107,7 +107,7 @@
 }
 
 .lecture-item.active {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #c47a5a 0%, #b06a4a 100%);
   color: white;
   border-color: var(--color-primary);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -298,14 +298,14 @@
   transition: all 0.3s ease;
   min-width: 250px;
   text-align: center;
-  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 2px 10px rgba(160, 106, 74, 0.1);
 }
 
 .subject-select:hover,
 .subject-select:focus {
   border-color: var(--color-secondary);
   outline: none;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 15px rgba(160, 106, 74, 0.2);
   transform: translateY(-1px);
 }
 
@@ -333,7 +333,7 @@
 }
 
 .prev-button {
-  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  background: linear-gradient(135deg, #8b8175 0%, #6b6156 100%);
   color: white;
 }
 
@@ -349,7 +349,7 @@
 }
 
 .prev-button:hover {
-  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  background: linear-gradient(135deg, #6b6156 0%, #4f473d 100%);
 }
 
 .next-button:hover {
@@ -552,7 +552,7 @@
 .modal-form .form-group textarea:focus {
   border-color: var(--color-primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(160, 106, 74, 0.1);
 }
 
 .modal-form .form-group textarea::placeholder {
@@ -586,7 +586,7 @@
 
 .submit-button {
   padding: 0.8rem 1.5rem;
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  background: linear-gradient(135deg, #6d7a5e 0%, #66735a 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -597,7 +597,7 @@
 }
 
 .submit-button:hover {
-  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+  background: linear-gradient(135deg, #66735a 0%, #525e48 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
 }

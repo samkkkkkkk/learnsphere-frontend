@@ -6,7 +6,7 @@
     max-width: 1200px;
     margin: 2rem auto;
     padding: 2rem;
-    background-color: #fff;
+    background: var(--color-bg-card);
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease-in-out;
@@ -21,7 +21,7 @@
   }
   
   .react-learn-header h1 {
-    color: #0d82d9;
+    color: #6b6156;
     font-weight: 700;
     font-size: 2.2rem;
   }
@@ -38,7 +38,7 @@
     align-items: center;
     margin-bottom: 2rem;
     padding: 1rem;
-    background-color: #f8f9fa;
+    background-color: #f8f4ea;
     border-radius: 8px;
   }
   
@@ -64,7 +64,7 @@
   
   .refresh-btn {
     padding: 0.5rem 1rem;
-    background: linear-gradient(135deg, #28a745, #20c997);
+    background: linear-gradient(135deg, #6d7a5e, #66735a);
     color: white;
     border: none;
     border-radius: 6px;
@@ -80,7 +80,7 @@
   }
   
   .refresh-btn:disabled {
-    background: #a0b0c0;
+    background: #c0b6a6;
     cursor: not-allowed;
   }
   
@@ -99,7 +99,7 @@
     flex: 0 0 30%;
     min-width: 200px;
     max-width: 350px;
-    background-color: #f8f9fa;
+    background-color: #f8f4ea;
     border-radius: 8px;
     padding: 1.5rem;
     height: fit-content;
@@ -107,7 +107,7 @@
   
   .lesson-list h3 {
     margin-bottom: 1rem;
-    color: #0d82d9;
+    color: #6b6156;
     font-size: 1.2rem;
   }
   
@@ -124,7 +124,7 @@
     gap: 1rem;
     padding: 1rem;
     background-color: white;
-    border: 1px solid #e0e6f0;
+    border: 1px solid #ddd4c3;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -135,13 +135,13 @@
   }
   
   .lesson-card:hover {
-    border-color: #0d82d9;
-    box-shadow: 0 2px 8px rgba(13, 130, 217, 0.15);
+    border-color: #b06a4a;
+    box-shadow: 0 2px 8px rgba(160, 106, 74, 0.15);
   }
   
   .lesson-card.active {
-    border-color: #0d82d9;
-    background-color: #e3f2fd;
+    border-color: #b06a4a;
+    background-color: #eae4da;
   }
   
   .lesson-number {
@@ -150,7 +150,7 @@
     justify-content: center;
     width: 2rem;
     height: 2rem;
-    background-color: #0d82d9;
+    background-color: #6d7a5e;
     color: white;
     border-radius: 50%;
     font-weight: 600;
@@ -210,7 +210,7 @@
   }
   
   .lesson-detail h2 {
-    color: #0d82d9;
+    color: #6b6156;
     margin-bottom: 0.5rem;
     font-size: 1.8rem;
   }
@@ -220,7 +220,7 @@
     font-size: 0.9rem;
     margin-bottom: 2rem;
     padding: 0.5rem 1rem;
-    background-color: #f8f9fa;
+    background-color: #f8f4ea;
     border-radius: 4px;
     display: inline-block;
   }
@@ -231,8 +231,8 @@
   }
   
   .lesson-section h3 {
-    color: #0d82d9;
-    border-bottom: 2px solid #e0e6f0;
+    color: #6b6156;
+    border-bottom: 2px solid #ddd4c3;
     padding-bottom: 0.5rem;
     margin-bottom: 1rem;
     font-size: 1.3rem;
@@ -276,9 +276,9 @@
   .quiz-item {
     margin: 1rem 0;
     padding: 1rem;
-    border: 1px solid #e0e6f0;
+    border: 1px solid #ddd4c3;
     border-radius: 8px;
-    background-color: #f8f9fa;
+    background-color: #f8f4ea;
   }
   
   .quiz-question {
@@ -290,7 +290,7 @@
   
   .quiz-number {
     font-weight: 600;
-    color: #0d82d9;
+    color: #6d7a5e;
     min-width: 2rem;
   }
   
@@ -301,7 +301,7 @@
   
   .quiz-toggle-btn {
     padding: 0.3rem 0.8rem;
-    background: linear-gradient(135deg, #28a745, #20c997);
+    background: linear-gradient(135deg, #6d7a5e, #66735a);
     color: white;
     border: none;
     border-radius: 4px;
@@ -313,14 +313,14 @@
   }
   
   .quiz-toggle-btn:hover {
-    background: linear-gradient(135deg, #218838, #1e7e34);
+    background: linear-gradient(135deg, #58644c, #4f5a45);
   }
   
   .quiz-answer {
     margin-top: 0.5rem;
     padding: 0.5rem;
     background-color: #e8f5e8;
-    border-left: 3px solid #28a745;
+    border-left: 3px solid #6d7a5e;
     border-radius: 4px;
   }
   
@@ -353,7 +353,7 @@
 }
 
 .modal-content {
-  background: #fff;
+  background: var(--color-bg-card);
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.18);
   padding: 2.5rem 2rem 2rem 2rem;
@@ -370,7 +370,7 @@
   position: absolute;
   top: 1.2rem;
   right: 1.5rem;
-  background: #e0e6f0;
+  background: #ddd4c3;
   border: none;
   border-radius: 6px;
   padding: 0.5rem 1.2rem;
@@ -394,7 +394,7 @@
 
 .modal-btn {
   margin-left: 1rem;
-  background: #3b82f6;
+  background: #c47a5a;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -404,7 +404,7 @@
   transition: background 0.2s;
 }
 .modal-btn:disabled {
-  background: #bcd0ee;
+  background: #ded5c5;
   color: #fff;
   cursor: not-allowed;
 }
