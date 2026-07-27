@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { useChatWidget } from '../../contexts/ChatWidgetContext';
 import { useAuth } from '../../contexts/AuthContext';
 import * as chatApi from '../../api/chatApi';
@@ -7,6 +6,7 @@ import type { ChatSession } from '../../api/chatApi';
 import { useChatConversation } from './useChatConversation';
 import ChatMessages from './ChatMessages';
 import ChatComposer from './ChatComposer';
+import ChatLoginPrompt from './ChatLoginPrompt';
 import ConfirmModal from '../ui/ConfirmModal';
 import { useToast } from '../ui/ToastContext';
 import './ChatWidget.css';
@@ -15,7 +15,6 @@ import './ChatWidget.css';
 const ChatWidget: React.FC = () => {
   const { isOpen, toggleChat, closeChat } = useChatWidget();
   const { user } = useAuth();
-  const location = useLocation();
   const { showToast } = useToast();
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeId, setActiveId] = useState<number | null>(null);
@@ -89,17 +88,7 @@ const ChatWidget: React.FC = () => {
 
   const renderBody = () => {
     if (!user) {
-      return (
-        <div className="chat-panel__messages">
-          <p className="chat-panel__empty">
-            튜터에게 질문하려면 로그인이 필요합니다.
-            <br />
-            <Link to="/login" state={{ from: location.pathname }} onClick={closeChat} className="chat-panel__login-link">
-              로그인하러 가기
-            </Link>
-          </p>
-        </div>
-      );
+      return <ChatLoginPrompt onNavigate={closeChat} />;
     }
 
     return (

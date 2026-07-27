@@ -349,6 +349,37 @@
 }
 
 /* 반응형 */
+/* 이전/다음 레슨 내비게이션 (#8) */
+.lesson-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-line);
+}
+
+.lesson-nav-btn {
+  max-width: 48%;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--r-sm);
+  background: var(--color-raise);
+  color: var(--color-sub);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.lesson-nav-btn:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
 @media (max-width: 900px) {
   .react-learn-container {
     padding: var(--space-5);

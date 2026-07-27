@@ -165,6 +165,15 @@ export default function ReactLearn() {
     }
   }, [lessonIndex, level, selectedLesson]);
 
+  // 이전/다음 레슨 (#8) — 현재 레벨 목록 기준
+  const levelLessons = lessonIndex?.[level] ?? [];
+  const lessonPos = selectedLesson
+    ? levelLessons.findIndex(lesson => lesson.id === selectedLesson.id)
+    : -1;
+  const prevLesson = lessonPos > 0 ? levelLessons[lessonPos - 1] : null;
+  const nextLesson =
+    lessonPos >= 0 && lessonPos < levelLessons.length - 1 ? levelLessons[lessonPos + 1] : null;
+
   return (
     (
       <div className="react-learn-container">
@@ -295,6 +304,32 @@ export default function ReactLearn() {
                     storageKey={`lesson-${selectedLesson.id}`}
                   />
                 </section>
+              )}
+
+              {/* 이전/다음 레슨 이동 (#8) */}
+              {(prevLesson || nextLesson) && (
+                <nav className="lesson-navigation" aria-label="레슨 이동">
+                  {prevLesson ? (
+                    <button
+                      type="button"
+                      className="lesson-nav-btn"
+                      onClick={() => loadLessonDetail(prevLesson.id)}
+                    >
+                      ← 이전: {prevLesson.title}
+                    </button>
+                  ) : (
+                    <span />
+                  )}
+                  {nextLesson && (
+                    <button
+                      type="button"
+                      className="lesson-nav-btn"
+                      onClick={() => loadLessonDetail(nextLesson.id)}
+                    >
+                      다음: {nextLesson.title} →
+                    </button>
+                  )}
+                </nav>
               )}
             </div>
 

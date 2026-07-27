@@ -47,6 +47,7 @@ function LMSPage() {
   const [selectedSubject, setSelectedSubject] = useState<Subject>(subjects[0]);
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
   const [content, setContent] = useState<string>('');
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [requestText, setRequestText] = useState<string>('');
   const [showFloatingPanel, setShowFloatingPanel] = useState<boolean>(false);
@@ -54,17 +55,20 @@ function LMSPage() {
 
   const loadLecture = async (filename: string) => {
     setLoading(true);
+    setLoadError(null);
     try {
       const response = await fetch(`/lectures/${filename}`);
       if (response.ok) {
         const text = await response.text();
         setContent(text);
       } else {
-        setContent('강의를 불러오는데 실패했습니다.');
+        setContent('');
+        setLoadError('강의를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
       }
     } catch (error) {
       console.error('강의 로딩 실패:', error);
-      setContent('강의를 불러오는데 실패했습니다.');
+      setContent('');
+      setLoadError('강의를 불러오지 못했습니다. 네트워크 연결을 확인해주세요.');
     } finally {
       setLoading(false);
     }
@@ -86,6 +90,7 @@ function LMSPage() {
     setSelectedSubject(subject);
     setSelectedLecture(null);
     setContent('');
+    setLoadError(null);
   };
 
   const handlePreviousLecture = () => {
@@ -186,6 +191,15 @@ function LMSPage() {
         <div className="lecture-content">
           {loading ? (
             <div className="loading"><Spinner label="강의를 불러오는 중" /></div>
+          ) : loadError ? (
+            <div className="lecture-error" role="alert">
+              <p>{loadError}</p>
+              {selectedLecture && (
+                <Button variant="secondary" onClick={() => loadLecture(selectedLecture.file)}>
+                  다시 시도
+                </Button>
+              )}
+            </div>
           ) : content ? (
             <div className="markdown-content">
               <MarkdownRenderer>{content}</MarkdownRenderer>

@@ -118,7 +118,7 @@
 - [x] `ChatWidget.css`·`LessonChatPanel.css` 새 테마 리스킨 (보라 #5b21b6 전부 제거 — #17 완료)
 - [x] #69 챗 위젯 모바일 대응 — 640px 이하 전체 화면 시트 전환
 - [x] #72 FAB·집중력 복원 버튼 위치 확인 (모바일에서 FAB 16px로 이동, 겹침 없음 확인)
-- [ ] 미로그인 안내 UI 중복 코드(ChatWidget/LessonChatPanel) 공통화 — **미진행** (동작 문제 없어 후순위)
+- [x] 미로그인 안내 UI 중복 코드(ChatWidget/LessonChatPanel) 공통화 — `ChatLoginPrompt` 컴포넌트로 통합 (후속 백로그 라운드에서 처리)
 
 **대상**: `LoginPage.css`, `src/components/chat/*.css`, `ChatWidget.tsx`, `LessonChatPanel.tsx`
 **검증**: 전 화면에서 구 보라색이 보이지 않는지, 모바일(375px)에서 로그인·챗 정상 동작.
@@ -282,3 +282,4 @@
 - **Phase 11**: 진도는 localStorage 저장(`learnsphere.quiz.*`, `learnsphere.lastLesson`) — 서버 이관은 Phase 14.
 - **Phase 12 (완료)**: #32 클릭 div→button 전부, #39 skip link+`<main>`+`.sr-only`, #34 아이콘 버튼 aria-label 전체, #38 LoginPage sr-only h1, #51 내부 용어 문구 교체, #40 대비 검증 완료. #40은 토큰 전 조합 계산 방식 — `--color-faint` #5c6478→#828aa0 보정(AA 미달이었음), 미사용 레거시 `--color-point`/`--color-greige` 제거, 보더 라인(1.2~1.6:1)은 장식 보더로 예외 처리(포커스 링·배경 차이가 식별 담당). 상세는 `docs/contrast-audit.md`.
 - **Phase 13 (완료)**: 브레이크포인트 640/900/1200 통일, 터치 타겟은 `pointer: coarse` 전역 44px 규칙, FocusManager 웹캠 모달 aspect-ratio 반응형. Lighthouse 모바일 기준선(체크리스트 하단 표): 접근성·권장사항·SEO 3개 라우트 모두 100, 성능 42~54 — 병목은 초기 공용 청크 1,078kB(마크다운·Prism이 전역 챗 위젯 경유 포함), 개선(렌더러 지연 로드·벤더 분리)은 후속 백로그. `/roadmap` CLS 0.23 후속 점검 대상. 체크리스트 재점검: ✅ 2→61개(81%), 잔여 ❌ 3건(#7 브레드크럼, #16 RAG 링크 🔗, #50 LMS 오류 본문 치환)·⚠️ 11건.
+- **후속 백로그 라운드 (2026-07-27, Phase 13 직후)**: ① 성능 — 전체 Prism→PrismLight(9개 언어 등록)+MarkdownRenderer lazy 파사드로 초기 청크 1,078→283kB, 모바일 성능 54→64/42→53/52→67, TBT 전부 0ms. ② #50 LMS 오류를 별도 UI+재시도로 분리, ③ #8 ReactLearnPage 이전/다음 레슨, ④ #31 OG 태그, ⑤ 미로그인 안내 `ChatLoginPrompt` 공통화(Phase 6 잔여), ⑥ #57은 비동기 폼이 로그인뿐임을 확인. `/roadmap` CLS 0.23은 Pretendard dynamic-subset 스왑 리플로우로 원인 확정 — 보정(폰트 셀프호스팅+size-adjust)과 렌더 블로킹 CDN CSS 개선은 후속 성능 과제. 체크리스트 ✅ 65개(87%), 잔여 ❌ 2건(#7 브레드크럼, #16 RAG 링크 🔗)·⚠️ 8건.
