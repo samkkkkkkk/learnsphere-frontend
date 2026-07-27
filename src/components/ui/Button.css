@@ -1,0 +1,45 @@
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s;
+  white-space: nowrap;
+}
+
+/* 크기 */
+.ui-btn--sm { font-size: var(--text-xs); padding: 6px 12px; }
+.ui-btn--md { font-size: var(--text-sm); padding: 9px 18px; }
+.ui-btn--lg { font-size: var(--text-base); padding: 12px 24px; }
+
+/* 변형 */
+.ui-btn--primary { background: var(--color-accent); color: var(--color-on-accent); }
+.ui-btn--primary:hover:not(:disabled) { background: var(--color-accent-deep); }
+
+.ui-btn--secondary { background: var(--color-raise); color: var(--color-ink); border-color: var(--color-line-strong); }
+.ui-btn--secondary:hover:not(:disabled) { border-color: var(--color-faint); background: var(--color-line); }
+
+.ui-btn--ghost { background: transparent; color: var(--color-sub); border-color: var(--color-line-strong); }
+.ui-btn--ghost:hover:not(:disabled) { color: var(--color-ink); border-color: var(--color-faint); }
+
+.ui-btn--danger { background: var(--color-red-soft); color: var(--color-red); }
+.ui-btn--danger:hover:not(:disabled) { background: rgba(240, 113, 120, 0.22); }
+
+.ui-btn:active:not(:disabled) { transform: translateY(1px); }
+.ui-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* 로딩 스피너 (버튼 내장) */
+.ui-btn__spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: ui-btn-spin 0.7s linear infinite;
+}
+@keyframes ui-btn-spin { to { transform: rotate(360deg); } }

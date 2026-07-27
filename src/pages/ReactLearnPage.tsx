@@ -3,6 +3,7 @@ import MarkdownRenderer from '../components/MarkdownRenderer';
 import LessonChatPanel from '../components/chat/LessonChatPanel';
 import { fetchLessonIndex, fetchLessonDetail } from '../api/lessonApi';
 import type { LessonDetail, LessonIndex } from '../api/lessonApi';
+import Skeleton from '../components/ui/Skeleton';
 import './ReactLearnPage.css';
 import LMSPage from './LMSPage';
 
@@ -208,7 +209,11 @@ export default function ReactLearn() {
           <div className="lesson-list">
             <h3>{level} 레벨 레슨 목록</h3>
             {isLoading ? (
-              <div className="loading-spinner">로딩 중...</div>
+              <div className="lesson-grid" aria-busy="true">
+                {Array.from({ length: 4 }, (_, i) => (
+                  <Skeleton key={i} height={64} radius="var(--r-md)" />
+                ))}
+              </div>
             ) : lessonIndex && lessonIndex[level] ? (
               <div className="lesson-grid">
                 {lessonIndex[level].map((lesson) => (

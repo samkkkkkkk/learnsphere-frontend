@@ -1,0 +1,22 @@
+.ui-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  color: var(--color-sub);
+}
+
+.ui-spinner__circle {
+  border: 2.5px solid var(--color-line-strong);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: ui-spin 0.8s linear infinite;
+}
+.ui-spinner--md .ui-spinner__circle { width: 24px; height: 24px; }
+.ui-spinner--sm .ui-spinner__circle { width: 16px; height: 16px; border-width: 2px; }
+
+.ui-spinner__label { font-size: var(--text-sm); }
+.ui-spinner--sm .ui-spinner__label { font-size: var(--text-xs); }
+
+@keyframes ui-spin { to { transform: rotate(360deg); } }

@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Spinner from '../components/ui/Spinner';
 import './LMSPage.css';
 
 interface Lecture {
@@ -182,7 +183,7 @@ function LMSPage() {
         {/* 강의 내용 */}
         <div className="lecture-content">
           {loading ? (
-            <div className="loading">강의를 불러오는 중...</div>
+            <div className="loading"><Spinner label="강의를 불러오는 중" /></div>
           ) : content ? (
             <div className="markdown-content">
               <ReactMarkdown
