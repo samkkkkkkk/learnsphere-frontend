@@ -62,7 +62,7 @@ const LessonChatPanel: React.FC<LessonChatPanelProps> = ({
         <span className="lesson-chat-panel__title" title={lessonTitle}>
           {lessonTitle} 질문
         </span>
-        <button className="chat-panel__close" onClick={onClose} title="닫기">
+        <button className="chat-panel__close" onClick={onClose} title="닫기" aria-label="닫기">
           &times;
         </button>
       </div>

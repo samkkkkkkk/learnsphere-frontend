@@ -167,6 +167,8 @@ const ChatWidget: React.FC = () => {
                     className="chat-panel__action"
                     onClick={() => setShowList(prev => !prev)}
                     title="대화 목록"
+                    aria-label="대화 목록"
+                    aria-expanded={showList}
                   >
                     ☰
                   </button>
@@ -174,12 +176,13 @@ const ChatWidget: React.FC = () => {
                     className="chat-panel__action"
                     onClick={() => void startNewSession()}
                     title="새 대화"
+                    aria-label="새 대화"
                   >
                     ✚
                   </button>
                 </>
               )}
-              <button className="chat-panel__close" onClick={closeChat} title="닫기">
+              <button className="chat-panel__close" onClick={closeChat} title="닫기" aria-label="닫기">
                 &times;
               </button>
             </div>

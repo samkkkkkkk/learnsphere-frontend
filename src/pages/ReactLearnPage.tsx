@@ -237,14 +237,14 @@ export default function ReactLearn() {
                     <div className="lesson-number">{lesson.number}</div>
                     <div className="lesson-title">{lesson.title}</div>
                     {getQuizProgress(`lesson-${lesson.id}`)?.completed && (
-                      <span className="lesson-done" title="퀴즈 완료">✓</span>
+                      <span className="lesson-done" title="퀴즈 완료" role="img" aria-label="퀴즈 완료">✓</span>
                     )}
                   </button>
                 ))}
               </div>
             ) : (
               <div className="no-lessons">
-                {level} 레벨의 레슨이 없습니다. 관리자 패널에서 콘텐츠를 생성해주세요.
+                {level} 레벨의 레슨이 아직 준비되지 않았어요. 다른 레벨을 먼저 살펴보세요.
               </div>
             )}
           </div>

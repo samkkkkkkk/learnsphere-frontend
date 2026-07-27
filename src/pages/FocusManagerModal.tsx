@@ -228,8 +228,8 @@ const FocusManagerModal: React.FC = () => {
       <div style={{ display: isMinimized ? 'none' : 'block' }}>
         <div className="modal active" style={{ zIndex: 1000 }}>
           <div className="modal-content" style={{ position: 'relative', background: '#34495e', color: 'white', borderRadius: 10, padding: 12, width: 680, maxWidth: '95vw' }}>
-            <button onClick={closeModal} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: '#fff', fontSize: 28, cursor: 'pointer', zIndex: 10 }}>&times;</button>
-            <button onClick={minimizeModal} style={{ position: 'absolute', top: 16, right: 56, background: 'none', border: 'none', color: '#fff', fontSize: 24, cursor: 'pointer', zIndex: 10 }} title="최소화">&#8211;</button>
+            <button onClick={closeModal} title="닫기" aria-label="닫기" style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: '#fff', fontSize: 28, cursor: 'pointer', zIndex: 10 }}>&times;</button>
+            <button onClick={minimizeModal} title="최소화" aria-label="최소화" style={{ position: 'absolute', top: 16, right: 56, background: 'none', border: 'none', color: '#fff', fontSize: 24, cursor: 'pointer', zIndex: 10 }}>&#8211;</button>
             <h2 style={{ marginBottom: 16 }}>AI 집중력 매니저</h2>
             <div style={{ position: 'relative', width: 640, height: 480, margin: '0 auto 16px auto', border: '4px solid #3498db', borderRadius: 10, overflow: 'visible' }}>
               <video ref={videoRef} width={640} height={480} autoPlay playsInline style={{ display: 'block', transform: 'scaleX(-1)', objectFit: 'contain', width: '100%', height: '100%' }} />
@@ -265,9 +265,10 @@ const FocusManagerModal: React.FC = () => {
             cursor: 'pointer',
           }}
           title="AI 집중력 매니저 복원"
+          aria-label="AI 집중력 매니저 복원"
           onClick={restoreModal}
         >
-          <span role="img" aria-label="restore">🔍</span>
+          <span aria-hidden="true">🔍</span>
         </button>
       )}
     </>

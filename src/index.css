@@ -23,7 +23,7 @@
   /* ── 색상: 텍스트 ── */
   --color-ink: #e2e4ea;         /* 본문 */
   --color-sub: #9aa1b3;         /* 보조 텍스트 */
-  --color-faint: #5c6478;       /* 힌트·비활성 */
+  --color-faint: #828aa0;       /* 힌트·비활성 — raise 배경 위에서도 AA 4.5:1 충족 */
 
   /* ── 색상: 포인트 (앰버 = 유일한 Primary) ── */
   --color-accent: #ffb454;
@@ -91,8 +91,6 @@
   --color-main-gradient-to: var(--color-accent-deep);
   --color-primary: var(--color-ink);
   --color-secondary: var(--color-sub);
-  --color-greige: var(--color-faint);
-  --color-point: #2f6fbf;
   --color-sage: var(--color-blue);
   --color-danger: var(--color-red);
   --color-bg-page: var(--color-bg);

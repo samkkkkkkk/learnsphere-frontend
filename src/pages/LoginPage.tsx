@@ -50,6 +50,7 @@ const LoginPage: React.FC = () => {
   return (
     <div className="login-page">
       <div className="login-card">
+        <h1 className="sr-only">{mode === 'login' ? '로그인' : '회원가입'}</h1>
         <div className="login-tabs">
           <button
             className={`login-tab ${mode === 'login' ? 'active' : ''}`}

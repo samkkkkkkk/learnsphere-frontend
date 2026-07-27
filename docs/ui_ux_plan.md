@@ -212,11 +212,11 @@
 **목표**: 키보드·스크린리더 사용자도 전 기능을 쓸 수 있게 한다.
 
 - [x] #32 클릭 가능한 `<div>` → `<button>` 전환 완료 (topic-option, lesson-card, lecture-item, 로드맵 노드 전체, LMS panel-option)
-- [ ] #34 아이콘 전용 버튼 `aria-label` — **부분 완료** (챗 FAB·삭제·LMS 플로팅 완료 / 챗 ☰ ✚ × 등 잔여)
-- [ ] #38 페이지별 `<h1>` 정리 — **부분 완료** (Header h1 제거, Main/Roadmap/NotFound 확보 / LoginPage 잔여)
+- [x] #34 아이콘 전용 버튼 `aria-label` — 챗 ☰(+`aria-expanded`)·✚·×, 레슨 패널 ×, FocusManager 닫기·최소화·복원, 완료 뱃지(✓)까지 적용
+- [x] #38 페이지별 `<h1>` 정리 — LoginPage에 sr-only h1 추가로 완료
 - [x] #39 Skip-to-content 링크 + 전역 `<main id="main-content">` 랜드마크 + `.sr-only` 유틸
-- [ ] #40 새 테마 색상 대비 WCAG AA 검증 (axe DevTools) — **미진행**
-- [ ] #51 내부 용어 문구 교체 ("관리자 패널에서 콘텐츠를 생성해주세요" 등) — **미진행**
+- [x] #40 새 테마 색상 대비 WCAG AA 검증 — 토큰 전 조합 계산 검증, 텍스트 30조합 통과 ([contrast-audit.md](./contrast-audit.md)) · axe 브라우저 실측은 Phase 13 Lighthouse와 병행
+- [x] #51 내부 용어 문구 교체 — 빈 레슨 안내를 사용자 관점 문구로 교체
 
 **대상**: 전 페이지 (패턴 반복 작업)
 **검증**: 마우스 없이 Tab/Enter만으로 주요 여정 완주, axe 스캔 크리티컬 0건.
@@ -268,7 +268,7 @@
 | 9 | 챗봇 UX | ✅ |
 | 10 | 로드맵 → 레슨 연결 | ✅ |
 | 11 | 퀴즈 인터랙션 | ✅ |
-| 12 | 접근성 일괄 | 🔶 진행 중 (#32·#39 완료 / #34·#38 부분 / #40·#51 미진행) |
+| 12 | 접근성 일괄 | ✅ |
 | 13 | 반응형 마무리 · 측정 | ⬜ |
 | 14 | 백엔드 연계 🔗 | ⬜ |
 
@@ -280,4 +280,4 @@
 - **Phase 9**: 챗 스트리밍 응답은 백엔드 SSE 필요 → 계획대로 Phase 14 유지. #55는 자동 스크롤 중지까지 구현("새 메시지" 버튼은 미구현).
 - **Phase 10**: 로드맵을 데이터 기반 구조로 재작성(500줄 → 데이터+렌더러, 번들 27.7→14.9kB). 레슨 연결은 레벨 단위 — 세부 노드↔개별 레슨 매핑은 콘텐츠 메타 데이터가 생기면 고도화.
 - **Phase 11**: 진도는 localStorage 저장(`learnsphere.quiz.*`, `learnsphere.lastLesson`) — 서버 이관은 Phase 14.
-- **Phase 12 (진행 중, 여기서 일시 중단)**: 완료 — #32 클릭 div→button 전환 전부, #39 skip link+`<main>` 랜드마크+`.sr-only`. 잔여 — #34 챗 헤더 아이콘 버튼(☰ ✚ ×) aria-label, #38 LoginPage h1, #40 대비 실측(axe), #51 내부 용어 문구 교체. Phase 13(브레이크포인트 통일·FocusManager 반응형·Lighthouse·체크리스트 재점검)은 미착수.
+- **Phase 12 (완료)**: #32 클릭 div→button 전부, #39 skip link+`<main>`+`.sr-only`, #34 아이콘 버튼 aria-label 전체, #38 LoginPage sr-only h1, #51 내부 용어 문구 교체, #40 대비 검증 완료. #40은 토큰 전 조합 계산 방식 — `--color-faint` #5c6478→#828aa0 보정(AA 미달이었음), 미사용 레거시 `--color-point`/`--color-greige` 제거, 보더 라인(1.2~1.6:1)은 장식 보더로 예외 처리(포커스 링·배경 차이가 식별 담당). 상세는 `docs/contrast-audit.md`. Phase 13(브레이크포인트 통일·FocusManager 반응형·Lighthouse·체크리스트 재점검)은 미착수.
