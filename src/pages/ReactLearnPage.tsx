@@ -6,6 +6,7 @@ import { fetchLessonIndex, fetchLessonDetail } from '../api/lessonApi';
 import type { LessonDetail, LessonIndex } from '../api/lessonApi';
 import Skeleton from '../components/ui/Skeleton';
 import Modal from '../components/ui/Modal';
+import Breadcrumb from '../components/ui/Breadcrumb';
 import Quiz, { getQuizProgress, QUIZ_PROGRESS_EVENT } from '../components/Quiz';
 import './ReactLearnPage.css';
 
@@ -262,6 +263,14 @@ export default function ReactLearn() {
           {selectedLesson && (
             <div className="lesson-with-chat">
             <div className="lesson-detail">
+              <Breadcrumb
+                items={[
+                  { label: '홈', to: '/' },
+                  { label: 'React 학습', to: '/react-learn' },
+                  { label: level },
+                  { label: selectedLesson.title },
+                ]}
+              />
               <h2>{selectedLesson.title}</h2>
               <div className="lesson-level">레벨: {selectedLesson.level}</div>
 

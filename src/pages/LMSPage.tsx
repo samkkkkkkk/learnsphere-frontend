@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import Breadcrumb from '../components/ui/Breadcrumb';
 import Spinner from '../components/ui/Spinner';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
@@ -202,6 +203,15 @@ function LMSPage() {
             </div>
           ) : content ? (
             <div className="markdown-content">
+              {selectedLecture && (
+                <Breadcrumb
+                  items={[
+                    { label: '홈', to: '/' },
+                    { label: selectedSubject.name },
+                    { label: selectedLecture.title },
+                  ]}
+                />
+              )}
               <MarkdownRenderer>{content}</MarkdownRenderer>
 
               {/* 강의 네비게이션 버튼 */}

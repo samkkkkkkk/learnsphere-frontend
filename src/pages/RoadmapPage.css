@@ -46,9 +46,11 @@
   box-sizing: border-box;
 }
 
+/* 루트 노드는 접기/펼치기 토글일 뿐이므로 primary(앰버 채움)가 아닌
+   아웃라인 스타일 — 진짜 CTA인 "레슨 바로 학습하기"와 경쟁하지 않게 (#27) */
 .root-node {
-  background: var(--color-accent);
-  color: var(--color-on-accent);
+  background: var(--color-card);
+  color: var(--color-accent);
   padding: var(--space-4) var(--space-8);
   border-radius: var(--r-lg);
   font-size: var(--text-lg);
@@ -58,12 +60,12 @@
   margin: 0 auto;
   max-width: 600px;
   text-align: center;
-  border: none;
+  border: 1px solid rgba(255, 180, 84, 0.35);
 }
 
 .root-node:hover {
   transform: translateY(-3px);
-  background: var(--color-accent-deep);
+  background: var(--color-accent-soft);
 }
 
 .main-branches {

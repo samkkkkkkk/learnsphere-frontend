@@ -221,13 +221,23 @@ const FocusManagerModal: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMinimized]);
 
+  // Esc로 닫기 (#33) — 최소화 상태에서는 무시
+  useEffect(() => {
+    if (!isOpen || isMinimized) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, isMinimized, closeModal]);
+
   if (!isOpen) return null;
 
   return (
     <>
       <div style={{ display: isMinimized ? 'none' : 'block' }}>
         <div className="modal active" style={{ zIndex: 1000 }}>
-          <div className="modal-content" style={{ position: 'relative', background: '#34495e', color: 'white', borderRadius: 10, padding: 12, width: 680, maxWidth: '95vw' }}>
+          <div className="modal-content" role="dialog" aria-modal="true" aria-label="AI 집중력 매니저" style={{ position: 'relative', background: '#34495e', color: 'white', borderRadius: 10, padding: 12, width: 680, maxWidth: '95vw' }}>
             <button onClick={closeModal} title="닫기" aria-label="닫기" style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: '#fff', fontSize: 28, cursor: 'pointer', zIndex: 10 }}>&times;</button>
             <button onClick={minimizeModal} title="최소화" aria-label="최소화" style={{ position: 'absolute', top: 16, right: 56, background: 'none', border: 'none', color: '#fff', fontSize: 24, cursor: 'pointer', zIndex: 10 }}>&#8211;</button>
             <h2 style={{ marginBottom: 16 }}>AI 집중력 매니저</h2>
