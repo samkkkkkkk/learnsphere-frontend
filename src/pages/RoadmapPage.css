@@ -34,6 +34,18 @@
   width: 100%;
 }
 
+/* 토글 노드는 button 요소 — 기본 버튼 스타일 리셋 */
+.root-node,
+.level-node,
+.sub-node {
+  display: block;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+  box-sizing: border-box;
+}
+
 .root-node {
   background: var(--color-accent);
   color: var(--color-on-accent);
@@ -46,6 +58,7 @@
   margin: 0 auto;
   max-width: 600px;
   text-align: center;
+  border: none;
 }
 
 .root-node:hover {
@@ -80,6 +93,28 @@
   margin-bottom: var(--space-3);
   text-align: center;
   border: 1px solid var(--color-line-strong);
+}
+
+/* 로드맵 → 학습하기 연결 버튼 */
+.roadmap-start-btn {
+  display: block;
+  width: 100%;
+  margin: 0 0 var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border: none;
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.roadmap-start-btn:hover {
+  background: var(--color-accent-deep);
 }
 
 /* 레벨별 신택스 컬러 */

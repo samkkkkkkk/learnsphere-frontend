@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import LessonChatPanel from '../components/chat/LessonChatPanel';
 import { fetchLessonIndex, fetchLessonDetail } from '../api/lessonApi';
@@ -22,9 +22,12 @@ type Level = '초급' | '중급' | '고급';
  */
 export default function ReactLearn() {
   const navigate = useNavigate();
+  const location = useLocation();
+  // 로드맵에서 "레슨 바로 학습하기"로 넘어온 경우 해당 레벨로 시작
+  const initialLevel = (location.state as { level?: Level } | null)?.level ?? '초급';
   // 컴포넌트의 상태 관리
   const [selectedTopic, setSelectedTopic] = useState<string>('react');
-  const [level, setLevel] = useState<Level>('초급');
+  const [level, setLevel] = useState<Level>(initialLevel);
   const [lessonIndex, setLessonIndex] = useState<LessonIndex | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<LessonDetail | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);

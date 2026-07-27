@@ -29,7 +29,7 @@ export default function MainPage() {
           <div className="hero-section">
             <p className="hero-eyebrow">learnsphere init --level=beginner</p>
             <h1>막막함은 끝.<br />학습 경로를 <em>컴파일</em>하세요.</h1>
-            <p className="hero-description">수준 진단부터 레슨·퀴즈·질문까지. 검증된 자료를 근거로 답하는 학습 도우미와 함께, 지금 필요한 것부터 순서대로 배웁니다.</p>
+            <p className="hero-description">수준별 로드맵부터 레슨·퀴즈·질문까지. 검증된 자료를 근거로 답하는 학습 도우미와 함께, 지금 필요한 것부터 순서대로 배웁니다.</p>
             <div className="hero-features">
               <div className="feature-item feature-seal">
                 <i className="fas fa-stamp"></i> <span>100% 검증된 자료</span>
@@ -48,8 +48,8 @@ export default function MainPage() {
           </div>
           <div className="selection-card">
             <div className="card-header">
-              <h3><i className="fas fa-book-open"></i> 학습 로드맵 생성하기</h3>
-              <p>원하는 주제를 선택하면, AI가 최적의 학습 경로를 만들어드립니다.</p>
+              <h3><i className="fas fa-book-open" aria-hidden="true"></i> 학습 로드맵 보기</h3>
+              <p>원하는 주제를 선택하면, 수준별 학습 경로와 검증된 자료를 보여드립니다.</p>
             </div>
             <div className="form-section">
               <label className="section-label">학습 주제 선택</label>
@@ -70,7 +70,7 @@ export default function MainPage() {
               </div>
             </div>
             <button id="generateBtn" className="generate-btn" onClick={handleGenerate}>
-              <i className="fas fa-sparkles"></i> <span>로드맵 생성하기</span>
+              <i className="fas fa-sparkles" aria-hidden="true"></i> <span>로드맵 보기</span>
             </button>
           </div>
         </div>
