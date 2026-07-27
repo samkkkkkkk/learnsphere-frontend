@@ -27,8 +27,9 @@ export default function MainPage() {
       <main className="container">
         <div id="selection-form">
           <div className="hero-section">
-            <h2>AI가 만드는 맞춤형 학습 로드맵</h2>
-            <p className="hero-description">검증된 고품질 자료만을 엄선하여, AI가 당신만을 위한 완벽한 학습 경로를 설계합니다.</p>
+            <p className="hero-eyebrow">learnsphere init --level=beginner</p>
+            <h1>막막함은 끝.<br />학습 경로를 <em>컴파일</em>하세요.</h1>
+            <p className="hero-description">수준 진단부터 레슨·퀴즈·질문까지. 검증된 자료를 근거로 답하는 학습 도우미와 함께, 지금 필요한 것부터 순서대로 배웁니다.</p>
             <div className="hero-features">
               <div className="feature-item feature-seal">
                 <i className="fas fa-stamp"></i> <span>100% 검증된 자료</span>
