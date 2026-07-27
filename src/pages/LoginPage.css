@@ -1,95 +1,116 @@
+/* 로그인/회원가입 — 시안 B 다크 */
 .login-page {
   display: flex;
   justify-content: center;
-  padding: 64px 24px;
+  padding: var(--space-10) var(--space-6);
 }
 
 .login-card {
   width: 100%;
   max-width: 400px;
-  background: #fff;
-  border: 1px solid #e6e4f0;
-  border-radius: 12px;
+  background: var(--color-card);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--r-lg);
   overflow: hidden;
 }
 
 .login-tabs {
   display: flex;
-  border-bottom: 1px solid #e6e4f0;
+  border-bottom: 1px solid var(--color-line);
 }
 
 .login-tab {
   flex: 1;
-  padding: 14px 0;
+  padding: var(--space-3) 0;
   border: none;
-  background: #f8f7fc;
-  color: #8b8b9e;
-  font-size: 0.95rem;
+  background: var(--color-raise);
+  color: var(--color-faint);
+  font-size: var(--text-sm);
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
 }
 
 .login-tab.active {
-  background: #fff;
-  color: #5b21b6;
-  box-shadow: inset 0 -2px 0 #5b21b6;
+  background: var(--color-card);
+  color: var(--color-accent);
+  box-shadow: inset 0 -2px 0 var(--color-accent);
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px;
+  gap: var(--space-4);
+  padding: var(--space-6);
 }
 
 .login-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 0.88rem;
-  color: #2d2d3a;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--color-sub);
 }
 
 .login-field input {
-  padding: 10px 12px;
-  border: 1px solid #d9d6e6;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--r-sm);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
   font-family: inherit;
+}
+
+.login-field input::placeholder {
+  color: var(--color-faint);
 }
 
 .login-field input:focus {
   outline: none;
-  border-color: #5b21b6;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
 }
 
 .login-error {
-  color: #b3261e;
-  font-size: 0.8rem;
+  color: var(--color-red);
+  font-size: var(--text-xs);
   font-style: normal;
 }
 
 .login-server-error {
-  padding: 10px 12px;
-  border: 1px solid #f5c6c2;
-  border-radius: 8px;
-  background: #fdecea;
-  color: #b3261e;
-  font-size: 0.85rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid rgba(240, 113, 120, 0.35);
+  border-radius: var(--r-sm);
+  background: var(--color-red-soft);
+  color: var(--color-red);
+  font-size: var(--text-xs);
 }
 
 .login-submit {
-  padding: 12px 0;
+  padding: var(--space-3) 0;
   border: none;
-  border-radius: 8px;
-  background: #5b21b6;
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 600;
+  border-radius: var(--r-sm);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  font-family: inherit;
   cursor: pointer;
+  transition: background 0.15s;
+}
+
+.login-submit:hover:not(:disabled) {
+  background: var(--color-accent-deep);
 }
 
 .login-submit:disabled {
-  background: #c4bede;
+  opacity: 0.45;
   cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .login-page {
+    padding: var(--space-6) var(--space-4);
+  }
 }
