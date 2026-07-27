@@ -8,6 +8,7 @@ import { useChatConversation } from './useChatConversation';
 import ChatMessages from './ChatMessages';
 import ChatComposer from './ChatComposer';
 import ConfirmModal from '../ui/ConfirmModal';
+import { useToast } from '../ui/ToastContext';
 import './ChatWidget.css';
 
 /** 모든 페이지에서 열 수 있는 전역 튜터 챗. */
@@ -15,18 +16,24 @@ const ChatWidget: React.FC = () => {
   const { isOpen, toggleChat, closeChat } = useChatWidget();
   const { user } = useAuth();
   const location = useLocation();
+  const { showToast } = useToast();
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeId, setActiveId] = useState<number | null>(null);
   const [showList, setShowList] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
-  const { messages, isSending, isLoading, error, send } = useChatConversation(activeId);
+  const { messages, isSending, isLoading, error, send, retry, canRetry } =
+    useChatConversation(activeId);
 
   const startNewSession = useCallback(async () => {
-    const session = await chatApi.createSession();
-    setSessions(prev => [session, ...prev]);
-    setActiveId(session.id);
-    setShowList(false);
-  }, []);
+    try {
+      const session = await chatApi.createSession();
+      setSessions(prev => [session, ...prev]);
+      setActiveId(session.id);
+      setShowList(false);
+    } catch {
+      showToast('새 대화를 만들지 못했습니다. 잠시 후 다시 시도해주세요.', 'error');
+    }
+  }, [showToast]);
 
   // 창을 열면 내 대화 목록을 불러오고, 없으면 새 대화를 만든다
   useEffect(() => {
@@ -46,24 +53,38 @@ const ChatWidget: React.FC = () => {
           void startNewSession();
         }
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (!cancelled) {
+          showToast('대화 목록을 불러오지 못했습니다. 잠시 후 다시 열어주세요.', 'error');
+        }
+      });
 
     return () => {
       cancelled = true;
     };
-  }, [isOpen, user, startNewSession]);
+  }, [isOpen, user, startNewSession, showToast]);
 
   const handleDelete = async (sessionId: number) => {
     setPendingDeleteId(null);
-    await chatApi.deleteSession(sessionId);
-    setSessions(prev => prev.filter(session => session.id !== sessionId));
-    if (activeId === sessionId) setActiveId(null);
+    try {
+      await chatApi.deleteSession(sessionId);
+      setSessions(prev => prev.filter(session => session.id !== sessionId));
+      if (activeId === sessionId) setActiveId(null);
+      showToast('대화를 삭제했습니다.', 'success');
+    } catch {
+      showToast('대화를 삭제하지 못했습니다. 잠시 후 다시 시도해주세요.', 'error');
+    }
   };
 
   // 첫 질문을 보내면 목록의 제목도 따라 바뀌도록 갱신한다
   const handleSend = async (message: string) => {
     await send(message);
-    setSessions(await chatApi.fetchSessions());
+    // 제목 갱신 실패는 대화 자체에 영향이 없으므로 무시한다
+    try {
+      setSessions(await chatApi.fetchSessions());
+    } catch {
+      /* noop */
+    }
   };
 
   const renderBody = () => {
@@ -119,18 +140,16 @@ const ChatWidget: React.FC = () => {
 
         <ChatMessages
           messages={messages}
-          isSending={isSending || isLoading}
+          isSending={isSending}
+          isLoading={isLoading}
           error={error}
-          emptyHint={
-            <>
-              React에 대해 궁금한 것을 물어보세요.
-              <br />
-              예: &ldquo;useState가 뭐야?&rdquo;
-            </>
-          }
+          onRetry={canRetry ? retry : null}
+          emptyHint={<>React에 대해 궁금한 것을 물어보세요.</>}
+          suggestions={['useState가 뭐야?', 'useEffect랑 언제 써야 해?', '컴포넌트를 어떻게 나누는 게 좋아?']}
+          onSuggestion={handleSend}
         />
 
-        <ChatComposer onSend={handleSend} disabled={isSending || activeId === null} />
+        <ChatComposer onSend={handleSend} disabled={isSending || activeId === null} autoFocus />
       </>
     );
   };

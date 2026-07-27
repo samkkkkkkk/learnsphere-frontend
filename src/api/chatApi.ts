@@ -51,17 +51,13 @@ export const sendMessage = async (
   sessionId: number,
   message: string,
 ): Promise<ChatAnswer> => {
-  try {
-    const response = await api.post<ChatAnswer>(
-      `/api/v1/chat/sessions/${sessionId}/messages`,
-      { message },
-    );
-    return {
-      answer: response.data.answer,
-      sources: response.data.sources ?? [],
-    };
-  } catch (error) {
-    console.error('튜터 응답 실패:', error);
-    throw new Error('답변을 가져오는데 실패했습니다.');
-  }
+  // 오류는 원본(axios) 그대로 던져 호출부가 상태 코드별로 안내를 분기할 수 있게 한다
+  const response = await api.post<ChatAnswer>(
+    `/api/v1/chat/sessions/${sessionId}/messages`,
+    { message },
+  );
+  return {
+    answer: response.data.answer,
+    sources: response.data.sources ?? [],
+  };
 };

@@ -29,7 +29,8 @@ const LessonChatPanel: React.FC<LessonChatPanelProps> = ({
   const location = useLocation();
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [sessionError, setSessionError] = useState<string | null>(null);
-  const { messages, isSending, isLoading, error, send } = useChatConversation(sessionId);
+  const { messages, isSending, isLoading, error, send, retry, canRetry } =
+    useChatConversation(sessionId);
 
   // 이 레슨의 기존 대화를 찾고, 없으면 새로 만든다
   useEffect(() => {
@@ -70,20 +71,19 @@ const LessonChatPanel: React.FC<LessonChatPanelProps> = ({
         <>
           <ChatMessages
             messages={messages}
-            isSending={isSending || isLoading}
+            isSending={isSending}
+            isLoading={isLoading}
             error={error ?? sessionError}
-            emptyHint={
-              <>
-                이 레슨 내용을 바탕으로 답변합니다.
-                <br />
-                예: &ldquo;여기 나온 예제 더 쉽게 설명해줘&rdquo;
-              </>
-            }
+            onRetry={canRetry ? retry : null}
+            emptyHint={<>이 레슨 내용을 바탕으로 답변합니다.</>}
+            suggestions={['여기 나온 예제 더 쉽게 설명해줘', '이 개념을 실무에서 언제 써?']}
+            onSuggestion={send}
           />
           <ChatComposer
             onSend={send}
             disabled={isSending || sessionId === null}
             placeholder="이 레슨에 대해 질문하세요"
+            autoFocus
           />
         </>
       ) : (
