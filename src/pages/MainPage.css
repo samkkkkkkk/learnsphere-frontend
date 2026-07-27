@@ -1,59 +1,9 @@
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--color-bg-page);
-  min-height: 100vh;
-  margin: 0;
-  color: var(--color-text-main);
-  font-size: 1.15rem;
-  overflow-x: hidden;
-}
 .container {
   max-width: 100vw;
   min-width: 0;
   margin: 0 auto;
   padding: 56px 4vw 0 4vw;
   box-sizing: border-box;
-}
-.header {
-  background: var(--color-bg-card);
-  box-shadow: 0 2px 32px rgba(84, 66, 39, 0.12);
-  border-radius: 0 0 32px 32px;
-  margin-bottom: 48px;
-}
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2.5rem 0 1.5rem 0;
-}
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-}
-.logo-icon {
-  width: 56px; height: 56px;
-  background: linear-gradient(135deg, var(--color-main-gradient-from), var(--color-main-gradient-to));
-  border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  color: white; font-size: 2rem;
-}
-.logo h1 {
-  font-size: 2.2rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--color-main-gradient-from), var(--color-main-gradient-to));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.version-badge {
-  background: var(--color-point);
-  color: white;
-  padding: 0.7rem 1.5rem;
-  border-radius: 24px;
-  font-size: 1.1rem;
-  font-weight: 700;
 }
 /* ── 히어로: 티크 책상 위에 놓인 작업물 ───────────────────── */
 .hero-section {
