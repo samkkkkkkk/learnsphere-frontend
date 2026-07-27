@@ -84,6 +84,8 @@
   border: 1px solid var(--color-line);
   border-radius: var(--r-md);
   padding: var(--space-5);
+  /* 전역 리셋이 없어 content-box로 계산되면 30% + 패딩만큼 커진다 */
+  box-sizing: border-box;
   height: fit-content;
 }
 
@@ -168,9 +170,8 @@
   font-size: var(--text-sm);
 }
 
-/* 레슨 상세 내용 */
+/* 레슨 상세 내용 — 폭은 부모(.lesson-with-chat)가 flex로 배분한다 */
 .lesson-detail {
-  flex: 0 0 70%;
   min-width: 0;
   background: var(--color-card);
   border: 1px solid var(--color-line);
@@ -208,13 +209,6 @@
   padding-bottom: var(--space-2);
   margin-bottom: var(--space-4);
   font-size: var(--text-md);
-}
-
-.lesson-section h3::before {
-  content: '## ';
-  color: var(--color-faint);
-  font-family: var(--font-mono);
-  font-weight: 400;
 }
 
 .core-concepts {

@@ -22,6 +22,10 @@
 
 /* 레슨 본문과 패널을 가로로 배치 */
 .lesson-with-chat {
+  /* react-learn-content 행에서 남은 폭을 항상 가득 채운다.
+     flex 지정이 없으면 내용(코드 줄 길이 등)이 폭을 결정해 레슨마다 크기가 달라진다 */
+  flex: 1;
+  min-width: 0;
   display: flex;
   gap: var(--space-6);
   align-items: flex-start;

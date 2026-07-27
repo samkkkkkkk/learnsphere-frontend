@@ -185,6 +185,8 @@
 
 .chat-message--assistant {
   align-self: flex-start;
+  /* 내용(코드 블록의 긴 줄 등)이 폭을 결정하면 말풍선 크기가 들쭉날쭉해지므로 고정 */
+  width: 88%;
   background: var(--color-raise);
   color: var(--color-ink);
   border: 1px solid var(--color-line);
