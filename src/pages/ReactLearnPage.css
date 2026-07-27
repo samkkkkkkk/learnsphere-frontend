@@ -102,6 +102,11 @@
 }
 
 .lesson-card {
+  /* button 요소 — 기본 스타일 리셋 */
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  text-align: left;
   display: flex;
   align-items: center;
   gap: var(--space-3);

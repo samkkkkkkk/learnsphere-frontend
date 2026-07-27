@@ -6,6 +6,7 @@ import { fetchLessonIndex, fetchLessonDetail } from '../api/lessonApi';
 import type { LessonDetail, LessonIndex } from '../api/lessonApi';
 import Skeleton from '../components/ui/Skeleton';
 import Modal from '../components/ui/Modal';
+import Quiz, { getQuizProgress, QUIZ_PROGRESS_EVENT } from '../components/Quiz';
 import './ReactLearnPage.css';
 
 // 학습 수준을 위한 타입 정의
@@ -20,11 +21,24 @@ type Level = '초급' | '중급' | '고급';
 /**
  * React 학습 자료 생성기 메인 UI 컴포넌트
  */
+// 마지막 학습 위치 저장 키
+const LAST_LESSON_KEY = 'learnsphere.lastLesson';
+
+function loadLastLesson(): { level: Level; lessonId: number } | null {
+  try {
+    return JSON.parse(localStorage.getItem(LAST_LESSON_KEY) ?? 'null');
+  } catch {
+    return null;
+  }
+}
+
 export default function ReactLearn() {
   const navigate = useNavigate();
   const location = useLocation();
-  // 로드맵에서 "레슨 바로 학습하기"로 넘어온 경우 해당 레벨로 시작
-  const initialLevel = (location.state as { level?: Level } | null)?.level ?? '초급';
+  // 우선순위: 로드맵에서 넘어온 레벨 > 마지막 학습 위치 > 초급
+  const lastLesson = loadLastLesson();
+  const initialLevel =
+    (location.state as { level?: Level } | null)?.level ?? lastLesson?.level ?? '초급';
   // 컴포넌트의 상태 관리
   const [selectedTopic, setSelectedTopic] = useState<string>('react');
   const [level, setLevel] = useState<Level>(initialLevel);
@@ -32,9 +46,16 @@ export default function ReactLearn() {
   const [selectedLesson, setSelectedLesson] = useState<LessonDetail | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [showAnswers, setShowAnswers] = useState<Set<string>>(new Set()); // 정답을 보여줄 퀴즈들을 추적
   const [showModal, setShowModal] = useState(false);
   const [isLessonChatOpen, setIsLessonChatOpen] = useState(false);
+  // 퀴즈 진도가 바뀌면 레슨 목록 완료 뱃지를 다시 그린다
+  const [quizVersion, setQuizVersion] = useState(0);
+
+  useEffect(() => {
+    const onQuizUpdate = () => setQuizVersion(v => v + 1);
+    window.addEventListener(QUIZ_PROGRESS_EVENT, onQuizUpdate);
+    return () => window.removeEventListener(QUIZ_PROGRESS_EVENT, onQuizUpdate);
+  }, []);
 
   /**
    * 레슨 인덱스를 로드하는 함수
@@ -62,28 +83,17 @@ export default function ReactLearn() {
       setError(null);
       const lesson = await fetchLessonDetail(lessonId);
       setSelectedLesson(lesson);
+      // 마지막 학습 위치 저장 — 다음 방문 시 이어서 학습
+      localStorage.setItem(
+        LAST_LESSON_KEY,
+        JSON.stringify({ level: lesson.level, lessonId: lesson.id }),
+      );
     } catch (err) {
       setError('레슨 내용을 불러오는데 실패했습니다.');
       console.error('레슨 상세 로드 실패:', err);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  /**
-   * 퀴즈 정답을 토글하는 함수
-   * @param quizId 퀴즈 식별자
-   */
-  const toggleAnswer = (quizId: string) => {
-    setShowAnswers(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(quizId)) {
-        newSet.delete(quizId);
-      } else {
-        newSet.add(quizId);
-      }
-      return newSet;
-    });
   };
 
   // 모달 열기 핸들러
@@ -145,8 +155,13 @@ export default function ReactLearn() {
    */
   useEffect(() => {
     if (lessonIndex && lessonIndex[level] && lessonIndex[level].length > 0 && !selectedLesson) {
-      const firstLesson = lessonIndex[level][0];
-      loadLessonDetail(firstLesson.id);
+      // 마지막으로 본 레슨이 현재 레벨에 있으면 이어서 학습, 없으면 첫 레슨
+      const saved = loadLastLesson();
+      const resume =
+        saved && saved.level === level
+          ? lessonIndex[level].find(lesson => lesson.id === saved.lessonId)
+          : undefined;
+      loadLessonDetail((resume ?? lessonIndex[level][0]).id);
     }
   }, [lessonIndex, level, selectedLesson]);
 
@@ -211,16 +226,20 @@ export default function ReactLearn() {
                 ))}
               </div>
             ) : lessonIndex && lessonIndex[level] ? (
-              <div className="lesson-grid">
+              <div className="lesson-grid" data-quiz-version={quizVersion}>
                 {lessonIndex[level].map((lesson) => (
-                  <div
+                  <button
+                    type="button"
                     key={lesson.id}
                     className={`lesson-card ${selectedLesson && selectedLesson.id === lesson.id ? 'active' : ''}`}
                     onClick={() => loadLessonDetail(lesson.id)}
                   >
                     <div className="lesson-number">{lesson.number}</div>
                     <div className="lesson-title">{lesson.title}</div>
-                  </div>
+                    {getQuizProgress(`lesson-${lesson.id}`)?.completed && (
+                      <span className="lesson-done" title="퀴즈 완료">✓</span>
+                    )}
+                  </button>
                 ))}
               </div>
             ) : (
@@ -267,39 +286,14 @@ export default function ReactLearn() {
                 </section>
               )}
 
-              {/* 퀴즈 */}
+              {/* 퀴즈 — 자가 채점, 결과는 레슨 id 기준으로 저장 */}
               {selectedLesson.quizzes.length > 0 && (
                 <section className="lesson-section">
                   <h3>퀴즈</h3>
-                  {selectedLesson.quizzes.map((quiz, index) => {
-                    const quizId = `lesson-${selectedLesson.title}-quiz-${index}`;
-                    const isAnswerVisible = showAnswers.has(quizId);
-                    
-                    return (
-                      <div key={index} className="quiz-item">
-                        <div className="quiz-question">
-                          <span className="quiz-number">{index + 1}.</span>
-                          <span className="quiz-text">{quiz.question}</span>
-                          <button 
-                            className="quiz-toggle-btn"
-                            onClick={() => toggleAnswer(quizId)}
-                          >
-                            {isAnswerVisible ? '정답 숨기기' : '정답 보기'}
-                          </button>
-                        </div>
-                        {isAnswerVisible && (
-                          <div className="quiz-answer">
-                            <strong>정답:</strong> {quiz.answer}
-                            {quiz.explanation && (
-                              <div className="quiz-explanation">
-                                <strong>해설:</strong> {quiz.explanation}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  <Quiz
+                    quizzes={selectedLesson.quizzes}
+                    storageKey={`lesson-${selectedLesson.id}`}
+                  />
                 </section>
               )}
             </div>
@@ -347,34 +341,10 @@ export default function ReactLearn() {
                 {selectedLesson.quizzes.length > 0 && (
                   <section className="lesson-section">
                     <h3>퀴즈</h3>
-                    {selectedLesson.quizzes.map((quiz, index) => {
-                      const quizId = `modal-lesson-${selectedLesson.title}-quiz-${index}`;
-                      const isAnswerVisible = showAnswers.has(quizId);
-                      return (
-                        <div key={index} className="quiz-item">
-                          <div className="quiz-question">
-                            <span className="quiz-number">{index + 1}.</span>
-                            <span className="quiz-text">{quiz.question}</span>
-                            <button
-                              className="quiz-toggle-btn"
-                              onClick={() => toggleAnswer(quizId)}
-                            >
-                              {isAnswerVisible ? '정답 숨기기' : '정답 보기'}
-                            </button>
-                          </div>
-                          {isAnswerVisible && (
-                            <div className="quiz-answer">
-                              <strong>정답:</strong> {quiz.answer}
-                              {quiz.explanation && (
-                                <div className="quiz-explanation">
-                                  <strong>해설:</strong> {quiz.explanation}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                    <Quiz
+                      quizzes={selectedLesson.quizzes}
+                      storageKey={`lesson-${selectedLesson.id}`}
+                    />
                   </section>
                 )}
               </div>
