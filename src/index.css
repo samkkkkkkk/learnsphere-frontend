@@ -168,6 +168,23 @@ textarea:focus-visible,
   outline-offset: 2px;
 }
 
+/* 터치 타겟 최소 44×44px — 터치 등 낮은 정밀도 포인터 환경에서만 확장,
+   마우스 환경은 기존 밀도 유지 (#73) */
+@media (pointer: coarse) {
+  button,
+  .nav-link,
+  .chat-panel__login-link {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    min-height: 44px;
+  }
+}
+
 /* 모션 최소화 설정 존중 */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -269,7 +269,7 @@
 }
 
 /* 반응형 디자인 */
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
   .lms-container {
     flex-direction: column;
     height: auto;
@@ -608,7 +608,7 @@
   transform: translateY(-1px);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .lms-header h1 {
     font-size: 1.6rem;
   }

@@ -120,7 +120,7 @@
   text-align: center;
   margin-bottom: var(--space-7);
 }
-.card-header h3 {
+.card-header h2 {
   font-size: var(--text-xl);
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -131,7 +131,7 @@
   justify-content: center;
   gap: var(--space-3);
 }
-.card-header h3 i { color: var(--color-accent); font-size: var(--text-lg); }
+.card-header h2 i { color: var(--color-accent); font-size: var(--text-lg); }
 .card-header p { color: var(--color-sub); font-size: var(--text-sm); margin: 0; }
 
 .form-section { margin-bottom: var(--space-6); }
@@ -171,7 +171,7 @@
 }
 .topic-option.disabled { opacity: 0.45; cursor: not-allowed; }
 
-.topic-content h4 {
+.topic-content h3 {
   font-size: var(--text-base);
   font-weight: 700;
   color: var(--color-ink);

@@ -277,14 +277,14 @@
 }
 
 /* 반응형 디자인 */
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
   .admin-content {
     grid-template-columns: 1fr;
     gap: 20px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .admin-panel {
     padding: 15px;
   }

@@ -48,7 +48,7 @@ export default function MainPage() {
           </div>
           <div className="selection-card">
             <div className="card-header">
-              <h3><i className="fas fa-book-open" aria-hidden="true"></i> 학습 로드맵 보기</h3>
+              <h2><i className="fas fa-book-open" aria-hidden="true"></i> 학습 로드맵 보기</h2>
               <p>원하는 주제를 선택하면, 수준별 학습 경로와 검증된 자료를 보여드립니다.</p>
             </div>
             <div className="form-section">
@@ -64,7 +64,7 @@ export default function MainPage() {
                     aria-pressed={selectedTopic === topic.key}
                   >
                     <div className="topic-content">
-                      <h4>{topic.label}</h4>
+                      <h3>{topic.label}</h3>
                       <p>{topic.desc}</p>
                     </div>
                     <div className={`topic-badge ${topic.available ? 'available' : 'coming-soon'}`}>{topic.available ? 'Available' : 'Coming Soon'}</div>
