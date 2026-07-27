@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ConfirmModal from '../components/ui/ConfirmModal';
+// 이 페이지만 Font Awesome을 쓰므로 라우트 청크에서 지역 로드한다 (초기 번들 제외)
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import './LearningManagerPage.css';
 
 const CATEGORY_MAP = {

@@ -157,14 +157,16 @@
   animation: slideDown 0.3s ease-out;
 }
 
+/* max-height 애니메이션은 아래 형제를 밀어내 CLS를 유발하므로
+   레이아웃에 영향 없는 opacity+transform만 쓴다 */
 @keyframes slideDown {
   from {
     opacity: 0;
-    max-height: 0;
+    transform: translateY(-6px);
   }
   to {
     opacity: 1;
-    max-height: 1000px;
+    transform: translateY(0);
   }
 }
 

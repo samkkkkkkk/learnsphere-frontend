@@ -1,6 +1,7 @@
 import { Link, NavLink } from 'react-router-dom';
 import { useFocusManager } from '../contexts/FocusManagerContext';
 import { useAuth } from '../contexts/AuthContext';
+import Icon from './ui/Icon';
 import './Header.css';
 
 const Header: React.FC = () => {
@@ -21,7 +22,7 @@ const Header: React.FC = () => {
             <NavLink to="/react-learn" className="nav-link">학습하기</NavLink>
             {/* <NavLink to="/learning-manager" className="nav-link">학습관리</NavLink> */}
             <button onClick={openModal} className="nav-link focus-manager-btn">
-              <i className="fas fa-bolt" aria-hidden="true"></i>
+              <Icon name="zap" size={14} />
               집중력 매니저
             </button>
             {/* <NavLink to="/wireframe" className="nav-link">와이어프레임</NavLink>

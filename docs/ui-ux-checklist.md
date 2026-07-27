@@ -128,11 +128,11 @@
 |---|---|---|
 | 61 | 라우트별 code splitting(lazy)으로 초기 번들을 줄였는가? | ✅ 전 라우트 lazy 분할 (Phase 8, 초기 JS 1,183→1,078kB) |
 | 62 | 무거운 라이브러리(MediaPipe 등)가 사용 시점에만 로드되는가? | ✅ 열 때 동적 import 확인 (Phase 8) |
-| 63 | 외부 리소스(Font Awesome)가 렌더 블로킹 없이 로드되는가? | ✅ `<link>` + preconnect (Phase 1) |
+| 63 | 외부 리소스(Font Awesome)가 렌더 블로킹 없이 로드되는가? | ✅ 외부 CDN 의존 자체를 제거 — 폰트·아이콘 셀프호스팅, FA는 사용 페이지(LearningManager) 청크에서만 로드 (폰트 라운드) |
 | 64 | 로딩 표시가 전 화면에서 하나의 패턴(스피너 or 스켈레톤)으로 통일되어 있는가? | ✅ Spinner/Skeleton 공용 컴포넌트로 통일 (Phase 3) |
 | 65 | 목록/콘텐츠 로딩에 스켈레톤 UI를 제공해 레이아웃 시프트를 막는가? | ✅ 레슨 목록 스켈레톤 (Phase 3) |
 | 66 | 인증 확인 중 Header 영역이 자리(placeholder)를 유지해 CLS가 없는가? | ✅ placeholder 유지 (Phase 5) |
-| 67 | Lighthouse(모바일) 성능·접근성 점수를 측정하고 목표치(예: 90+)를 관리하는가? | ✅ 기준선 확보 (Phase 13) — 성능 42~54는 초기 JS 1,078kB가 원인, 접근성·권장사항·SEO 100. 하단 "Lighthouse 기준선" 참조 |
+| 67 | Lighthouse(모바일) 성능·접근성 점수를 측정하고 목표치(예: 90+)를 관리하는가? | ✅ 기준선 확보 + 2회 개선 라운드 — 성능 42~54 → 83~90, 접근성·권장사항·SEO 100. 하단 "Lighthouse 기준선" 참조 |
 
 ### 5-2. 모바일 · 반응형
 
@@ -177,16 +177,27 @@
 
 ### Lighthouse 기준선 (모바일)
 
-측정: Lighthouse 12, 모바일 에뮬레이션(기본 스로틀링), `vite preview` 프로덕션 빌드 (2026-07-27).
-괄호 안은 번들 분리(마크다운·Prism 지연 로드) **개선 전** 수치.
+측정: Lighthouse 12, 모바일 에뮬레이션(기본 스로틀링), `vite preview` 프로덕션 빌드 (2026-07-27)
 
 | 페이지 | 성능 | 접근성 | 권장사항 | SEO | FCP | LCP | TBT | CLS |
 |---|---|---|---|---|---|---|---|---|
-| `/` | **64** (54) | 100 | 100 | 100 | 5.6s (7.5s) | 5.8s (7.8s) | 0ms (240ms) | 0 |
-| `/roadmap` | **53** (42) | 100 | 100 | 100 | 5.5s (7.4s) | 5.7s (7.7s) | 0ms (270ms) | 0.23 |
-| `/login` | **67** (52) | 100 | 100 | 100 | 5.2s (6.9s) | 5.3s (7.2s) | 0ms (340ms) | 0 |
+| `/` | **83** | 100 | 100 | 100 | 2.8s | 3.9s | 0ms | 0.005 |
+| `/roadmap` | **85** | 100 | 100 | 100 | 2.8s | 3.7s | 0ms | 0.004 |
+| `/login` | **90** | 100 | 100 | 100 | 2.8s | 3.0s | 0ms | 0.004 |
 
-- **적용된 개선**: 전체 Prism 빌드 → PrismLight+필요 언어 9종 등록, MarkdownRenderer lazy 파사드 분리 → 초기 청크 **1,078kB → 283kB** (gzip 374→94kB), 마크다운 청크 229kB는 사용 시 로드.
-- **남은 병목**: 렌더 블로킹 CDN CSS(Font Awesome·Pretendard·JetBrains Mono) — 셀프호스팅+preload 또는 비동기 로드로 개선 가능 (후속).
-- **`/roadmap` CLS 0.23**: Pretendard dynamic-subset의 비동기 글리프 로드로 브랜치 텍스트가 리플로우 — 원인 확정. 보정은 폰트 셀프호스팅+`size-adjust` 폴백 필요 (후속).
-- 측정 중 발견·즉시 수정: 메인 h1→h3 heading 건너뜀(→h2/h3 정정), `robots.txt` 부재(추가) — 3개 페이지 접근성·SEO 100 달성.
+**성능 점수 추이 (라운드별, / · /roadmap · /login)**
+
+| 라운드 | 성능 | 주요 조치 |
+|---|---|---|
+| 최초 기준선 | 54 · 42 · 52 | (측정만) 초기 JS 1,078kB + CDN 렌더 블로킹 CSS 3건 |
+| 번들 분리 | 64 · 53 · 67 | 전체 Prism → PrismLight(9개 언어), MarkdownRenderer lazy → 초기 JS 283kB |
+| 폰트 라운드 | **83 · 85 · 90** | 폰트·아이콘 셀프호스팅(외부 요청 0), roadmap CLS 해소 |
+
+**폰트 라운드 적용 내역**
+- Pretendard·JetBrains Mono를 npm 패키지(`pretendard`, `@fontsource/jetbrains-mono`)로 셀프호스팅 — dynamic subset이라 필요한 서브셋 woff2만 페치, 외부 CDN 요청·preconnect 전부 제거
+- Font Awesome 의존 제거: 노출 화면(Header·MainPage) 아이콘 7개를 인라인 SVG `Icon` 컴포넌트로 교체, FA CSS는 유일한 사용처인 LearningManager 지연 청크에 격리
+- `Pretendard Fallback` @font-face 메트릭 오버라이드(size-adjust 99% 등)로 폰트 스왑 리플로우 완화 → `/`·`/login` CLS 0.00x
+- **`/roadmap` CLS 0.22의 실제 원인은 폰트가 아니라 초기 펼침 `max-height` 애니메이션**이 아래 브랜치를 밀어내는 것 — opacity+transform 애니메이션으로 교체해 0.004로 해소
+- 남은 개선 여지: FCP 2.8s는 스로틀드 모바일에서 JS 284kB+CSS 101kB 크리티컬 패스가 원인 — 추가 개선은 프리렌더/크리티컬 CSS 분리 영역 (SPA 구조상 후순위)
+
+측정 중 발견·즉시 수정된 이력: 메인 h1→h3 heading 건너뜀(→h2/h3 정정), `robots.txt` 부재(추가) — 3개 페이지 접근성·SEO 100 달성.
