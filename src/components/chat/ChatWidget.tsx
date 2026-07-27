@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useChatWidget } from '../../contexts/ChatWidgetContext';
 import { useAuth } from '../../contexts/AuthContext';
 import * as chatApi from '../../api/chatApi';
@@ -20,8 +20,20 @@ const ChatWidget: React.FC = () => {
   const [activeId, setActiveId] = useState<number | null>(null);
   const [showList, setShowList] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
-  const { messages, isSending, isLoading, error, send, retry, canRetry } =
-    useChatConversation(activeId);
+  const { messages, isSending, isLoading, error, streamingAnswer, send, retry, cancel,
+    reload, canRetry } = useChatConversation(activeId);
+
+  // 창을 닫아도 위젯은 마운트된 채로 남는다. 진행 중인 스트림은 직접 끊고,
+  // 다시 열 때 서버에서 대화를 다시 읽는다 — 끊긴 답변은 서버에만 남아 있기 때문.
+  const wasOpenRef = useRef(false);
+  useEffect(() => {
+    if (!isOpen) {
+      cancel();
+    } else if (!wasOpenRef.current && activeId !== null) {
+      reload();
+    }
+    wasOpenRef.current = isOpen;
+  }, [isOpen, activeId, cancel, reload]);
 
   const startNewSession = useCallback(async () => {
     try {
@@ -130,6 +142,7 @@ const ChatWidget: React.FC = () => {
         <ChatMessages
           messages={messages}
           isSending={isSending}
+          streamingAnswer={streamingAnswer}
           isLoading={isLoading}
           error={error}
           onRetry={canRetry ? retry : null}

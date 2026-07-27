@@ -28,7 +28,7 @@ const LessonChatPanel: React.FC<LessonChatPanelProps> = ({
   const { user } = useAuth();
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [sessionError, setSessionError] = useState<string | null>(null);
-  const { messages, isSending, isLoading, error, send, retry, canRetry } =
+  const { messages, isSending, isLoading, error, streamingAnswer, send, retry, canRetry } =
     useChatConversation(sessionId);
 
   // 이 레슨의 기존 대화를 찾고, 없으면 새로 만든다
@@ -71,6 +71,7 @@ const LessonChatPanel: React.FC<LessonChatPanelProps> = ({
           <ChatMessages
             messages={messages}
             isSending={isSending}
+            streamingAnswer={streamingAnswer}
             isLoading={isLoading}
             error={error ?? sessionError}
             onRetry={canRetry ? retry : null}

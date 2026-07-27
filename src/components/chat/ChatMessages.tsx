@@ -7,6 +7,8 @@ interface ChatMessagesProps {
   messages: ChatMessage[];
   /** 답변 생성 중 (타이핑 인디케이터 표시) */
   isSending: boolean;
+  /** 도착하는 중인 답변. null이면 스트리밍 중이 아니다. */
+  streamingAnswer?: string | null;
   /** 지난 대화 불러오는 중 (isSending과 구분 표시) */
   isLoading?: boolean;
   error: string | null;
@@ -26,6 +28,7 @@ interface ChatMessagesProps {
 const ChatMessages: React.FC<ChatMessagesProps> = ({
   messages,
   isSending,
+  streamingAnswer = null,
   isLoading = false,
   error,
   emptyHint,
@@ -46,11 +49,14 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
 
   useEffect(() => {
     if (stickToBottomRef.current) {
-      endRef.current?.scrollIntoView({ behavior: 'smooth' });
+      // 토큰마다 부드러운 스크롤을 걸면 따라가지 못하고 흔들린다
+      endRef.current?.scrollIntoView({ behavior: streamingAnswer ? 'auto' : 'smooth' });
     }
-  }, [messages, isSending]);
+  }, [messages, isSending, streamingAnswer]);
 
   const showEmpty = messages.length === 0 && !isSending && !isLoading;
+  // 첫 토큰이 오기 전까지만 점 세 개를 보여주고, 이후에는 글자가 그 자리를 대신한다
+  const showTypingDots = isSending && !streamingAnswer;
 
   return (
     <div
@@ -102,7 +108,14 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
         </div>
       ))}
 
-      {isSending && (
+      {streamingAnswer && (
+        <div className="chat-message chat-message--assistant chat-message--streaming">
+          <MarkdownRenderer>{streamingAnswer}</MarkdownRenderer>
+          <span className="chat-cursor" aria-hidden="true" />
+        </div>
+      )}
+
+      {showTypingDots && (
         <div className="chat-typing" aria-label="답변을 작성하고 있어요">
           <i /><i /><i />
         </div>

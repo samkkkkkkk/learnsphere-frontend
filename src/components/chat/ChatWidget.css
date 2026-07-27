@@ -222,6 +222,27 @@
   40% { opacity: 1; }
 }
 
+/* 스트리밍 중인 답변 끝에 붙는 커서 */
+.chat-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--color-accent);
+  animation: chat-cursor-blink 1s step-end infinite;
+}
+
+@keyframes chat-cursor-blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+/* 마크다운 마지막 블록과 커서를 같은 줄에 두어 글자 뒤에 붙어 보이게 한다 */
+.chat-message--streaming > :last-of-type {
+  display: inline;
+}
+
 /* --- 답변 내 마크다운 요소 --- */
 
 .chat-message--assistant > :first-child {

@@ -43,6 +43,18 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
   onUnauthorized = handler;
 }
 
+/**
+ * 학습자 토큰이 거부됐을 때의 뒷정리 (토큰 폐기 + AuthContext 통지).
+ *
+ * axios 인터셉터가 하는 일과 같다. SSE 스트림은 axios를 못 쓰고 fetch를 쓰므로
+ * 같은 처리를 직접 호출할 수 있도록 노출한다.
+ */
+export function notifyUnauthorized() {
+  if (!getAuthToken()) return;
+  setAuthToken(null);
+  onUnauthorized?.();
+}
+
 // 관리자 엔드포인트에는 X-Admin-API-Key, 그 외에는 학습자 Bearer 토큰을 첨부
 api.interceptors.request.use(config => {
   if (config.url?.includes('/admin/')) {
