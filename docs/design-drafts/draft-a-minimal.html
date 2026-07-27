@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시안 A — 모던 미니멀 · LearnSphere</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#FFFFFF; --surface:#F7F7F8; --card:#FFFFFF;
+    --line:#E8E8EC; --line-strong:#D9D9DF;
+    --ink:#17171C; --sub:#5E5E68; --faint:#9A9AA3;
+    --accent:#2C3FE3; --accent-deep:#1F30C4; --accent-soft:#EEF0FE;
+    --ok:#0E8F62; --warn:#B54708; --danger:#C92A2A;
+    --code-bg:#F6F7F9; --code-ink:#2B2B33;
+    --r-sm:8px; --r-md:12px; --r-lg:16px;
+    --font:"Pretendard Variable",Pretendard,-apple-system,sans-serif;
+    --mono:"JetBrains Mono",monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;letter-spacing:-0.01em}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px}
+
+  .draft-bar{background:var(--ink);color:#fff;font-size:12.5px;padding:8px 0}
+  .draft-bar .wrap{display:flex;justify-content:space-between;align-items:center}
+  .draft-bar a{color:#A8B0FF;margin-left:16px}
+  .draft-bar strong{font-weight:600}
+
+  header.site{position:sticky;top:0;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);z-index:50}
+  header.site .wrap{display:flex;align-items:center;gap:36px;height:60px}
+  .logo{font-weight:800;font-size:17px;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px}
+  .logo .dot{width:10px;height:10px;border-radius:3px;background:var(--accent);display:inline-block}
+  nav.main{display:flex;gap:8px;flex:1}
+  nav.main a{padding:7px 12px;border-radius:var(--r-sm);color:var(--sub);font-weight:500;font-size:14px}
+  nav.main a:hover{background:var(--surface);color:var(--ink)}
+  nav.main a.active{color:var(--accent);background:var(--accent-soft);font-weight:600}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--font);font-weight:600;font-size:14px;border-radius:var(--r-sm);border:1px solid transparent;cursor:pointer;padding:9px 18px;transition:.15s}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent-deep)}
+  .btn-ghost{background:transparent;color:var(--sub);border-color:var(--line-strong)}
+  .btn-ghost:hover{color:var(--ink);border-color:var(--faint)}
+
+  .hero{padding:96px 0 80px;position:relative}
+  .hero .wrap{display:grid;grid-template-columns:56px 1fr;gap:0}
+  .start-rail{position:relative;width:2px;background:var(--line);margin-left:20px}
+  .start-rail::before{content:"";position:absolute;top:0;left:-5px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 6px var(--accent-soft)}
+  .start-rail .rail-label{position:absolute;top:-4px;left:22px;font-size:12px;font-weight:600;color:var(--accent);white-space:nowrap;font-family:var(--mono)}
+  .hero-body{padding-left:40px}
+  .eyebrow{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:16px;letter-spacing:.02em}
+  h1.display{font-size:52px;font-weight:800;letter-spacing:-0.035em;line-height:1.15;margin-bottom:20px}
+  h1.display .thin{color:var(--faint);font-weight:600}
+  .hero p.lede{font-size:17px;color:var(--sub);max-width:560px;margin-bottom:32px}
+  .hero-actions{display:flex;gap:12px;align-items:center}
+  .hero-actions .hint{font-size:13px;color:var(--faint);margin-left:8px}
+
+  section{padding:72px 0;border-top:1px solid var(--line)}
+  .sec-head{margin-bottom:36px}
+  .sec-head h2{font-size:24px;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px}
+  .sec-head p{color:var(--sub);font-size:14.5px}
+
+  .metro{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:8px 0 16px}
+  .stop{min-width:170px;position:relative;padding-top:26px}
+  .stop::before{content:"";position:absolute;top:7px;left:0;right:0;height:2px;background:var(--line)}
+  .stop::after{content:"";position:absolute;top:0;left:0;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--line-strong)}
+  .stop.done::before{background:var(--accent)}
+  .stop.done::after{background:var(--accent);border-color:var(--accent)}
+  .stop.now::after{border-color:var(--accent);box-shadow:0 0 0 5px var(--accent-soft)}
+  .stop .lv{font-size:11.5px;font-weight:600;color:var(--faint);font-family:var(--mono)}
+  .stop.now .lv,.stop.done .lv{color:var(--accent)}
+  .stop h4{font-size:15px;font-weight:600;margin:2px 0 4px}
+  .stop p{font-size:12.5px;color:var(--sub);padding-right:24px}
+  .stop .badge-now{display:inline-block;margin-top:8px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);padding:3px 8px;border-radius:99px}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;transition:.15s;cursor:pointer}
+  .card:hover{border-color:var(--accent);box-shadow:0 4px 24px rgba(44,63,227,.08)}
+  .card .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .chip{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--surface);color:var(--sub)}
+  .chip.lv1{color:var(--ok);background:#E9F7F1}
+  .chip.lv2{color:var(--warn);background:#FDF3E7}
+  .card .done-mark{font-size:12px;color:var(--ok);font-weight:600}
+  .card h3{font-size:16.5px;font-weight:700;letter-spacing:-0.01em;margin-bottom:6px}
+  .card p{font-size:13.5px;color:var(--sub);margin-bottom:16px}
+  .card .foot{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--faint)}
+  .progress{height:4px;background:var(--surface);border-radius:99px;flex:1;margin-right:12px;overflow:hidden}
+  .progress i{display:block;height:100%;background:var(--accent);border-radius:99px}
+
+  .lesson-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;align-items:start}
+  .doc{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:32px}
+  .doc h3{font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.02em}
+  .doc p{font-size:14.5px;color:var(--sub);margin-bottom:16px}
+  .codeblock{background:var(--code-bg);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;margin-bottom:8px}
+  .codeblock .bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--faint);font-family:var(--mono)}
+  .codeblock .copy{font-family:var(--font);font-size:12px;font-weight:600;color:var(--sub);background:none;border:1px solid var(--line-strong);border-radius:6px;padding:3px 10px;cursor:pointer}
+  .codeblock .copy:hover{color:var(--accent);border-color:var(--accent)}
+  .codeblock pre{padding:16px;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--code-ink);overflow-x:auto}
+  .tok-k{color:#7C3AED}.tok-f{color:var(--accent)}.tok-s{color:#0E8F62}.tok-c{color:var(--faint)}
+
+  .quiz{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px}
+  .quiz .q-label{font-size:12px;font-weight:600;color:var(--accent);font-family:var(--mono);margin-bottom:10px}
+  .quiz h4{font-size:15.5px;font-weight:600;margin-bottom:16px;line-height:1.5}
+  .quiz .answer{background:var(--surface);border-radius:var(--r-md);padding:14px 16px;font-size:13.5px;color:var(--sub);margin-bottom:16px}
+  .quiz .answer strong{color:var(--ink)}
+  .self-grade{display:flex;gap:8px}
+  .self-grade .btn{flex:1;justify-content:center;font-size:13px;padding:8px}
+  .btn-ok{background:#E9F7F1;color:var(--ok)}
+  .btn-ok:hover{background:#D8F0E5}
+  .btn-no{background:#FBEBEB;color:var(--danger)}
+  .btn-no:hover{background:#F6DCDC}
+  .quiz .score{margin-top:14px;font-size:12.5px;color:var(--faint);text-align:center}
+
+  .chat-demo{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+  .chat-copy h2{font-size:24px;font-weight:700;letter-spacing:-0.02em;margin-bottom:12px}
+  .chat-copy p{color:var(--sub);font-size:14.5px;margin-bottom:20px;max-width:420px}
+  .chat-copy ul{list-style:none}
+  .chat-copy li{font-size:14px;color:var(--sub);padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:10px}
+  .chat-copy li::before{content:"—";color:var(--accent);font-weight:700}
+  .chat{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:0 12px 40px rgba(23,23,28,.08);overflow:hidden}
+  .chat .head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .chat .head b{font-size:14px}
+  .chat .head span{font-size:11.5px;color:var(--ok);font-weight:600}
+  .chat .body{padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--surface)}
+  .msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:13.5px;line-height:1.55}
+  .msg.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+  .msg.bot{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
+  .msg.bot code{font-family:var(--mono);font-size:12px;background:var(--code-bg);padding:1px 5px;border-radius:4px;color:var(--accent)}
+  .sources{display:flex;gap:6px;flex-wrap:wrap;align-self:flex-start;max-width:85%}
+  .src{font-size:11.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:99px;cursor:pointer}
+  .src:hover{text-decoration:underline}
+  .typing{align-self:flex-start;display:flex;gap:4px;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:14px;border-bottom-left-radius:4px}
+  .typing i{width:6px;height:6px;border-radius:50%;background:var(--faint);animation:blink 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 18px 12px;background:var(--surface)}
+  .chips button{font-family:var(--font);font-size:12px;color:var(--sub);background:var(--card);border:1px solid var(--line-strong);border-radius:99px;padding:5px 12px;cursor:pointer}
+  .chips button:hover{color:var(--accent);border-color:var(--accent)}
+  .chat .input{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line);background:var(--card)}
+  .chat .input input{flex:1;border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:9px 12px;font-family:var(--font);font-size:13.5px;outline:none}
+  .chat .input input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+
+  .tokens{background:var(--surface)}
+  .tokens .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+  .swatch{width:120px;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line);background:var(--card)}
+  .swatch .c{height:56px}
+  .swatch .l{padding:8px 10px;font-size:11px;font-family:var(--mono);color:var(--sub)}
+  .type-scale div{border-bottom:1px solid var(--line);padding:10px 0}
+  .type-scale .t1{font-size:32px;font-weight:800;letter-spacing:-0.03em}
+  .type-scale .t2{font-size:22px;font-weight:700;letter-spacing:-0.02em}
+  .type-scale .t3{font-size:16px;font-weight:600}
+  .type-scale .t4{font-size:14px;color:var(--sub)}
+  .type-scale .t5{font-size:12.5px;font-family:var(--mono);color:var(--faint)}
+
+  footer.site{border-top:1px solid var(--line);padding:28px 0;font-size:13px;color:var(--faint)}
+  @media (max-width:860px){
+    .cards,.lesson-grid,.chat-demo{grid-template-columns:1fr}
+    h1.display{font-size:36px}
+    .hero .wrap{grid-template-columns:1fr}
+    .start-rail{display:none}
+    .hero-body{padding-left:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="draft-bar"><div class="wrap">
+  <span><strong>시안 A — 모던 미니멀</strong> · 뉴트럴 + 코발트 블루 · Pretendard</span>
+  <span>다른 시안: <a href="./draft-b-dark-dev.html">B 다크 개발자</a><a href="./draft-c-soft.html">C 소프트 러닝</a></span>
+</div></div>
+
+<header class="site"><div class="wrap">
+  <a class="logo" href="#"><span class="dot"></span>LearnSphere</a>
+  <nav class="main">
+    <a href="#">홈</a><a href="#" class="active">로드맵</a><a href="#">학습하기</a>
+  </nav>
+  <button class="btn btn-ghost">로그인</button>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <div class="start-rail"><span class="rail-label">// start here</span></div>
+  <div class="hero-body">
+    <div class="eyebrow">개발 학습 로드맵 · RAG 기반 학습 도우미</div>
+    <h1 class="display">어디서 시작할지 막막하다면,<br><span class="thin">시작점은 여기입니다.</span></h1>
+    <p class="lede">수준을 진단하고, 지금 필요한 것부터 순서대로. 레슨·퀴즈·질문까지 한 화면에서 이어지는 학습 경로를 만들어 드립니다.</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary">내 로드맵 만들기</button>
+      <button class="btn btn-ghost">레슨 둘러보기</button>
+      <span class="hint">가입 없이 둘러볼 수 있어요</span>
+    </div>
+  </div>
+</div></div>
+
+<section><div class="wrap">
+  <div class="sec-head"><h2>React 학습 경로</h2><p>완료한 정거장은 채워지고, 지금 위치가 표시됩니다.</p></div>
+  <div class="metro">
+    <div class="stop done"><span class="lv">LV.0</span><h4>개발 환경 준비</h4><p>Node, 에디터, 프로젝트 생성</p></div>
+    <div class="stop done"><span class="lv">LV.1</span><h4>JSX와 컴포넌트</h4><p>화면을 조각으로 나누는 법</p></div>
+    <div class="stop now"><span class="lv">LV.1</span><h4>State와 이벤트</h4><p>useState로 화면 바꾸기</p><span class="badge-now">지금 여기</span></div>
+    <div class="stop"><span class="lv">LV.2</span><h4>Effect와 데이터</h4><p>useEffect, fetch 패턴</p></div>
+    <div class="stop"><span class="lv">LV.2</span><h4>컴포넌트 설계</h4><p>props 설계와 상태 끌어올리기</p></div>
+    <div class="stop"><span class="lv">LV.3</span><h4>전역 상태 관리</h4><p>Context와 상태 라이브러리</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="sec-head"><h2>이어서 학습하기</h2><p>진행 중인 레슨과 다음 추천 레슨입니다.</p></div>
+  <div class="cards">
+    <div class="card">
+      <div class="meta"><span class="chip lv1">초급</span><span class="done-mark">✓ 완료</span></div>
+      <h3>JSX 기초와 렌더링</h3>
+      <p>JSX 문법, 조건부 렌더링, 리스트 렌더링을 다룹니다.</p>
+      <div class="foot"><div class="progress"><i style="width:100%"></i></div><span>12/12</span></div>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="chip lv1">초급</span><span style="font-size:12px;color:var(--accent);font-weight:600">진행 중</span></div>
+      <h3>useState로 상태 다루기</h3>
+      <p>상태가 바뀌면 화면이 다시 그려지는 원리를 배웁니다.</p>
+      <div class="foot"><div class="progress"><i style="width:60%"></i></div><span>6/10</span></div>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="chip lv2">중급</span></div>
+      <h3>useEffect와 데이터 불러오기</h3>
+      <p>사이드 이펙트를 안전하게 다루는 패턴을 익힙니다.</p>
+      <div class="foot"><div class="progress"><i style="width:0"></i></div><span>0/8</span></div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="sec-head"><h2>레슨 화면</h2><p>본문·코드·퀴즈가 한 흐름으로 이어집니다.</p></div>
+  <div class="lesson-grid">
+    <div class="doc">
+      <h3>useState로 상태 다루기</h3>
+      <p>컴포넌트가 기억해야 하는 값은 변수 대신 <b>state</b>로 선언합니다. state가 바뀌면 React가 화면을 다시 그립니다.</p>
+      <div class="codeblock">
+        <div class="bar"><span>Counter.jsx</span><button class="copy">복사</button></div>
+        <pre><span class="tok-k">import</span> { useState } <span class="tok-k">from</span> <span class="tok-s">'react'</span>;
+
+<span class="tok-k">function</span> <span class="tok-f">Counter</span>() {
+  <span class="tok-k">const</span> [count, setCount] = <span class="tok-f">useState</span>(0);
+  <span class="tok-c">// setCount를 호출하면 화면이 다시 그려집니다</span>
+  <span class="tok-k">return</span> &lt;button onClick={() =&gt; <span class="tok-f">setCount</span>(count + 1)}&gt;{count}&lt;/button&gt;;
+}</pre>
+      </div>
+    </div>
+    <div class="quiz">
+      <div class="q-label">QUIZ 2/3</div>
+      <h4>state를 직접 수정하지 않고 setCount를 사용하는 이유는 무엇인가요?</h4>
+      <div class="answer"><strong>정답</strong> — React는 setter 호출을 통해서만 변경을 감지하고 리렌더링을 예약하기 때문입니다.</div>
+      <div class="self-grade">
+        <button class="btn btn-ok">맞았어요</button>
+        <button class="btn btn-no">틀렸어요</button>
+      </div>
+      <div class="score">이번 세트 정답률 2/2 · 완료 시 레슨에 체크 표시</div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="chat-demo">
+    <div class="chat-copy">
+      <h2>막히면 바로 질문하세요</h2>
+      <p>학습 도우미가 지금 보고 있는 레슨을 근거로 답합니다. 답변의 출처 문서를 눌러 원문으로 이동할 수 있습니다.</p>
+      <ul>
+        <li>레슨 내용을 근거로 답변 (RAG)</li>
+        <li>참고 문서 클릭 → 해당 레슨으로 이동</li>
+        <li>실패 시 한 번에 재시도</li>
+      </ul>
+    </div>
+    <div class="chat">
+      <div class="head"><b>학습 도우미</b><span>● 레슨 연결됨</span></div>
+      <div class="body">
+        <div class="msg user">useState가 뭐야?</div>
+        <div class="msg bot"><code>useState</code>는 컴포넌트에 <b>기억할 값</b>을 만들어 주는 훅이에요. 값이 바뀌면 화면이 자동으로 다시 그려집니다.</div>
+        <div class="sources"><span class="src">📄 useState로 상태 다루기</span><span class="src">📄 렌더링의 원리</span></div>
+        <div class="typing"><i></i><i></i><i></i></div>
+      </div>
+      <div class="chips"><button>예제를 더 보여줘</button><button>useEffect랑 뭐가 달라?</button></div>
+      <div class="input"><input placeholder="레슨에 대해 물어보세요"><button class="btn btn-primary">전송</button></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="tokens"><div class="wrap">
+  <div class="sec-head"><h2>디자인 토큰</h2><p>시안 A의 팔레트와 타입 스케일</p></div>
+  <div class="row">
+    <div class="swatch"><div class="c" style="background:#2C3FE3"></div><div class="l">accent #2C3FE3</div></div>
+    <div class="swatch"><div class="c" style="background:#EEF0FE"></div><div class="l">accent-soft #EEF0FE</div></div>
+    <div class="swatch"><div class="c" style="background:#17171C"></div><div class="l">ink #17171C</div></div>
+    <div class="swatch"><div class="c" style="background:#5E5E68"></div><div class="l">sub #5E5E68</div></div>
+    <div class="swatch"><div class="c" style="background:#F7F7F8"></div><div class="l">surface #F7F7F8</div></div>
+    <div class="swatch"><div class="c" style="background:#0E8F62"></div><div class="l">ok #0E8F62</div></div>
+  </div>
+  <div class="type-scale">
+    <div class="t1">Display — Pretendard 800, -3% 자간</div>
+    <div class="t2">Heading — Pretendard 700</div>
+    <div class="t3">Subheading — Pretendard 600</div>
+    <div class="t4">Body — Pretendard 400, 행간 1.6</div>
+    <div class="t5">Code / Label — JetBrains Mono</div>
+  </div>
+</div></section>
+
+<footer class="site"><div class="wrap">LearnSphere · 시안 A — 모던 미니멀</div></footer>
+</body>
+</html>
