@@ -1,6 +1,5 @@
 /* LMS Page Styles - LearnSphere 톤앤매너 유지 */
 .lms-page {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   color: var(--color-text-main);
   background: var(--color-bg-page);
@@ -228,7 +227,7 @@
   background: var(--color-bg-hover);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
-  font-family: 'Fira Code', 'Consolas', monospace;
+  font-family: var(--font-mono);
   font-size: 0.9rem;
 }
 

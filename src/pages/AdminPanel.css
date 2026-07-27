@@ -3,7 +3,6 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .admin-header {
@@ -225,7 +224,7 @@
 .log-entry {
   padding: 8px 12px;
   border-bottom: 1px solid #ded5c5;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   color: #4f473d;
   line-height: 1.4;
