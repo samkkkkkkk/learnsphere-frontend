@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import LessonChatPanel from '../components/chat/LessonChatPanel';
 import { fetchLessonIndex, fetchLessonDetail } from '../api/lessonApi';
@@ -6,7 +7,6 @@ import type { LessonDetail, LessonIndex } from '../api/lessonApi';
 import Skeleton from '../components/ui/Skeleton';
 import Modal from '../components/ui/Modal';
 import './ReactLearnPage.css';
-import LMSPage from './LMSPage';
 
 // 학습 수준을 위한 타입 정의
 // MainPage의 과목 목록을 반영
@@ -21,6 +21,7 @@ type Level = '초급' | '중급' | '고급';
  * React 학습 자료 생성기 메인 UI 컴포넌트
  */
 export default function ReactLearn() {
+  const navigate = useNavigate();
   // 컴포넌트의 상태 관리
   const [selectedTopic, setSelectedTopic] = useState<string>('react');
   const [level, setLevel] = useState<Level>('초급');
@@ -96,6 +97,11 @@ export default function ReactLearn() {
    */
   const handleTopicChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newTopic = e.target.value;
+    // UniTask는 전용 LMS 화면으로 이동 (URL 공유·뒤로가기 가능)
+    if (newTopic === 'UniTask') {
+      navigate('/lms');
+      return;
+    }
     setSelectedTopic(newTopic);
     setSelectedLesson(null);
     setLessonIndex(null);
@@ -142,9 +148,7 @@ export default function ReactLearn() {
   }, [lessonIndex, level, selectedLesson]);
 
   return (
-    selectedTopic === 'UniTask' ? (
-      <LMSPage />
-    ) : (
+    (
       <div className="react-learn-container">
         <header className="react-learn-header">
           <h1>React 학습 자료 📚</h1>

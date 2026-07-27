@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useChatWidget } from '../../contexts/ChatWidgetContext';
 import { useAuth } from '../../contexts/AuthContext';
 import * as chatApi from '../../api/chatApi';
@@ -14,6 +14,7 @@ import './ChatWidget.css';
 const ChatWidget: React.FC = () => {
   const { isOpen, toggleChat, closeChat } = useChatWidget();
   const { user } = useAuth();
+  const location = useLocation();
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeId, setActiveId] = useState<number | null>(null);
   const [showList, setShowList] = useState(false);
@@ -72,7 +73,7 @@ const ChatWidget: React.FC = () => {
           <p className="chat-panel__empty">
             튜터에게 질문하려면 로그인이 필요합니다.
             <br />
-            <Link to="/login" onClick={closeChat} className="chat-panel__login-link">
+            <Link to="/login" state={{ from: location.pathname }} onClick={closeChat} className="chat-panel__login-link">
               로그인하러 가기
             </Link>
           </p>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import * as chatApi from '../../api/chatApi';
 import { useChatConversation } from './useChatConversation';
@@ -26,6 +26,7 @@ const LessonChatPanel: React.FC<LessonChatPanelProps> = ({
   onClose,
 }) => {
   const { user } = useAuth();
+  const location = useLocation();
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [sessionError, setSessionError] = useState<string | null>(null);
   const { messages, isSending, isLoading, error, send } = useChatConversation(sessionId);
@@ -90,7 +91,7 @@ const LessonChatPanel: React.FC<LessonChatPanelProps> = ({
           <p className="chat-panel__empty">
             튜터에게 질문하려면 로그인이 필요합니다.
             <br />
-            <Link to="/login" className="chat-panel__login-link">
+            <Link to="/login" state={{ from: location.pathname }} className="chat-panel__login-link">
               로그인하러 가기
             </Link>
           </p>
