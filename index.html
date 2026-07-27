@@ -10,6 +10,14 @@
     <meta property="og:description" content="수준별 학습 로드맵과 AI 학습 도우미. 어디서 시작할지 막막한 개발자를 위한 학습 플랫폼" />
     <meta property="og:site_name" content="LearnSphere" />
     <title>LearnSphere</title>
+    <!-- 저장된 테마를 첫 페인트 전에 적용 (FOUC 방지). 기본은 다크 -->
+    <script>
+      try {
+        if (localStorage.getItem('learnsphere.theme') === 'light') {
+          document.documentElement.dataset.theme = 'light';
+        }
+      } catch (e) { /* 프라이빗 모드 등 — 다크 기본값 유지 */ }
+    </script>
     <!-- 폰트(Pretendard·JetBrains Mono)·아이콘은 셀프호스팅 — 외부 CDN 요청 없음 -->
   </head>
   <body>

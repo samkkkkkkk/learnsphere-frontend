@@ -2,6 +2,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { useFocusManager } from '../contexts/FocusManagerContext';
 import { useAuth } from '../contexts/AuthContext';
 import Icon from './ui/Icon';
+import ThemeToggle from './ThemeToggle';
 import './Header.css';
 
 const Header: React.FC = () => {
@@ -30,6 +31,7 @@ const Header: React.FC = () => {
           </div>
 
           <div className="nav-group nav-auth">
+            <ThemeToggle />
             {isLoading ? (
               /* 세션 복원 중 — 자리를 유지해 레이아웃 흔들림(CLS) 방지 */
               <span className="nav-auth-placeholder" aria-hidden="true" />

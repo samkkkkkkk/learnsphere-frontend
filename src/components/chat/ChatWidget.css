@@ -253,7 +253,7 @@
 .chat-message--assistant :not(pre) > code {
   padding: 1px 5px;
   border-radius: 4px;
-  background: var(--color-code-bg);
+  background: var(--color-code-inline-bg);
   color: var(--color-blue);
   font-size: 0.85em;
 }

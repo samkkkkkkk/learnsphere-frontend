@@ -14,7 +14,9 @@
   --color-surface: #131721;     /* 섹션·패널 배경 */
   --color-card: #161b26;        /* 카드 배경 */
   --color-raise: #1b2130;       /* 카드 위 요소(호버·인풋·코드 인라인) */
-  --color-code-bg: #0a0d13;     /* 코드 블록 배경 */
+  --color-code-bg: #0a0d13;     /* 코드 블록 배경 (라이트 모드에서도 다크 유지) */
+  --color-code-inline-bg: var(--color-code-bg); /* 인라인 코드 칩 배경 */
+  --color-header-bg: rgba(13, 16, 23, 0.85);    /* 반투명 헤더 */
 
   /* ── 색상: 라인 ── */
   --color-line: #232a3a;
@@ -106,6 +108,46 @@
   --window-light: none;
   --paper-fiber: none;
   --deboss: none;
+}
+
+/* ─────────────────────────────────────────────────────────
+   라이트 테마 — <html data-theme="light">일 때 색 토큰만 교체.
+   기본은 다크(브랜드 무드), 토글 시 localStorage(learnsphere.theme)에 저장.
+   코드 블록(--color-code-bg)은 라이트에서도 다크를 유지한다(에디터 무드).
+   전 조합 AA 4.5:1 검증 완료 — docs/contrast-audit.md 참조.
+   ───────────────────────────────────────────────────────── */
+:root[data-theme='light'] {
+  --color-bg: #f5f6f9;
+  --color-surface: #ffffff;
+  --color-card: #ffffff;
+  --color-raise: #e9edf3;
+  --color-code-inline-bg: #e4e9f1;
+  --color-header-bg: rgba(255, 255, 255, 0.85);
+
+  --color-line: #dde2ec;
+  --color-line-strong: #c8d0de;
+
+  --color-ink: #1e2433;
+  --color-sub: #4d566b;
+  --color-faint: #5d6780;
+
+  --color-accent: #8f5500;
+  --color-accent-deep: #6f4200;
+  --color-accent-soft: rgba(143, 85, 0, 0.12);
+  --color-on-accent: #ffffff;
+
+  --color-blue: #0d66a8;
+  --color-blue-soft: rgba(13, 102, 168, 0.1);
+  --color-green: #3f6f00;
+  --color-green-soft: rgba(63, 111, 0, 0.12);
+  --color-purple: #6d3bd8;
+  --color-purple-soft: rgba(109, 59, 216, 0.12);
+  --color-red: #bb2d3b;
+  --color-red-soft: rgba(187, 45, 59, 0.12);
+
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.12);
+  --shadow-lg: 0 20px 60px rgba(15, 23, 42, 0.16);
 }
 
 /* Pretendard 로드 전 시스템 폰트 폴백 — 메트릭을 Pretendard에 맞춰
