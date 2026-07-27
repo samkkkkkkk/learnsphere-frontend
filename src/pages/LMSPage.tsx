@@ -4,6 +4,9 @@ import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Spinner from '../components/ui/Spinner';
+import Modal from '../components/ui/Modal';
+import Button from '../components/ui/Button';
+import { useToast } from '../components/ui/ToastContext';
 import './LMSPage.css';
 
 interface Lecture {
@@ -43,6 +46,7 @@ const subjects: Subject[] = [
 ];
 
 function LMSPage() {
+  const { showToast } = useToast();
   const [selectedSubject, setSelectedSubject] = useState<Subject>(subjects[0]);
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
   const [content, setContent] = useState<string>('');
@@ -105,7 +109,7 @@ function LMSPage() {
 
   const handleRequestSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('요청이 제출되었습니다. 관리자가 검토 후 학습 자료를 생성해드릴 예정입니다.');
+    showToast('신청이 접수되었습니다. 검토 후 학습 자료를 준비해드릴게요.', 'success');
     setRequestText('');
     setShowRequestModal(false);
     setShowFloatingPanel(false);
@@ -251,7 +255,7 @@ function LMSPage() {
               <span className="option-icon">📚</span>
               <span className="option-text">기술스택 신청</span>
             </div>
-            <div className="panel-option" onClick={() => alert('추후 기능 예정')}>
+            <div className="panel-option" onClick={() => showToast('준비 중인 기능입니다.', 'info')}>
               <span className="option-icon">⚙️</span>
               <span className="option-text">기타 기능</span>
             </div>
@@ -260,40 +264,28 @@ function LMSPage() {
       </div>
       
       {/* 기술스택 신청 모달 */}
-      {showRequestModal && (
-        <div className="modal-overlay" onClick={handleModalClose}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>새로운 기술스택 학습 신청</h2>
-              <button className="modal-close" onClick={handleModalClose}>×</button>
-            </div>
-            <div className="modal-body">
-              <p>배우고 싶은 기술이나 주제가 있으시면 신청해주세요.</p>
-              <form onSubmit={handleRequestSubmit} className="modal-form">
-                <div className="form-group">
-                  <label htmlFor="tech-request">원하는 기술스택 또는 주제:</label>
-                  <textarea
-                    id="tech-request"
-                    value={requestText}
-                    onChange={(e) => setRequestText(e.target.value)}
-                    placeholder="예: React Advanced Patterns, Spring Boot 심화, Python 머신러닝, Docker & Kubernetes 등"
-                    rows={4}
-                    required
-                  />
-                </div>
-                <div className="modal-actions">
-                  <button type="button" className="cancel-button" onClick={handleModalClose}>
-                    취소
-                  </button>
-                  <button type="submit" className="submit-button">
-                    신청하기
-                  </button>
-                </div>
-              </form>
-            </div>
+      <Modal open={showRequestModal} onClose={handleModalClose} title="새로운 기술스택 학습 신청">
+        <p className="modal-intro">배우고 싶은 기술이나 주제가 있으시면 신청해주세요.</p>
+        <form onSubmit={handleRequestSubmit} className="modal-form">
+          <div className="form-group">
+            <label htmlFor="tech-request">원하는 기술스택 또는 주제</label>
+            <textarea
+              id="tech-request"
+              value={requestText}
+              onChange={(e) => setRequestText(e.target.value)}
+              placeholder="예: React Advanced Patterns, Spring Boot 심화, Python 머신러닝, Docker & Kubernetes 등"
+              rows={4}
+              required
+            />
           </div>
-        </div>
-      )}
+          <div className="modal-actions">
+            <Button type="button" variant="ghost" onClick={handleModalClose}>
+              취소
+            </Button>
+            <Button type="submit">신청하기</Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

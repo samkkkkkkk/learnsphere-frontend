@@ -12,10 +12,12 @@ import { ChatWidgetProvider } from './contexts/ChatWidgetContext';
 import ChatWidget from './components/chat/ChatWidget';
 import { AuthProvider } from './contexts/AuthContext';
 import LoginPage from './pages/LoginPage';
+import { ToastProvider } from './components/ui/ToastContext';
 
 function App() {
   return (
     <AuthProvider>
+    <ToastProvider>
     <FocusManagerProvider>
       <ChatWidgetProvider>
         <Header />
@@ -32,6 +34,7 @@ function App() {
         <ChatWidget />
       </ChatWidgetProvider>
     </FocusManagerProvider>
+    </ToastProvider>
     </AuthProvider>
   );
 }

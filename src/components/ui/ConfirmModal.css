@@ -1,0 +1,12 @@
+.ui-confirm__message {
+  margin: 0 0 var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--color-sub);
+  line-height: var(--leading-body);
+}
+
+.ui-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ConfirmModal from '../components/ui/ConfirmModal';
 import './LearningManagerPage.css';
 
 const CATEGORY_MAP = {
@@ -78,6 +79,7 @@ export default function LearningManagerPage() {
     dailyStudyTime: 60,
   });
   const [editingGoalId, setEditingGoalId] = useState<null | number>(null);
+  const [deletingGoalId, setDeletingGoalId] = useState<null | number>(null);
   const [goalMessage, setGoalMessage] = useState<{text: string, type: string} | null>(null);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [scheduleForm, setScheduleForm] = useState<ScheduleFormType>({
@@ -150,9 +152,13 @@ export default function LearningManagerPage() {
     setEditingGoalId(goal.id);
   };
   const handleGoalDelete = (goalId: number) => {
-    if (window.confirm('정말로 이 목표를 삭제하시겠습니까?')) {
-      setGoals((goals: Goal[]) => goals.filter((g: Goal) => g.id !== goalId));
+    setDeletingGoalId(goalId);
+  };
+  const confirmGoalDelete = () => {
+    if (deletingGoalId !== null) {
+      setGoals((goals: Goal[]) => goals.filter((g: Goal) => g.id !== deletingGoalId));
     }
+    setDeletingGoalId(null);
   };
 
   // Schedule
@@ -593,6 +599,16 @@ export default function LearningManagerPage() {
           )}
         </div>
       </main>
+
+      <ConfirmModal
+        open={deletingGoalId !== null}
+        title="목표 삭제"
+        message="이 목표를 삭제하면 되돌릴 수 없습니다. 삭제할까요?"
+        confirmLabel="삭제"
+        danger
+        onConfirm={confirmGoalDelete}
+        onCancel={() => setDeletingGoalId(null)}
+      />
     </div>
   );
 } 

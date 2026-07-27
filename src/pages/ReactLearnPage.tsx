@@ -4,6 +4,7 @@ import LessonChatPanel from '../components/chat/LessonChatPanel';
 import { fetchLessonIndex, fetchLessonDetail } from '../api/lessonApi';
 import type { LessonDetail, LessonIndex } from '../api/lessonApi';
 import Skeleton from '../components/ui/Skeleton';
+import Modal from '../components/ui/Modal';
 import './ReactLearnPage.css';
 import LMSPage from './LMSPage';
 
@@ -30,18 +31,6 @@ export default function ReactLearn() {
   const [showAnswers, setShowAnswers] = useState<Set<string>>(new Set()); // 정답을 보여줄 퀴즈들을 추적
   const [showModal, setShowModal] = useState(false);
   const [isLessonChatOpen, setIsLessonChatOpen] = useState(false);
-
-  // 모달 열릴 때 body 스크롤 방지
-  useEffect(() => {
-    if (showModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [showModal]);
 
   /**
    * 레슨 인덱스를 로드하는 함수
@@ -321,13 +310,15 @@ export default function ReactLearn() {
           )}
         </div>
 
-        {/* 모달: 초급 레벨 상세 자료 크게 보기 */}
-        {showModal && selectedLesson && (
-          <div className="modal-overlay" onClick={handleCloseModal}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
-              <button className="modal-close-btn" onClick={handleCloseModal}>✖</button>
+        {/* 모달: 레슨 상세 자료 크게 보기 */}
+        {selectedLesson && (
+          <Modal
+            open={showModal}
+            onClose={handleCloseModal}
+            title={selectedLesson.title}
+            maxWidth={880}
+          >
               <div className="lesson-detail modal-lesson-detail">
-                <h2>{selectedLesson.title}</h2>
                 <div className="lesson-level">레벨: {selectedLesson.level}</div>
                 <section className="lesson-section">
                   <h3>핵심 개념</h3>
@@ -380,8 +371,7 @@ export default function ReactLearn() {
                   </section>
                 )}
               </div>
-            </div>
-          </div>
+          </Modal>
         )}
       </div>
     )

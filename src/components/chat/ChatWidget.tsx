@@ -7,6 +7,7 @@ import type { ChatSession } from '../../api/chatApi';
 import { useChatConversation } from './useChatConversation';
 import ChatMessages from './ChatMessages';
 import ChatComposer from './ChatComposer';
+import ConfirmModal from '../ui/ConfirmModal';
 import './ChatWidget.css';
 
 /** 모든 페이지에서 열 수 있는 전역 튜터 챗. */
@@ -16,6 +17,7 @@ const ChatWidget: React.FC = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeId, setActiveId] = useState<number | null>(null);
   const [showList, setShowList] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
   const { messages, isSending, isLoading, error, send } = useChatConversation(activeId);
 
   const startNewSession = useCallback(async () => {
@@ -51,6 +53,7 @@ const ChatWidget: React.FC = () => {
   }, [isOpen, user, startNewSession]);
 
   const handleDelete = async (sessionId: number) => {
+    setPendingDeleteId(null);
     await chatApi.deleteSession(sessionId);
     setSessions(prev => prev.filter(session => session.id !== sessionId));
     if (activeId === sessionId) setActiveId(null);
@@ -97,8 +100,9 @@ const ChatWidget: React.FC = () => {
                 </button>
                 <button
                   className="chat-session-item__delete"
-                  onClick={() => void handleDelete(session.id)}
+                  onClick={() => setPendingDeleteId(session.id)}
                   title="대화 삭제"
+                  aria-label="대화 삭제"
                 >
                   &times;
                 </button>
@@ -165,11 +169,23 @@ const ChatWidget: React.FC = () => {
         </div>
       )}
 
-      <button className="chat-fab" onClick={toggleChat} title="AI 튜터에게 질문하기">
-        <span role="img" aria-label="chat">
+      <button className="chat-fab" onClick={toggleChat} title="AI 튜터에게 질문하기" aria-label="AI 튜터에게 질문하기">
+        <span role="img" aria-hidden="true">
           💬
         </span>
       </button>
+
+      <ConfirmModal
+        open={pendingDeleteId !== null}
+        title="대화 삭제"
+        message="이 대화를 삭제하면 되돌릴 수 없습니다. 삭제할까요?"
+        confirmLabel="삭제"
+        danger
+        onConfirm={() => {
+          if (pendingDeleteId !== null) void handleDelete(pendingDeleteId);
+        }}
+        onCancel={() => setPendingDeleteId(null)}
+      />
     </>
   );
 };

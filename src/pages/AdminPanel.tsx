@@ -12,6 +12,8 @@ import {
   getAdminApiKey,
 } from '../api/lessonApi';
 import type { GenerationSummary, GenerationDetail, LessonVersionInfo } from '../api/lessonApi';
+import ConfirmModal from '../components/ui/ConfirmModal';
+import { useToast } from '../components/ui/ToastContext';
 import './AdminPanel.css';
 
 type ServerStatus = {
@@ -25,6 +27,8 @@ type LessonOption = { id: number; title: string; level: string; number: number }
  * 관리자 패널 - React 학습 플랫폼 관리
  */
 export default function AdminPanel() {
+  const { showToast } = useToast();
+  const [confirmGenerationId, setConfirmGenerationId] = useState<number | null>(null);
   const [serverStatus, setServerStatus] = useState<ServerStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
@@ -137,17 +141,17 @@ export default function AdminPanel() {
    * 특정 세대로 일괄 전환
    */
   const handleActivateGeneration = async (generationId: number) => {
-    if (!window.confirm(`generation ${generationId}의 레슨으로 전체 전환하시겠습니까?`)) return;
+    setConfirmGenerationId(null);
     try {
       await activateGeneration(generationId);
       addLog(`generation ${generationId}(으)로 전환 완료`);
-      alert('전환 완료!');
+      showToast(`generation ${generationId}(으)로 전환했습니다.`, 'success');
       loadGenerations();
       if (selectedLessonId !== '') loadVersions(selectedLessonId);
     } catch (err) {
       console.error('세대 전환 실패:', err);
       addLog('세대 전환 실패');
-      alert('전환 실패');
+      showToast('전환에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
     }
   };
 
@@ -194,12 +198,12 @@ export default function AdminPanel() {
     try {
       await restoreLessonVersion(selectedLessonId, versionId, 'admin');
       addLog(`레슨 ${selectedLessonId}을(를) 버전 ${versionId}(으)로 복원했습니다.`);
-      alert('복원 완료!');
+      showToast('버전 복원이 완료되었습니다.', 'success');
       loadVersions(selectedLessonId);
     } catch (err) {
       console.error('복원 실패:', err);
       addLog('복원 실패');
-      alert('복원 실패');
+      showToast('복원에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
     }
   };
 
@@ -329,7 +333,7 @@ export default function AdminPanel() {
                       <td>{g.failed_count}</td>
                       <td>
                         <button
-                          onClick={e => { e.stopPropagation(); handleActivateGeneration(g.id); }}
+                          onClick={e => { e.stopPropagation(); setConfirmGenerationId(g.id); }}
                           disabled={g.status !== 'completed'}
                           style={{ padding: '0.3rem 0.8rem', borderRadius: 4, background: '#3b82f6', color: '#fff', border: 'none' }}
                         >
@@ -447,6 +451,17 @@ export default function AdminPanel() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        open={confirmGenerationId !== null}
+        title="세대 전환"
+        message={`generation ${confirmGenerationId}의 레슨으로 전체 전환합니다. 계속할까요?`}
+        confirmLabel="전환"
+        onConfirm={() => {
+          if (confirmGenerationId !== null) void handleActivateGeneration(confirmGenerationId);
+        }}
+        onCancel={() => setConfirmGenerationId(null)}
+      />
     </div>
   );
 }

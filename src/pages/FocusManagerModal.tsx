@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useFocusManager } from '../contexts/FocusManagerContext';
+import { useToast } from '../components/ui/ToastContext';
 
 const EAR_THRESHOLD_DEFAULT = 0.25;
 
@@ -7,6 +8,7 @@ const mediapipeUrl = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@lates
 
 const FocusManagerModal: React.FC = () => {
   const { isOpen, isMinimized, closeModal, minimizeModal, restoreModal } = useFocusManager();
+  const { showToast } = useToast();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [earThreshold, setEarThreshold] = useState(EAR_THRESHOLD_DEFAULT);
   const [alerts, setAlerts] = useState<{ drowsy: boolean; absence: boolean; attention: boolean }>({ drowsy: false, absence: false, attention: false });
@@ -123,7 +125,7 @@ const FocusManagerModal: React.FC = () => {
         }
       } catch (err) {
         console.error('Camera access error:', err);
-        alert('웹캠 접근 오류: ' + err);
+        showToast('웹캠에 접근할 수 없습니다. 브라우저의 카메라 권한을 확인해주세요.', 'error');
       }
     }
 
