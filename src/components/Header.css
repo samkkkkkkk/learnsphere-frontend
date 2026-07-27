@@ -1,10 +1,12 @@
+/* 에디터 상단 바 느낌의 글로벌 헤더 */
 .header {
   width: 100%;
-  background: rgba(255,255,255,0.97);
-  box-shadow: 0 2px 16px rgba(102,126,234,0.08);
+  background: var(--color-header-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-line);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: var(--z-header);
 }
 
 .header-content {
@@ -12,78 +14,125 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  padding: 1rem 2rem;
+  gap: var(--space-7);
+  padding: 0 var(--space-7);
+  height: 60px;
 }
 
 .logo {
   display: flex;
-  align-items: center;
-  gap: 0.8rem;
+  align-items: baseline;
+  gap: var(--space-2);
   text-decoration: none;
-  color: inherit;
-  margin-right: 2rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.05rem;
 }
 
-.logo i {
-  font-size: 2rem;
-  color: #667eea;
+.logo-prompt {
+  color: var(--color-accent);
 }
 
-.logo h1 {
-  font-size: 1.5rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0;
+.logo-text {
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
 }
 
 .nav {
   display: flex;
-  gap: 2rem;
-  margin-left: auto;
+  flex: 1;
+  gap: var(--space-4);
   justify-content: space-between;
   align-items: center;
 }
 
 .nav-group {
   display: flex;
-  gap: 2rem;
-}
-
-.nav-right {
-  display: flex;
+  gap: var(--space-1);
   align-items: center;
-  margin-left: 2rem;
 }
 
 .nav-link {
-  color: #666;
+  color: var(--color-sub);
   text-decoration: none;
-  font-weight: 600;
-  font-size: 1.08rem;
-  padding: 0.5rem 1.2rem;
-  border-radius: 22px;
-  transition: all 0.2s;
+  font-weight: 500;
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--r-sm);
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-.nav-link.active,
 .nav-link:hover {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff;
+  background: var(--color-raise);
+  color: var(--color-ink);
 }
 
-@media (max-width: 700px) {
+.nav-link.active {
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  font-weight: 600;
+}
+
+.focus-manager-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* 로그인 상태 표시 — 네비게이션 오른쪽 끝 */
+.nav-auth {
+  gap: var(--space-3);
+  margin-left: var(--space-3);
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--color-line-strong);
+  min-height: 36px;
+}
+
+/* 세션 복원 중 자리 유지용 (CLS 방지) */
+.nav-auth-placeholder {
+  display: inline-block;
+  width: 96px;
+  height: 20px;
+  border-radius: var(--r-sm);
+  background: var(--color-raise);
+}
+
+.nav-nickname {
+  color: var(--color-ink);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.nav-auth-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+@media (max-width: 640px) {
   .header-content {
     flex-direction: column;
-    gap: 0.7rem;
     align-items: flex-start;
-    padding: 1rem 2rem;
+    gap: var(--space-2);
+    height: auto;
+    padding: var(--space-3) var(--space-4);
   }
-  
+
   .nav {
-    gap: 1rem;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
-} 
+
+  .nav-auth {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+  }
+}

@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ConfirmModal from '../components/ui/ConfirmModal';
+// 이 페이지만 Font Awesome을 쓰므로 라우트 청크에서 지역 로드한다 (초기 번들 제외)
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import './LearningManagerPage.css';
 
 const CATEGORY_MAP = {
@@ -78,6 +81,7 @@ export default function LearningManagerPage() {
     dailyStudyTime: 60,
   });
   const [editingGoalId, setEditingGoalId] = useState<null | number>(null);
+  const [deletingGoalId, setDeletingGoalId] = useState<null | number>(null);
   const [goalMessage, setGoalMessage] = useState<{text: string, type: string} | null>(null);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [scheduleForm, setScheduleForm] = useState<ScheduleFormType>({
@@ -150,9 +154,13 @@ export default function LearningManagerPage() {
     setEditingGoalId(goal.id);
   };
   const handleGoalDelete = (goalId: number) => {
-    if (window.confirm('정말로 이 목표를 삭제하시겠습니까?')) {
-      setGoals((goals: Goal[]) => goals.filter((g: Goal) => g.id !== goalId));
+    setDeletingGoalId(goalId);
+  };
+  const confirmGoalDelete = () => {
+    if (deletingGoalId !== null) {
+      setGoals((goals: Goal[]) => goals.filter((g: Goal) => g.id !== deletingGoalId));
     }
+    setDeletingGoalId(null);
   };
 
   // Schedule
@@ -239,7 +247,7 @@ export default function LearningManagerPage() {
       return `<h4><i class='fas fa-chart-line'></i> 진도 분석 리포트</h4><p>전체 목표 평균 진도율: <strong>${avgProgress.toFixed(1)}%</strong></p><p>완료된 학습 세션: <strong>${completedSchedules}/${totalSchedules}</strong></p>${avgProgress < 30 ? `<p><strong>🚀 초기 단계 - 기초 다지기에 집중하세요</strong></p><ul class='feedback-list'><li><i class='fas fa-check'></i> 꾸준함이 가장 중요합니다</li><li><i class='fas fa-check'></i> 작은 성취도 축하하세요</li><li><i class='fas fa-check'></i> 기초 개념을 확실히 잡으세요</li></ul>` : avgProgress < 70 ? `<p><strong>📈 중간 단계 - 실력 향상이 눈에 보입니다</strong></p><ul class='feedback-list'><li><i class='fas fa-check'></i> 실습 비중을 늘려보세요</li><li><i class='fas fa-check'></i> 프로젝트를 시작해보세요</li><li><i class='fas fa-check'></i> 다른 학습자와 교류하세요</li></ul>` : `<p><strong>🎯 고급 단계 - 목표 달성이 가까워졌습니다</strong></p><ul class='feedback-list'><li><i class='fas fa-check'></i> 심화 학습에 도전하세요</li><li><i class='fas fa-check'></i> 포트폴리오를 준비하세요</li><li><i class='fas fa-check'></i> 새로운 목표를 설정하세요</li></ul>`}`;
     }
     if (type === 'motivation') {
-      return `<h4><i class='fas fa-fire'></i> 동기부여 메시지</h4><p><strong>🌟 당신은 이미 훌륭한 학습자입니다!</strong></p><p>지금까지의 노력이 결실을 맺고 있습니다. ${completedSchedules}개의 학습 세션을 완료하신 것은 정말 대단한 성과입니다.</p><div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;"><h4 style="margin-bottom: 1rem;">💪 오늘의 동기부여</h4><p style="font-style: italic; margin-bottom: 0;">"성공은 매일매일의 작은 노력이 쌓여서 만들어지는 것입니다. 오늘도 한 걸음 더 나아가세요!"</p></div><ul class='feedback-list'><li><i class='fas fa-check'></i> 매일 조금씩이라도 꾸준히 하세요</li><li><i class='fas fa-check'></i> 완벽하지 않아도 괜찮습니다</li><li><i class='fas fa-check'></i> 진전이 있다면 자신을 칭찬하세요</li><li><i class='fas fa-check'></i> 목표를 달성한 미래의 자신을 상상해보세요</li></ul>`;
+      return `<h4><i class='fas fa-fire'></i> 동기부여 메시지</h4><p><strong>🌟 당신은 이미 훌륭한 학습자입니다!</strong></p><p>지금까지의 노력이 결실을 맺고 있습니다. ${completedSchedules}개의 학습 세션을 완료하신 것은 정말 대단한 성과입니다.</p><div style="background: linear-gradient(135deg, #c47a5a, #a55f42); color: white; padding: 1.5rem; border-radius: 10px; margin: 1rem 0;"><h4 style="margin-bottom: 1rem;">💪 오늘의 동기부여</h4><p style="font-style: italic; margin-bottom: 0;">"성공은 매일매일의 작은 노력이 쌓여서 만들어지는 것입니다. 오늘도 한 걸음 더 나아가세요!"</p></div><ul class='feedback-list'><li><i class='fas fa-check'></i> 매일 조금씩이라도 꾸준히 하세요</li><li><i class='fas fa-check'></i> 완벽하지 않아도 괜찮습니다</li><li><i class='fas fa-check'></i> 진전이 있다면 자신을 칭찬하세요</li><li><i class='fas fa-check'></i> 목표를 달성한 미래의 자신을 상상해보세요</li></ul>`;
     }
     return '';
   }
@@ -304,7 +312,7 @@ export default function LearningManagerPage() {
           <i className="fas fa-chart-bar"></i> 진도현황
         </button>
       </aside>
-      <main className="lm-main">
+      <div className="lm-main">
         <div className="container">
           {/* 목표 설정 */}
           {activeTab === 'goals' && (
@@ -592,7 +600,17 @@ export default function LearningManagerPage() {
             </section>
           )}
         </div>
-      </main>
+      </div>
+
+      <ConfirmModal
+        open={deletingGoalId !== null}
+        title="목표 삭제"
+        message="이 목표를 삭제하면 되돌릴 수 없습니다. 삭제할까요?"
+        confirmLabel="삭제"
+        danger
+        onConfirm={confirmGoalDelete}
+        onCancel={() => setDeletingGoalId(null)}
+      />
     </div>
   );
 } 

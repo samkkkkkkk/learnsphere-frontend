@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import MarkdownRenderer from '../components/MarkdownRenderer';
+import Breadcrumb from '../components/ui/Breadcrumb';
+import Spinner from '../components/ui/Spinner';
+import Modal from '../components/ui/Modal';
+import Button from '../components/ui/Button';
+import { useToast } from '../components/ui/ToastContext';
 import './LMSPage.css';
 
 interface Lecture {
@@ -42,9 +44,11 @@ const subjects: Subject[] = [
 ];
 
 function LMSPage() {
+  const { showToast } = useToast();
   const [selectedSubject, setSelectedSubject] = useState<Subject>(subjects[0]);
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
   const [content, setContent] = useState<string>('');
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [requestText, setRequestText] = useState<string>('');
   const [showFloatingPanel, setShowFloatingPanel] = useState<boolean>(false);
@@ -52,17 +56,20 @@ function LMSPage() {
 
   const loadLecture = async (filename: string) => {
     setLoading(true);
+    setLoadError(null);
     try {
       const response = await fetch(`/lectures/${filename}`);
       if (response.ok) {
         const text = await response.text();
         setContent(text);
       } else {
-        setContent('강의를 불러오는데 실패했습니다.');
+        setContent('');
+        setLoadError('강의를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
       }
     } catch (error) {
       console.error('강의 로딩 실패:', error);
-      setContent('강의를 불러오는데 실패했습니다.');
+      setContent('');
+      setLoadError('강의를 불러오지 못했습니다. 네트워크 연결을 확인해주세요.');
     } finally {
       setLoading(false);
     }
@@ -84,6 +91,7 @@ function LMSPage() {
     setSelectedSubject(subject);
     setSelectedLecture(null);
     setContent('');
+    setLoadError(null);
   };
 
   const handlePreviousLecture = () => {
@@ -104,7 +112,7 @@ function LMSPage() {
 
   const handleRequestSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('요청이 제출되었습니다. 관리자가 검토 후 학습 자료를 생성해드릴 예정입니다.');
+    showToast('신청이 접수되었습니다. 검토 후 학습 자료를 준비해드릴게요.', 'success');
     setRequestText('');
     setShowRequestModal(false);
     setShowFloatingPanel(false);
@@ -164,7 +172,8 @@ function LMSPage() {
           <h2>강의 목록</h2>
           <div className="lecture-list">
             {selectedSubject.lectures.map(lecture => (
-              <div 
+              <button
+                type="button"
                 key={lecture.id}
                 className={`lecture-item ${selectedLecture?.id === lecture.id ? 'active' : ''}`}
                 onClick={() => handleLectureSelect(lecture)}
@@ -174,7 +183,7 @@ function LMSPage() {
                   <h3>{lecture.title}</h3>
                   <p>{lecture.description}</p>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -182,34 +191,29 @@ function LMSPage() {
         {/* 강의 내용 */}
         <div className="lecture-content">
           {loading ? (
-            <div className="loading">강의를 불러오는 중...</div>
+            <div className="loading"><Spinner label="강의를 불러오는 중" /></div>
+          ) : loadError ? (
+            <div className="lecture-error" role="alert">
+              <p>{loadError}</p>
+              {selectedLecture && (
+                <Button variant="secondary" onClick={() => loadLecture(selectedLecture.file)}>
+                  다시 시도
+                </Button>
+              )}
+            </div>
           ) : content ? (
             <div className="markdown-content">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  code({node, inline, className, children, ...props}: any) {
-                    const match = /language-(\w+)/.exec(className || '');
-                    return !inline && match ? (
-                      <SyntaxHighlighter
-                        style={tomorrow as any}
-                        language={match[1]}
-                        PreTag="div"
-                        {...props}
-                      >
-                        {String(children).replace(/\n$/, '')}
-                      </SyntaxHighlighter>
-                    ) : (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    );
-                  }
-                }}
-              >
-                {content}
-              </ReactMarkdown>
-              
+              {selectedLecture && (
+                <Breadcrumb
+                  items={[
+                    { label: '홈', to: '/' },
+                    { label: selectedSubject.name },
+                    { label: selectedLecture.title },
+                  ]}
+                />
+              )}
+              <MarkdownRenderer>{content}</MarkdownRenderer>
+
               {/* 강의 네비게이션 버튼 */}
               {selectedLecture && (
                 <div className="lecture-navigation">
@@ -240,59 +244,56 @@ function LMSPage() {
       
       {/* 우측 하단 플로팅 아이콘 */}
       <div className="floating-container">
-        <button className="floating-icon" onClick={handleFloatingIconClick}>
+        <button
+          className="floating-icon"
+          onClick={handleFloatingIconClick}
+          aria-label="더보기 메뉴"
+          aria-expanded={showFloatingPanel}
+        >
           +
         </button>
-        
+
         {showFloatingPanel && (
           <div className="floating-panel">
-            <div className="panel-option" onClick={handleRequestOptionClick}>
-              <span className="option-icon">📚</span>
+            <button type="button" className="panel-option" onClick={handleRequestOptionClick}>
+              <span className="option-icon" aria-hidden="true">📚</span>
               <span className="option-text">기술스택 신청</span>
-            </div>
-            <div className="panel-option" onClick={() => alert('추후 기능 예정')}>
-              <span className="option-icon">⚙️</span>
+            </button>
+            <button
+              type="button"
+              className="panel-option"
+              onClick={() => showToast('준비 중인 기능입니다.', 'info')}
+            >
+              <span className="option-icon" aria-hidden="true">⚙️</span>
               <span className="option-text">기타 기능</span>
-            </div>
+            </button>
           </div>
         )}
       </div>
       
       {/* 기술스택 신청 모달 */}
-      {showRequestModal && (
-        <div className="modal-overlay" onClick={handleModalClose}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>새로운 기술스택 학습 신청</h2>
-              <button className="modal-close" onClick={handleModalClose}>×</button>
-            </div>
-            <div className="modal-body">
-              <p>배우고 싶은 기술이나 주제가 있으시면 신청해주세요.</p>
-              <form onSubmit={handleRequestSubmit} className="modal-form">
-                <div className="form-group">
-                  <label htmlFor="tech-request">원하는 기술스택 또는 주제:</label>
-                  <textarea
-                    id="tech-request"
-                    value={requestText}
-                    onChange={(e) => setRequestText(e.target.value)}
-                    placeholder="예: React Advanced Patterns, Spring Boot 심화, Python 머신러닝, Docker & Kubernetes 등"
-                    rows={4}
-                    required
-                  />
-                </div>
-                <div className="modal-actions">
-                  <button type="button" className="cancel-button" onClick={handleModalClose}>
-                    취소
-                  </button>
-                  <button type="submit" className="submit-button">
-                    신청하기
-                  </button>
-                </div>
-              </form>
-            </div>
+      <Modal open={showRequestModal} onClose={handleModalClose} title="새로운 기술스택 학습 신청">
+        <p className="modal-intro">배우고 싶은 기술이나 주제가 있으시면 신청해주세요.</p>
+        <form onSubmit={handleRequestSubmit} className="modal-form">
+          <div className="form-group">
+            <label htmlFor="tech-request">원하는 기술스택 또는 주제</label>
+            <textarea
+              id="tech-request"
+              value={requestText}
+              onChange={(e) => setRequestText(e.target.value)}
+              placeholder="예: React Advanced Patterns, Spring Boot 심화, Python 머신러닝, Docker & Kubernetes 등"
+              rows={4}
+              required
+            />
           </div>
-        </div>
-      )}
+          <div className="modal-actions">
+            <Button type="button" variant="ghost" onClick={handleModalClose}>
+              취소
+            </Button>
+            <Button type="submit">신청하기</Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

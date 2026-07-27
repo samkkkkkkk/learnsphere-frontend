@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useLocation, useNavigate } from 'react-router-dom';
+import MarkdownRenderer from '../components/MarkdownRenderer';
+import LessonChatPanel from '../components/chat/LessonChatPanel';
 import { fetchLessonIndex, fetchLessonDetail } from '../api/lessonApi';
-import type { LessonContent, LessonIndex } from '../api/lessonApi';
+import type { LessonDetail, LessonIndex } from '../api/lessonApi';
+import Skeleton from '../components/ui/Skeleton';
+import Modal from '../components/ui/Modal';
+import Breadcrumb from '../components/ui/Breadcrumb';
+import Quiz, { getQuizProgress, QUIZ_PROGRESS_EVENT } from '../components/Quiz';
 import './ReactLearnPage.css';
-import LMSPage from './LMSPage';
 
 // 학습 수준을 위한 타입 정의
 // MainPage의 과목 목록을 반영
@@ -20,28 +22,41 @@ type Level = '초급' | '중급' | '고급';
 /**
  * React 학습 자료 생성기 메인 UI 컴포넌트
  */
+// 마지막 학습 위치 저장 키
+const LAST_LESSON_KEY = 'learnsphere.lastLesson';
+
+function loadLastLesson(): { level: Level; lessonId: number } | null {
+  try {
+    return JSON.parse(localStorage.getItem(LAST_LESSON_KEY) ?? 'null');
+  } catch {
+    return null;
+  }
+}
+
 export default function ReactLearn() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  // 우선순위: 로드맵에서 넘어온 레벨 > 마지막 학습 위치 > 초급
+  const lastLesson = loadLastLesson();
+  const initialLevel =
+    (location.state as { level?: Level } | null)?.level ?? lastLesson?.level ?? '초급';
   // 컴포넌트의 상태 관리
   const [selectedTopic, setSelectedTopic] = useState<string>('react');
-  const [level, setLevel] = useState<Level>('초급');
+  const [level, setLevel] = useState<Level>(initialLevel);
   const [lessonIndex, setLessonIndex] = useState<LessonIndex | null>(null);
-  const [selectedLesson, setSelectedLesson] = useState<(LessonContent & { filename: string }) | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<LessonDetail | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [showAnswers, setShowAnswers] = useState<Set<string>>(new Set()); // 정답을 보여줄 퀴즈들을 추적
   const [showModal, setShowModal] = useState(false);
+  const [isLessonChatOpen, setIsLessonChatOpen] = useState(false);
+  // 퀴즈 진도가 바뀌면 레슨 목록 완료 뱃지를 다시 그린다
+  const [quizVersion, setQuizVersion] = useState(0);
 
-  // 모달 열릴 때 body 스크롤 방지
   useEffect(() => {
-    if (showModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [showModal]);
+    const onQuizUpdate = () => setQuizVersion(v => v + 1);
+    window.addEventListener(QUIZ_PROGRESS_EVENT, onQuizUpdate);
+    return () => window.removeEventListener(QUIZ_PROGRESS_EVENT, onQuizUpdate);
+  }, []);
 
   /**
    * 레슨 인덱스를 로드하는 함수
@@ -63,34 +78,23 @@ export default function ReactLearn() {
   /**
    * 특정 레슨을 로드하는 함수
    */
-  const loadLessonDetail = async (filename: string) => {
+  const loadLessonDetail = async (lessonId: number) => {
     try {
       setIsLoading(true);
       setError(null);
-      const lesson = await fetchLessonDetail(filename);
+      const lesson = await fetchLessonDetail(lessonId);
       setSelectedLesson(lesson);
+      // 마지막 학습 위치 저장 — 다음 방문 시 이어서 학습
+      localStorage.setItem(
+        LAST_LESSON_KEY,
+        JSON.stringify({ level: lesson.level, lessonId: lesson.id }),
+      );
     } catch (err) {
       setError('레슨 내용을 불러오는데 실패했습니다.');
       console.error('레슨 상세 로드 실패:', err);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  /**
-   * 퀴즈 정답을 토글하는 함수
-   * @param quizId 퀴즈 식별자
-   */
-  const toggleAnswer = (quizId: string) => {
-    setShowAnswers(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(quizId)) {
-        newSet.delete(quizId);
-      } else {
-        newSet.add(quizId);
-      }
-      return newSet;
-    });
   };
 
   // 모달 열기 핸들러
@@ -107,6 +111,11 @@ export default function ReactLearn() {
    */
   const handleTopicChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newTopic = e.target.value;
+    // UniTask는 전용 LMS 화면으로 이동 (URL 공유·뒤로가기 가능)
+    if (newTopic === 'UniTask') {
+      navigate('/lms');
+      return;
+    }
     setSelectedTopic(newTopic);
     setSelectedLesson(null);
     setLessonIndex(null);
@@ -129,7 +138,7 @@ export default function ReactLearn() {
     // 레슨 인덱스가 로드되어 있고, 해당 레벨에 레슨이 있으면 첫 번째 레슨을 자동으로 로드
     if (lessonIndex && lessonIndex[newLevel] && lessonIndex[newLevel].length > 0) {
       const firstLesson = lessonIndex[newLevel][0];
-      loadLessonDetail(firstLesson.filename);
+      loadLessonDetail(firstLesson.id);
     }
   };
 
@@ -147,15 +156,27 @@ export default function ReactLearn() {
    */
   useEffect(() => {
     if (lessonIndex && lessonIndex[level] && lessonIndex[level].length > 0 && !selectedLesson) {
-      const firstLesson = lessonIndex[level][0];
-      loadLessonDetail(firstLesson.filename);
+      // 마지막으로 본 레슨이 현재 레벨에 있으면 이어서 학습, 없으면 첫 레슨
+      const saved = loadLastLesson();
+      const resume =
+        saved && saved.level === level
+          ? lessonIndex[level].find(lesson => lesson.id === saved.lessonId)
+          : undefined;
+      loadLessonDetail((resume ?? lessonIndex[level][0]).id);
     }
   }, [lessonIndex, level, selectedLesson]);
 
+  // 이전/다음 레슨 (#8) — 현재 레벨 목록 기준
+  const levelLessons = lessonIndex?.[level] ?? [];
+  const lessonPos = selectedLesson
+    ? levelLessons.findIndex(lesson => lesson.id === selectedLesson.id)
+    : -1;
+  const prevLesson = lessonPos > 0 ? levelLessons[lessonPos - 1] : null;
+  const nextLesson =
+    lessonPos >= 0 && lessonPos < levelLessons.length - 1 ? levelLessons[lessonPos + 1] : null;
+
   return (
-    selectedTopic === 'UniTask' ? (
-      <LMSPage />
-    ) : (
+    (
       <div className="react-learn-container">
         <header className="react-learn-header">
           <h1>React 학습 자료 📚</h1>
@@ -209,38 +230,64 @@ export default function ReactLearn() {
           <div className="lesson-list">
             <h3>{level} 레벨 레슨 목록</h3>
             {isLoading ? (
-              <div className="loading-spinner">로딩 중...</div>
+              <div className="lesson-grid" aria-busy="true">
+                {Array.from({ length: 4 }, (_, i) => (
+                  <Skeleton key={i} height={64} radius="var(--r-md)" />
+                ))}
+              </div>
             ) : lessonIndex && lessonIndex[level] ? (
-              <div className="lesson-grid">
-                {lessonIndex[level].map((lesson, index) => (
-                  <div 
-                    key={lesson.filename}
-                    className={`lesson-card ${selectedLesson && selectedLesson.filename === lesson.filename ? 'active' : ''}`}
-                    onClick={() => loadLessonDetail(lesson.filename)}
+              <div className="lesson-grid" data-quiz-version={quizVersion}>
+                {lessonIndex[level].map((lesson) => (
+                  <button
+                    type="button"
+                    key={lesson.id}
+                    className={`lesson-card ${selectedLesson && selectedLesson.id === lesson.id ? 'active' : ''}`}
+                    onClick={() => loadLessonDetail(lesson.id)}
                   >
                     <div className="lesson-number">{lesson.number}</div>
                     <div className="lesson-title">{lesson.title}</div>
-                  </div>
+                    {getQuizProgress(`lesson-${lesson.id}`)?.completed && (
+                      <span className="lesson-done" title="퀴즈 완료" role="img" aria-label="퀴즈 완료">✓</span>
+                    )}
+                  </button>
                 ))}
               </div>
             ) : (
               <div className="no-lessons">
-                {level} 레벨의 레슨이 없습니다. 관리자 패널에서 콘텐츠를 생성해주세요.
+                {level} 레벨의 레슨이 아직 준비되지 않았어요. 다른 레벨을 먼저 살펴보세요.
               </div>
             )}
           </div>
 
           {/* 선택된 레슨 상세 내용 */}
           {selectedLesson && (
+            <div className="lesson-with-chat">
             <div className="lesson-detail">
+              <Breadcrumb
+                items={[
+                  { label: '홈', to: '/' },
+                  { label: 'React 학습', to: '/react-learn' },
+                  { label: level },
+                  { label: selectedLesson.title },
+                ]}
+              />
               <h2>{selectedLesson.title}</h2>
               <div className="lesson-level">레벨: {selectedLesson.level}</div>
-              
+
+              {!isLessonChatOpen && (
+                <button
+                  className="lesson-chat-open-button"
+                  onClick={() => setIsLessonChatOpen(true)}
+                >
+                  💬 이 레슨에 대해 질문하기
+                </button>
+              )}
+
               {/* 핵심 개념 */}
               <section className="lesson-section">
                 <h3>핵심 개념</h3>
                 <div className="core-concepts">
-                  <ReactMarkdown>{selectedLesson.core_concepts}</ReactMarkdown>
+                  <MarkdownRenderer>{selectedLesson.core_concepts}</MarkdownRenderer>
                 </div>
               </section>
 
@@ -251,80 +298,77 @@ export default function ReactLearn() {
                   {selectedLesson.code_examples.map((example, index) => (
                     <div key={index} className="code-example">
                       <h4>{example.description}</h4>
-                      <ReactMarkdown
-                        components={{
-                          code({ className, children, ...props }: any) {
-                            const match = /language-(\w+)/.exec(className || '');
-                            const isInline = !match;
-                            return !isInline ? (
-                              <SyntaxHighlighter
-                                style={tomorrow}
-                                language={match?.[1] || 'javascript'}
-                                PreTag="div"
-                              >
-                                {String(children).replace(/\n$/, '')}
-                              </SyntaxHighlighter>
-                            ) : (
-                              <code className={className} {...props}>
-                                {children}
-                              </code>
-                            );
-                          },
-                        }}
-                      >
-                        {example.code}
-                      </ReactMarkdown>
+                      <MarkdownRenderer>{example.code}</MarkdownRenderer>
                     </div>
                   ))}
                 </section>
               )}
 
-              {/* 퀴즈 */}
+              {/* 퀴즈 — 자가 채점, 결과는 레슨 id 기준으로 저장 */}
               {selectedLesson.quizzes.length > 0 && (
                 <section className="lesson-section">
                   <h3>퀴즈</h3>
-                  {selectedLesson.quizzes.map((quiz, index) => {
-                    const quizId = `lesson-${selectedLesson.title}-quiz-${index}`;
-                    const isAnswerVisible = showAnswers.has(quizId);
-                    
-                    return (
-                      <div key={index} className="quiz-item">
-                        <div className="quiz-question">
-                          <span className="quiz-number">{index + 1}.</span>
-                          <span className="quiz-text">{quiz.question}</span>
-                          <button 
-                            className="quiz-toggle-btn"
-                            onClick={() => toggleAnswer(quizId)}
-                          >
-                            {isAnswerVisible ? '정답 숨기기' : '정답 보기'}
-                          </button>
-                        </div>
-                        {isAnswerVisible && (
-                          <div className="quiz-answer">
-                            <strong>정답:</strong> {quiz.answer}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  <Quiz
+                    quizzes={selectedLesson.quizzes}
+                    storageKey={`lesson-${selectedLesson.id}`}
+                  />
                 </section>
               )}
+
+              {/* 이전/다음 레슨 이동 (#8) */}
+              {(prevLesson || nextLesson) && (
+                <nav className="lesson-navigation" aria-label="레슨 이동">
+                  {prevLesson ? (
+                    <button
+                      type="button"
+                      className="lesson-nav-btn"
+                      onClick={() => loadLessonDetail(prevLesson.id)}
+                    >
+                      ← 이전: {prevLesson.title}
+                    </button>
+                  ) : (
+                    <span />
+                  )}
+                  {nextLesson && (
+                    <button
+                      type="button"
+                      className="lesson-nav-btn"
+                      onClick={() => loadLessonDetail(nextLesson.id)}
+                    >
+                      다음: {nextLesson.title} →
+                    </button>
+                  )}
+                </nav>
+              )}
+            </div>
+
+            {isLessonChatOpen && (
+              // key로 레슨이 바뀌면 대화를 새로 시작한다
+              <LessonChatPanel
+                key={selectedLesson.id}
+                lessonId={selectedLesson.id}
+                lessonTitle={selectedLesson.title}
+                onClose={() => setIsLessonChatOpen(false)}
+              />
+            )}
             </div>
           )}
         </div>
 
-        {/* 모달: 초급 레벨 상세 자료 크게 보기 */}
-        {showModal && selectedLesson && (
-          <div className="modal-overlay" onClick={handleCloseModal}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
-              <button className="modal-close-btn" onClick={handleCloseModal}>✖</button>
+        {/* 모달: 레슨 상세 자료 크게 보기 */}
+        {selectedLesson && (
+          <Modal
+            open={showModal}
+            onClose={handleCloseModal}
+            title={selectedLesson.title}
+            maxWidth={880}
+          >
               <div className="lesson-detail modal-lesson-detail">
-                <h2>{selectedLesson.title}</h2>
                 <div className="lesson-level">레벨: {selectedLesson.level}</div>
                 <section className="lesson-section">
                   <h3>핵심 개념</h3>
                   <div className="core-concepts">
-                    <ReactMarkdown>{selectedLesson.core_concepts}</ReactMarkdown>
+                    <MarkdownRenderer>{selectedLesson.core_concepts}</MarkdownRenderer>
                   </div>
                 </section>
                 {selectedLesson.code_examples.length > 0 && (
@@ -333,29 +377,7 @@ export default function ReactLearn() {
                     {selectedLesson.code_examples.map((example, index) => (
                       <div key={index} className="code-example">
                         <h4>{example.description}</h4>
-                        <ReactMarkdown
-                          components={{
-                            code({ className, children, ...props }: any) {
-                              const match = /language-(\w+)/.exec(className || '');
-                              const isInline = !match;
-                              return !isInline ? (
-                                <SyntaxHighlighter
-                                  style={tomorrow}
-                                  language={match?.[1] || 'javascript'}
-                                  PreTag="div"
-                                >
-                                  {String(children).replace(/\n$/, '')}
-                                </SyntaxHighlighter>
-                              ) : (
-                                <code className={className} {...props}>
-                                  {children}
-                                </code>
-                              );
-                            },
-                          }}
-                        >
-                          {example.code}
-                        </ReactMarkdown>
+                        <MarkdownRenderer>{example.code}</MarkdownRenderer>
                       </div>
                     ))}
                   </section>
@@ -363,34 +385,14 @@ export default function ReactLearn() {
                 {selectedLesson.quizzes.length > 0 && (
                   <section className="lesson-section">
                     <h3>퀴즈</h3>
-                    {selectedLesson.quizzes.map((quiz, index) => {
-                      const quizId = `modal-lesson-${selectedLesson.title}-quiz-${index}`;
-                      const isAnswerVisible = showAnswers.has(quizId);
-                      return (
-                        <div key={index} className="quiz-item">
-                          <div className="quiz-question">
-                            <span className="quiz-number">{index + 1}.</span>
-                            <span className="quiz-text">{quiz.question}</span>
-                            <button
-                              className="quiz-toggle-btn"
-                              onClick={() => toggleAnswer(quizId)}
-                            >
-                              {isAnswerVisible ? '정답 숨기기' : '정답 보기'}
-                            </button>
-                          </div>
-                          {isAnswerVisible && (
-                            <div className="quiz-answer">
-                              <strong>정답:</strong> {quiz.answer}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                    <Quiz
+                      quizzes={selectedLesson.quizzes}
+                      storageKey={`lesson-${selectedLesson.id}`}
+                    />
                   </section>
                 )}
               </div>
-            </div>
-          </div>
+          </Modal>
         )}
       </div>
     )

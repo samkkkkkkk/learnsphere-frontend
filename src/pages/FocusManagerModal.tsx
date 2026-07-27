@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useFocusManager } from '../contexts/FocusManagerContext';
+import { useToast } from '../components/ui/ToastContext';
 
 const EAR_THRESHOLD_DEFAULT = 0.25;
 
@@ -7,6 +8,7 @@ const mediapipeUrl = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@lates
 
 const FocusManagerModal: React.FC = () => {
   const { isOpen, isMinimized, closeModal, minimizeModal, restoreModal } = useFocusManager();
+  const { showToast } = useToast();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [earThreshold, setEarThreshold] = useState(EAR_THRESHOLD_DEFAULT);
   const [alerts, setAlerts] = useState<{ drowsy: boolean; absence: boolean; attention: boolean }>({ drowsy: false, absence: false, attention: false });
@@ -123,7 +125,7 @@ const FocusManagerModal: React.FC = () => {
         }
       } catch (err) {
         console.error('Camera access error:', err);
-        alert('웹캠 접근 오류: ' + err);
+        showToast('웹캠에 접근할 수 없습니다. 브라우저의 카메라 권한을 확인해주세요.', 'error');
       }
     }
 
@@ -219,24 +221,34 @@ const FocusManagerModal: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMinimized]);
 
+  // Esc로 닫기 (#33) — 최소화 상태에서는 무시
+  useEffect(() => {
+    if (!isOpen || isMinimized) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, isMinimized, closeModal]);
+
   if (!isOpen) return null;
 
   return (
     <>
       <div style={{ display: isMinimized ? 'none' : 'block' }}>
         <div className="modal active" style={{ zIndex: 1000 }}>
-          <div className="modal-content" style={{ position: 'relative', background: '#34495e', color: 'white', borderRadius: 10, padding: 12, width: 680, maxWidth: '95vw' }}>
-            <button onClick={closeModal} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: '#fff', fontSize: 28, cursor: 'pointer', zIndex: 10 }}>&times;</button>
-            <button onClick={minimizeModal} style={{ position: 'absolute', top: 16, right: 56, background: 'none', border: 'none', color: '#fff', fontSize: 24, cursor: 'pointer', zIndex: 10 }} title="최소화">&#8211;</button>
+          <div className="modal-content" role="dialog" aria-modal="true" aria-label="AI 집중력 매니저" style={{ position: 'relative', background: '#34495e', color: 'white', borderRadius: 10, padding: 12, width: 680, maxWidth: '95vw' }}>
+            <button onClick={closeModal} title="닫기" aria-label="닫기" style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: '#fff', fontSize: 28, cursor: 'pointer', zIndex: 10 }}>&times;</button>
+            <button onClick={minimizeModal} title="최소화" aria-label="최소화" style={{ position: 'absolute', top: 16, right: 56, background: 'none', border: 'none', color: '#fff', fontSize: 24, cursor: 'pointer', zIndex: 10 }}>&#8211;</button>
             <h2 style={{ marginBottom: 16 }}>AI 집중력 매니저</h2>
-            <div style={{ position: 'relative', width: 640, height: 480, margin: '0 auto 16px auto', border: '4px solid #3498db', borderRadius: 10, overflow: 'visible' }}>
+            <div style={{ position: 'relative', width: '100%', maxWidth: 640, aspectRatio: '4 / 3', margin: '0 auto 16px auto', border: '4px solid #3498db', borderRadius: 10, overflow: 'visible' }}>
               <video ref={videoRef} width={640} height={480} autoPlay playsInline style={{ display: 'block', transform: 'scaleX(-1)', objectFit: 'contain', width: '100%', height: '100%' }} />
               {/* 알림 */}
               {alerts.drowsy && <div style={{ position: 'absolute', top: 20, left: '50%', transform: 'translateX(-50%)', background: '#e74c3c', color: 'white', padding: '10px 20px', borderRadius: 5, fontSize: '1.5em', fontWeight: 'bold', zIndex: 10 }}>졸음 감지!</div>}
               {alerts.absence && <div style={{ position: 'absolute', top: 60, left: '50%', transform: 'translateX(-50%)', background: '#3498db', color: 'white', padding: '10px 20px', borderRadius: 5, fontSize: '1.5em', fontWeight: 'bold', zIndex: 10 }}>자리를 비우셨나요?</div>}
               {alerts.attention && <div style={{ position: 'absolute', top: 100, left: '50%', transform: 'translateX(-50%)', background: '#f39c12', color: 'white', padding: '10px 20px', borderRadius: 5, fontSize: '1.5em', fontWeight: 'bold', zIndex: 10 }}>집중하세요!</div>}
             </div>
-            <div style={{ background: '#222', padding: 12, borderRadius: 8, display: 'flex', alignItems: 'center', gap: 15, marginTop: 12 }}>
+            <div style={{ background: '#222', padding: 12, borderRadius: 8, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 15, marginTop: 12 }}>
               <label htmlFor="ear-slider">졸음 민감도 (높을수록 민감)</label>
               <input type="range" id="ear-slider" min={0.15} max={0.35} step={0.01} value={earThreshold} onChange={e => setEarThreshold(Number(e.target.value))} />
               <span>{earThreshold.toFixed(2)}</span>
@@ -249,7 +261,8 @@ const FocusManagerModal: React.FC = () => {
           style={{
             position: 'fixed',
             bottom: 32,
-            right: 32,
+            // 우측 하단은 튜터 챗 버튼이 쓰므로 한 칸 왼쪽에 놓는다
+            right: 104,
             zIndex: 1100,
             background: '#3498db',
             color: 'white',
@@ -262,9 +275,10 @@ const FocusManagerModal: React.FC = () => {
             cursor: 'pointer',
           }}
           title="AI 집중력 매니저 복원"
+          aria-label="AI 집중력 매니저 복원"
           onClick={restoreModal}
         >
-          <span role="img" aria-label="restore">🔍</span>
+          <span aria-hidden="true">🔍</span>
         </button>
       )}
     </>

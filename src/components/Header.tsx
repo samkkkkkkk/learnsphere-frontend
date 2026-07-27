@@ -1,43 +1,52 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useFocusManager } from '../contexts/FocusManagerContext';
+import { useAuth } from '../contexts/AuthContext';
+import Icon from './ui/Icon';
+import ThemeToggle from './ThemeToggle';
 import './Header.css';
 
 const Header: React.FC = () => {
   const { openModal } = useFocusManager();
+  const { user, isLoading, logout } = useAuth();
 
   return (
     <header className="header">
       <div className="header-content">
         <Link to="/" className="logo">
-          <i className="fas fa-graduation-cap"></i>
-          <h1>LearnSphere</h1>
+          <span className="logo-prompt" aria-hidden="true">&gt;_</span>
+          <span className="logo-text">learnsphere</span>
         </Link>
-        <nav className="nav">
+        <nav className="nav" aria-label="주 메뉴">
           <div className="nav-group">
-            <Link to="/" className="nav-link">홈</Link>
-            <Link to="/roadmap" className="nav-link">로드맵</Link>
-            <Link to="/react-learn" className="nav-link">학습하기</Link>
-            {/* <Link to="/learning-manager" className="nav-link">학습관리</Link> */}
-            <button 
-              onClick={openModal}
-              className="nav-link focus-manager-btn"
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'inherit',
-                cursor: 'pointer',
-                fontSize: 'inherit',
-                padding: 'inherit',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <i className="fas fa-bolt"></i>
+            <NavLink to="/" end className="nav-link">홈</NavLink>
+            <NavLink to="/roadmap" className="nav-link">로드맵</NavLink>
+            <NavLink to="/react-learn" className="nav-link">학습하기</NavLink>
+            {/* <NavLink to="/learning-manager" className="nav-link">학습관리</NavLink> */}
+            <button onClick={openModal} className="nav-link focus-manager-btn">
+              <Icon name="zap" size={14} />
               집중력 매니저
             </button>
-            {/* <Link to="/wireframe" className="nav-link">와이어프레임</Link>
-            <Link to="/admin" className="nav-link">관리자</Link> */}
+            {/* <NavLink to="/wireframe" className="nav-link">와이어프레임</NavLink>
+            <NavLink to="/admin" className="nav-link">관리자</NavLink> */}
+          </div>
+
+          <div className="nav-group nav-auth">
+            <ThemeToggle />
+            {isLoading ? (
+              /* 세션 복원 중 — 자리를 유지해 레이아웃 흔들림(CLS) 방지 */
+              <span className="nav-auth-placeholder" aria-hidden="true" />
+            ) : user ? (
+              <>
+                <span className="nav-nickname">{user.nickname}님</span>
+                <button className="nav-link nav-auth-btn" onClick={logout}>
+                  로그아웃
+                </button>
+              </>
+            ) : (
+              <NavLink to="/login" className="nav-link">
+                로그인
+              </NavLink>
+            )}
           </div>
         </nav>
       </div>
@@ -45,4 +54,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header; 
+export default Header;
