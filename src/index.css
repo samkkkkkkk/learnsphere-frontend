@@ -127,6 +127,38 @@ code, pre, kbd {
   font-family: var(--font-mono);
 }
 
+/* 스크린리더 전용 텍스트 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 본문 건너뛰기 링크 — 키보드 포커스 시에만 노출 */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--space-4);
+  z-index: calc(var(--z-toast) + 1);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-radius: var(--r-sm);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition: top 0.15s;
+}
+.skip-link:focus {
+  top: var(--space-3);
+}
+
 /* 키보드 포커스 가시성 (개별 outline: none 규칙보다 우선하도록 명시도 확보) */
 a:focus-visible,
 button:focus-visible,

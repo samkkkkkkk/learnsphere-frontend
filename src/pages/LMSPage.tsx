@@ -166,7 +166,8 @@ function LMSPage() {
           <h2>강의 목록</h2>
           <div className="lecture-list">
             {selectedSubject.lectures.map(lecture => (
-              <div 
+              <button
+                type="button"
                 key={lecture.id}
                 className={`lecture-item ${selectedLecture?.id === lecture.id ? 'active' : ''}`}
                 onClick={() => handleLectureSelect(lecture)}
@@ -176,7 +177,7 @@ function LMSPage() {
                   <h3>{lecture.title}</h3>
                   <p>{lecture.description}</p>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -219,20 +220,29 @@ function LMSPage() {
       
       {/* 우측 하단 플로팅 아이콘 */}
       <div className="floating-container">
-        <button className="floating-icon" onClick={handleFloatingIconClick}>
+        <button
+          className="floating-icon"
+          onClick={handleFloatingIconClick}
+          aria-label="더보기 메뉴"
+          aria-expanded={showFloatingPanel}
+        >
           +
         </button>
-        
+
         {showFloatingPanel && (
           <div className="floating-panel">
-            <div className="panel-option" onClick={handleRequestOptionClick}>
-              <span className="option-icon">📚</span>
+            <button type="button" className="panel-option" onClick={handleRequestOptionClick}>
+              <span className="option-icon" aria-hidden="true">📚</span>
               <span className="option-text">기술스택 신청</span>
-            </div>
-            <div className="panel-option" onClick={() => showToast('준비 중인 기능입니다.', 'info')}>
-              <span className="option-icon">⚙️</span>
+            </button>
+            <button
+              type="button"
+              className="panel-option"
+              onClick={() => showToast('준비 중인 기능입니다.', 'info')}
+            >
+              <span className="option-icon" aria-hidden="true">⚙️</span>
               <span className="option-text">기타 기능</span>
-            </div>
+            </button>
           </div>
         )}
       </div>

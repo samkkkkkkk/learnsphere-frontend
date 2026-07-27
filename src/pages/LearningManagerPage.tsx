@@ -310,7 +310,7 @@ export default function LearningManagerPage() {
           <i className="fas fa-chart-bar"></i> 진도현황
         </button>
       </aside>
-      <main className="lm-main">
+      <div className="lm-main">
         <div className="container">
           {/* 목표 설정 */}
           {activeTab === 'goals' && (
@@ -598,7 +598,7 @@ export default function LearningManagerPage() {
             </section>
           )}
         </div>
-      </main>
+      </div>
 
       <ConfirmModal
         open={deletingGoalId !== null}

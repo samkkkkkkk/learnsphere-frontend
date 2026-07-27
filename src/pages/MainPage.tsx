@@ -24,7 +24,7 @@ export default function MainPage() {
 
   return (
     <div>
-      <main className="container">
+      <div className="container">
         <div id="selection-form">
           <div className="hero-section">
             <p className="hero-eyebrow">learnsphere init --level=beginner</p>
@@ -55,17 +55,20 @@ export default function MainPage() {
               <label className="section-label">학습 주제 선택</label>
               <div className="topic-grid">
                 {topics.map((topic) => (
-                  <div
+                  <button
+                    type="button"
                     key={topic.key}
                     className={`topic-option${selectedTopic === topic.key ? ' active' : ''}${!topic.available ? ' disabled' : ''}`}
                     onClick={() => handleTopicClick(topic.key, topic.available)}
+                    disabled={!topic.available}
+                    aria-pressed={selectedTopic === topic.key}
                   >
                     <div className="topic-content">
                       <h4>{topic.label}</h4>
                       <p>{topic.desc}</p>
                     </div>
                     <div className={`topic-badge ${topic.available ? 'available' : 'coming-soon'}`}>{topic.available ? 'Available' : 'Coming Soon'}</div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -74,7 +77,7 @@ export default function MainPage() {
             </button>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
-} 
+}

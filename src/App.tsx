@@ -27,8 +27,10 @@ function App() {
     <ToastProvider>
     <FocusManagerProvider>
       <ChatWidgetProvider>
+        <a href="#main-content" className="skip-link">본문으로 건너뛰기</a>
         <Header />
         <ErrorBoundary>
+          <main id="main-content">
           <Suspense fallback={<Spinner label="페이지를 불러오는 중" />}>
             <Routes>
               <Route path="/" element={<MainPage />} />
@@ -42,6 +44,7 @@ function App() {
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
+          </main>
         </ErrorBoundary>
         <FocusManagerModal />
         <ChatWidget />
