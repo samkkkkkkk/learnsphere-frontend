@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import Spinner from '../components/ui/Spinner';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
@@ -190,31 +187,8 @@ function LMSPage() {
             <div className="loading"><Spinner label="강의를 불러오는 중" /></div>
           ) : content ? (
             <div className="markdown-content">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  code({node, inline, className, children, ...props}: any) {
-                    const match = /language-(\w+)/.exec(className || '');
-                    return !inline && match ? (
-                      <SyntaxHighlighter
-                        style={tomorrow as any}
-                        language={match[1]}
-                        PreTag="div"
-                        {...props}
-                      >
-                        {String(children).replace(/\n$/, '')}
-                      </SyntaxHighlighter>
-                    ) : (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    );
-                  }
-                }}
-              >
-                {content}
-              </ReactMarkdown>
-              
+              <MarkdownRenderer>{content}</MarkdownRenderer>
+
               {/* 강의 네비게이션 버튼 */}
               {selectedLecture && (
                 <div className="lecture-navigation">
