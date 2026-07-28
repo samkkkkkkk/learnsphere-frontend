@@ -1,5 +1,6 @@
-// 일정관리 탭 — 주간 캘린더 + 일정 추가 (LearningManagerPage에서 분리)
-import { useState } from 'react';
+// 일정관리 탭 — 주간 캘린더 + 일정 추가/수정/삭제
+import React, { useState } from 'react';
+import ConfirmModal from '../ui/ConfirmModal';
 import { getStartOfWeek, getWeekNumber, isToday, toLocalDateStr } from './dateUtils';
 import ScheduleModal from './ScheduleModal';
 import { type Goal, type Schedule, type ScheduleFormType } from './useLearningData';
@@ -7,18 +8,56 @@ import { type Goal, type Schedule, type ScheduleFormType } from './useLearningDa
 type Props = {
   goals: Goal[];
   schedules: Schedule[];
-  addSchedule: (form: ScheduleFormType) => void;
-  toggleScheduleComplete: (scheduleId: number) => void;
+  addSchedule: (form: ScheduleFormType) => Promise<boolean>;
+  updateScheduleItem: (scheduleId: number, form: ScheduleFormType) => Promise<boolean>;
+  deleteScheduleItem: (scheduleId: number) => Promise<boolean>;
+  toggleScheduleComplete: (scheduleId: number) => Promise<void>;
 };
 
-export default function ScheduleTab({ goals, schedules, addSchedule, toggleScheduleComplete }: Props) {
+export default function ScheduleTab({
+  goals, schedules, addSchedule, updateScheduleItem, deleteScheduleItem,
+  toggleScheduleComplete,
+}: Props) {
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
+  const [deletingScheduleId, setDeletingScheduleId] = useState<null | number>(null);
   const [calendarWeek, setCalendarWeek] = useState(new Date());
 
   function getSchedulesForDate(date: Date) {
     const dateString = toLocalDateStr(date);
     return schedules.filter((s) => s.date === dateString);
   }
+
+  const handleModalSubmit = (form: ScheduleFormType) => {
+    if (editingSchedule) {
+      void updateScheduleItem(editingSchedule.id, form);
+    } else {
+      void addSchedule(form);
+    }
+  };
+
+  const handleModalClose = () => {
+    setScheduleModalOpen(false);
+    setEditingSchedule(null);
+  };
+
+  const openEdit = (e: React.MouseEvent, schedule: Schedule) => {
+    e.stopPropagation();
+    setEditingSchedule(schedule);
+    setScheduleModalOpen(true);
+  };
+
+  const openDelete = (e: React.MouseEvent, scheduleId: number) => {
+    e.stopPropagation();
+    setDeletingScheduleId(scheduleId);
+  };
+
+  const confirmDelete = () => {
+    if (deletingScheduleId !== null) {
+      void deleteScheduleItem(deletingScheduleId);
+    }
+    setDeletingScheduleId(null);
+  };
 
   return (
     <section id="schedule" className="section active">
@@ -57,8 +96,16 @@ export default function ScheduleTab({ goals, schedules, addSchedule, toggleSched
                 <div className="day-header">{dayNames[i]} {date.getDate()}</div>
                 <div className="day-events">
                   {daySchedules.map((s) => (
-                    <div className={`event-item${s.completed ? ' completed' : ''}`} key={s.id} onClick={() => toggleScheduleComplete(s.id)}>
-                      {s.time} {s.content}
+                    <div className={`event-item${s.completed ? ' completed' : ''}`} key={s.id} onClick={() => void toggleScheduleComplete(s.id)}>
+                      <span className="event-label">{s.time} {s.content}</span>
+                      <span className="event-actions">
+                        <button className="event-action-btn" aria-label="일정 수정" onClick={(e) => openEdit(e, s)}>
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button className="event-action-btn" aria-label="일정 삭제" onClick={(e) => openDelete(e, s.id)}>
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -70,8 +117,18 @@ export default function ScheduleTab({ goals, schedules, addSchedule, toggleSched
       <ScheduleModal
         open={scheduleModalOpen}
         goals={goals}
-        onClose={() => setScheduleModalOpen(false)}
-        onSubmit={addSchedule}
+        editing={editingSchedule}
+        onClose={handleModalClose}
+        onSubmit={handleModalSubmit}
+      />
+      <ConfirmModal
+        open={deletingScheduleId !== null}
+        title="일정 삭제"
+        message="이 일정을 삭제하면 되돌릴 수 없습니다. 삭제할까요?"
+        confirmLabel="삭제"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setDeletingScheduleId(null)}
       />
     </section>
   );

@@ -52,6 +52,8 @@ export default function LearningManagerPage() {
               goals={data.goals}
               schedules={data.schedules}
               addSchedule={data.addSchedule}
+              updateScheduleItem={data.updateScheduleItem}
+              deleteScheduleItem={data.deleteScheduleItem}
               toggleScheduleComplete={data.toggleScheduleComplete}
             />
           )}

@@ -56,14 +56,6 @@ export type Schedule = {
   createdAt: string;
 };
 
-function readStored<T>(key: string): T[] {
-  try {
-    return JSON.parse(localStorage.getItem(key) || '[]');
-  } catch {
-    return [];
-  }
-}
-
 const toGoalPayload = (form: GoalFormType): learningApi.GoalPayload => ({
   title: form.title,
   category: form.category,
@@ -77,30 +69,39 @@ export function useLearningData() {
   const { showToast } = useToast();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [goalsLoading, setGoalsLoading] = useState(true);
-  const [schedules, setSchedules] = useState<Schedule[]>(
-    () => readStored<Schedule>('schedules'),
-  );
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
 
-  // 목표는 서버에서 로드 (로그인 사용자 기준)
+  // 목표·일정을 서버에서 로드 (로그인 사용자 기준).
+  // 일정은 개인 데이터라 양이 작아 전체를 한 번에 받고, 주간/월간 필터는
+  // 클라이언트에서 한다 (범위 쿼리는 서버가 지원하므로 필요 시 전환 가능).
   useEffect(() => {
     if (!user) {
       setGoals([]);
+      setSchedules([]);
       setGoalsLoading(false);
       return;
     }
     let cancelled = false;
     setGoalsLoading(true);
-    learningApi.fetchGoals()
-      .then((loaded) => { if (!cancelled) setGoals(loaded as Goal[]); })
-      .catch(() => { if (!cancelled) showToast('목표를 불러오지 못했습니다.', 'error'); })
+    Promise.all([learningApi.fetchGoals(), learningApi.fetchSchedules()])
+      .then(([loadedGoals, loadedSchedules]) => {
+        if (cancelled) return;
+        setGoals(loadedGoals as Goal[]);
+        setSchedules(loadedSchedules);
+      })
+      .catch(() => { if (!cancelled) showToast('학습 데이터를 불러오지 못했습니다.', 'error'); })
       .finally(() => { if (!cancelled) setGoalsLoading(false); });
     return () => { cancelled = true; };
   }, [user, showToast]);
 
-  // 일정은 아직 localStorage (P5에서 서버 전환)
-  useEffect(() => {
-    localStorage.setItem('schedules', JSON.stringify(schedules));
-  }, [schedules]);
+  // 일정 완료 상태가 바뀌면 목표 진도율(서버 계산)을 다시 읽는다
+  const refreshGoals = async () => {
+    try {
+      setGoals(await learningApi.fetchGoals() as Goal[]);
+    } catch {
+      // 진도율 갱신 실패는 치명적이지 않다 — 다음 로드에서 맞춰진다
+    }
+  };
 
   const addGoal = async (form: GoalFormType): Promise<boolean> => {
     try {
@@ -135,38 +136,70 @@ export function useLearningData() {
     }
   };
 
-  const addSchedule = (form: ScheduleFormType) => {
-    setSchedules((schedules) => [
-      ...schedules,
-      {
-        id: Date.now(),
-        goalId: Number(form.goalId),
-        date: form.date,
-        time: form.time,
-        content: form.content,
-        duration: Number(form.duration),
-        completed: false,
-        createdAt: new Date().toISOString(),
-      } as Schedule,
-    ]);
+  const toSchedulePayload = (form: ScheduleFormType): learningApi.SchedulePayload => ({
+    goal_id: Number(form.goalId),
+    date: form.date,
+    time: form.time,
+    content: form.content,
+    duration_minutes: Number(form.duration),
+  });
+
+  const addSchedule = async (form: ScheduleFormType): Promise<boolean> => {
+    try {
+      const created = await learningApi.createSchedule(toSchedulePayload(form));
+      setSchedules((schedules) => [...schedules, created]);
+      await refreshGoals();
+      return true;
+    } catch {
+      showToast('일정 저장에 실패했습니다.', 'error');
+      return false;
+    }
   };
 
-  const toggleScheduleComplete = (scheduleId: number) => {
-    setSchedules((schedules) => schedules.map((s) =>
-      s.id === scheduleId ? { ...s, completed: !s.completed } : s));
-    // 과도기(P4) 화면 반영용 — P5에서 서버 진도율 갱신으로 교체
+  const updateScheduleItem = async (scheduleId: number,
+                                    form: ScheduleFormType): Promise<boolean> => {
+    try {
+      const updated = await learningApi.updateSchedule(
+        scheduleId, toSchedulePayload(form));
+      setSchedules((schedules) => schedules.map((s) =>
+        s.id === scheduleId ? updated : s));
+      return true;
+    } catch {
+      showToast('일정 수정에 실패했습니다.', 'error');
+      return false;
+    }
+  };
+
+  const deleteScheduleItem = async (scheduleId: number): Promise<boolean> => {
+    try {
+      await learningApi.deleteSchedule(scheduleId);
+      setSchedules((schedules) => schedules.filter((s) => s.id !== scheduleId));
+      await refreshGoals();
+      return true;
+    } catch {
+      showToast('일정 삭제에 실패했습니다.', 'error');
+      return false;
+    }
+  };
+
+  const toggleScheduleComplete = async (scheduleId: number): Promise<void> => {
     const schedule = schedules.find((s) => s.id === scheduleId);
-    if (schedule && !schedule.completed) {
-      setGoals((goals) => goals.map((g) => g.id === schedule.goalId
-        ? { ...g, progress: Math.min(100, (g.progress || 0) + Math.min(5, (schedule.duration / 60) * 2)) }
-        : g));
+    if (!schedule) return;
+    try {
+      const updated = await learningApi.updateSchedule(
+        scheduleId, { completed: !schedule.completed });
+      setSchedules((schedules) => schedules.map((s) =>
+        s.id === scheduleId ? updated : s));
+      await refreshGoals();
+    } catch {
+      showToast('일정 상태 변경에 실패했습니다.', 'error');
     }
   };
 
   return {
     goals, goalsLoading, schedules,
     addGoal, updateGoal, deleteGoal,
-    addSchedule, toggleScheduleComplete,
+    addSchedule, updateScheduleItem, deleteScheduleItem, toggleScheduleComplete,
   };
 }
 

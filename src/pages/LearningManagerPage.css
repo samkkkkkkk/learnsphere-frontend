@@ -329,6 +329,36 @@ body {
   border-radius: 5px;
   font-size: 0.8rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+}
+.event-item .event-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.event-item .event-actions {
+  display: none;
+  flex-shrink: 0;
+  gap: 0.15rem;
+}
+.event-item:hover .event-actions,
+.event-item:focus-within .event-actions {
+  display: inline-flex;
+}
+.event-action-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 0.15rem;
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+.event-action-btn:hover {
+  opacity: 1;
 }
 .modal {
   display: none;

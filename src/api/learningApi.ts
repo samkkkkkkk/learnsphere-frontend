@@ -91,3 +91,79 @@ export const updateGoal = async (
 export const deleteGoal = async (goalId: number): Promise<void> => {
   await api.delete(`/api/v1/learning/goals/${goalId}`);
 };
+
+// --- 일정 ---
+
+export interface ServerSchedule {
+  id: number;
+  goal_id: number;
+  date: string;
+  time: string;
+  content: string;
+  duration_minutes: number;
+  completed: boolean;
+  created_at?: string;
+}
+
+export interface SchedulePayload {
+  goal_id: number;
+  date: string;
+  time: string;
+  content: string;
+  duration_minutes: number;
+}
+
+export interface MappedSchedule {
+  id: number;
+  goalId: number;
+  date: string;
+  time: string;
+  content: string;
+  duration: number;
+  completed: boolean;
+  createdAt: string;
+}
+
+const mapSchedule = (s: ServerSchedule): MappedSchedule => ({
+  id: s.id,
+  goalId: s.goal_id,
+  date: s.date,
+  time: s.time,
+  content: s.content,
+  duration: s.duration_minutes,
+  completed: s.completed,
+  createdAt: s.created_at ?? '',
+});
+
+export const fetchSchedules = async (
+  start?: string,
+  end?: string,
+): Promise<MappedSchedule[]> => {
+  const params: Record<string, string> = {};
+  if (start) params.start = start;
+  if (end) params.end = end;
+  const response = await api.get<ServerSchedule[]>(
+    '/api/v1/learning/schedules', { params });
+  return response.data.map(mapSchedule);
+};
+
+export const createSchedule = async (
+  payload: SchedulePayload,
+): Promise<MappedSchedule> => {
+  const response = await api.post<ServerSchedule>(
+    '/api/v1/learning/schedules', payload);
+  return mapSchedule(response.data);
+};
+
+export const updateSchedule = async (
+  scheduleId: number,
+  payload: Partial<SchedulePayload> & { completed?: boolean },
+): Promise<MappedSchedule> => {
+  const response = await api.patch<ServerSchedule>(
+    `/api/v1/learning/schedules/${scheduleId}`, payload);
+  return mapSchedule(response.data);
+};
+
+export const deleteSchedule = async (scheduleId: number): Promise<void> => {
+  await api.delete(`/api/v1/learning/schedules/${scheduleId}`);
+};
