@@ -16,12 +16,14 @@ export const CATEGORY_MAP = {
 
 export type CategoryKey = keyof typeof CATEGORY_MAP;
 
+// 숫자 입력은 지우는 중간 상태('')를 허용해야 한다 — Number('')로 강제하면
+// 필드를 비울 때마다 0이 끼어들어 입력이 망가진다. 제출은 required+min이 막는다.
 export type GoalFormType = {
   title: string;
   category: string;
   deadline: string;
   description: string;
-  dailyStudyTime: number;
+  dailyStudyTime: number | '';
   /** 연결할 레슨 레벨 (''이면 미연결) */
   linkedLevel: string;
 };
@@ -31,7 +33,7 @@ export type ScheduleFormType = {
   date: string;
   time: string;
   content: string;
-  duration: number;
+  duration: number | '';
 };
 
 export type Goal = {

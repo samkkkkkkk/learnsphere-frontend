@@ -51,7 +51,8 @@ export default function ScheduleModal({ open, goals, editing, onClose, onSubmit 
     const { id, value, type } = e.target;
     setScheduleForm({
       ...scheduleForm,
-      [id]: type === 'number' ? Number(value) : value,
+      // 지우는 중간 상태('')를 보존한다 — Number('')=0이 끼어들면 입력이 망가진다
+      [id]: type === 'number' ? (value === '' ? '' : Number(value)) : value,
     });
   };
 
