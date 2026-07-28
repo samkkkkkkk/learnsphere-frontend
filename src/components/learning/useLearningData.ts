@@ -22,6 +22,8 @@ export type GoalFormType = {
   deadline: string;
   description: string;
   dailyStudyTime: number;
+  /** 연결할 레슨 레벨 (''이면 미연결) */
+  linkedLevel: string;
 };
 
 export type ScheduleFormType = {
@@ -62,6 +64,7 @@ const toGoalPayload = (form: GoalFormType): learningApi.GoalPayload => ({
   deadline: form.deadline,
   description: form.description,
   daily_study_time: Number(form.dailyStudyTime),
+  linked_level: form.linkedLevel || null,
 });
 
 export function useLearningData() {

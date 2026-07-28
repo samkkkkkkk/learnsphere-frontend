@@ -17,6 +17,7 @@ const EMPTY_FORM: GoalFormType = {
   deadline: getTodayStr(),
   description: '',
   dailyStudyTime: 60,
+  linkedLevel: '',
 };
 
 export default function GoalsTab({ goals, addGoal, updateGoal, deleteGoal }: Props) {
@@ -54,6 +55,7 @@ export default function GoalsTab({ goals, addGoal, updateGoal, deleteGoal }: Pro
       deadline: goal.deadline,
       description: goal.description,
       dailyStudyTime: goal.dailyStudyTime,
+      linkedLevel: goal.linkedLevel ?? '',
     });
     setEditingGoalId(goal.id);
   };
@@ -98,9 +100,20 @@ export default function GoalsTab({ goals, addGoal, updateGoal, deleteGoal }: Pro
             <label htmlFor="description">상세 설명</label>
             <textarea id="description" value={goalForm.description ?? ''} onChange={handleGoalFormChange} placeholder="목표에 대한 구체적인 설명을 입력하세요" rows={3} />
           </div>
-          <div className="form-group">
-            <label htmlFor="dailyStudyTime">일일 학습 시간 (분)</label>
-            <input type="number" id="dailyStudyTime" min={15} max={480} value={goalForm.dailyStudyTime ?? 60} onChange={handleGoalFormChange} required />
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="dailyStudyTime">일일 학습 시간 (분)</label>
+              <input type="number" id="dailyStudyTime" min={15} max={480} value={goalForm.dailyStudyTime ?? 60} onChange={handleGoalFormChange} required />
+            </div>
+            <div className="form-group">
+              <label htmlFor="linkedLevel">레슨 레벨 연결 (선택)</label>
+              <select id="linkedLevel" value={goalForm.linkedLevel ?? ''} onChange={handleGoalFormChange}>
+                <option value="">연결 안 함</option>
+                <option value="초급">초급</option>
+                <option value="중급">중급</option>
+                <option value="고급">고급</option>
+              </select>
+            </div>
           </div>
           <button type="submit" className="btn btn-primary">
             <i className="fas fa-plus"></i> {editingGoalId ? '목표 수정' : '목표 추가'}
@@ -130,8 +143,19 @@ export default function GoalsTab({ goals, addGoal, updateGoal, deleteGoal }: Pro
               <div className="goal-meta">
                 <span><i className="fas fa-calendar"></i> {goal.deadline}</span>
                 <span><i className="fas fa-clock"></i> {goal.dailyStudyTime}분/일</span>
+                {goal.linkedLevel && (
+                  <span><i className="fas fa-book"></i> {goal.linkedLevel} 레슨 연동</span>
+                )}
                 <span className="progress-text">{goal.progress || 0}% 완료</span>
               </div>
+              {goal.progressDetail && (goal.progressDetail.scheduleTotal > 0 || goal.progressDetail.lessonTotal > 0) && (
+                <div className="goal-progress-breakdown">
+                  일정 {goal.progressDetail.scheduleDone}/{goal.progressDetail.scheduleTotal}
+                  {goal.progressDetail.lessonTotal > 0 && (
+                    <> · 레슨 {goal.progressDetail.lessonDone}/{goal.progressDetail.lessonTotal}</>
+                  )}
+                </div>
+              )}
               <div className="goal-actions">
                 <button className="edit-btn" onClick={() => handleGoalEdit(goal)}><i className="fas fa-edit"></i></button>
                 <button className="delete-btn" onClick={() => setDeletingGoalId(goal.id)}><i className="fas fa-trash"></i></button>
