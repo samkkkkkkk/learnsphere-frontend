@@ -21,7 +21,7 @@ const Header: React.FC = () => {
             <NavLink to="/" end className="nav-link">홈</NavLink>
             <NavLink to="/roadmap" className="nav-link">로드맵</NavLink>
             <NavLink to="/react-learn" className="nav-link">학습하기</NavLink>
-            {/* <NavLink to="/learning-manager" className="nav-link">학습관리</NavLink> */}
+            <NavLink to="/learning-manager" className="nav-link">학습관리</NavLink>
             <button onClick={openModal} className="nav-link focus-manager-btn">
               <Icon name="zap" size={14} />
               집중력 매니저
