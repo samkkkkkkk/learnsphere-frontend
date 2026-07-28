@@ -168,6 +168,40 @@ export const deleteSchedule = async (scheduleId: number): Promise<void> => {
   await api.delete(`/api/v1/learning/schedules/${scheduleId}`);
 };
 
+// --- 레슨 퀴즈 진도 ---
+
+export interface LessonProgressPayload {
+  done: number;
+  correct: number;
+  total: number;
+  completed: boolean;
+}
+
+export interface LessonProgressItem extends LessonProgressPayload {
+  lesson_id: number;
+}
+
+export const upsertLessonProgress = async (
+  lessonId: number,
+  payload: LessonProgressPayload,
+): Promise<void> => {
+  await api.put(`/api/v1/learning/lesson-progress/${lessonId}`, payload);
+};
+
+export const fetchLessonProgress = async (): Promise<LessonProgressItem[]> => {
+  const response = await api.get<LessonProgressItem[]>(
+    '/api/v1/learning/lesson-progress');
+  return response.data;
+};
+
+export const importLessonProgress = async (
+  items: LessonProgressItem[],
+): Promise<{ created: number; updated: number; skipped: number }> => {
+  const response = await api.post(
+    '/api/v1/learning/lesson-progress/import', { items });
+  return response.data;
+};
+
 // --- 로컬 데이터 이관 ---
 
 export interface ImportGoalItem {

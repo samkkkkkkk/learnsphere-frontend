@@ -1,36 +1,27 @@
 import { useCallback, useEffect, useState } from 'react';
+import * as learningApi from '../api/learningApi';
 import type { Quiz as QuizItem } from '../api/lessonApi';
+import { getAuthToken } from '../api/axios';
+import {
+  lessonIdOf, QUIZ_PROGRESS_EVENT, storageKeyOf,
+  type Grade, type StoredResult,
+} from './quizProgress';
 import './Quiz.css';
 
-type Grade = 'correct' | 'wrong';
-
-interface StoredResult {
-  grades: (Grade | null)[];
-  completedAt?: string;
-}
-
-/** 퀴즈 진도 변경 시 발행 — 레슨 목록 뱃지 등이 구독한다 */
-export const QUIZ_PROGRESS_EVENT = 'learnsphere:quiz-updated';
-
-const storageKeyOf = (key: string) => `learnsphere.quiz.${key}`;
-
-/** 저장된 퀴즈 진도 조회 (레슨 목록 완료 뱃지용) */
-export function getQuizProgress(key: string): { done: number; correct: number; total: number; completed: boolean } | null {
-  try {
-    const raw = localStorage.getItem(storageKeyOf(key));
-    if (!raw) return null;
-    const data = JSON.parse(raw) as StoredResult;
-    if (!Array.isArray(data.grades)) return null;
-    const done = data.grades.filter(Boolean).length;
-    return {
-      done,
-      correct: data.grades.filter(grade => grade === 'correct').length,
-      total: data.grades.length,
-      completed: done === data.grades.length && data.grades.length > 0,
-    };
-  } catch {
-    return null;
-  }
+/**
+ * 로그인 상태면 퀴즈 진도를 서버에도 남긴다 (fire-and-forget).
+ * 실패해도 UX를 막지 않는다 — localStorage가 오프라인 캐시로 남는다.
+ */
+function syncToServer(key: string, grades: (Grade | null)[]) {
+  const lessonId = lessonIdOf(key);
+  if (lessonId === null || !getAuthToken()) return;
+  const done = grades.filter(Boolean).length;
+  void learningApi.upsertLessonProgress(lessonId, {
+    done,
+    correct: grades.filter(grade => grade === 'correct').length,
+    total: grades.length,
+    completed: done === grades.length && grades.length > 0,
+  }).catch(() => {});
 }
 
 interface QuizProps {
@@ -85,6 +76,7 @@ export default function Quiz({ quizzes, storageKey }: QuizProps) {
       ...(completed ? { completedAt: new Date().toISOString() } : {}),
     };
     localStorage.setItem(storageKeyOf(storageKey), JSON.stringify(payload));
+    syncToServer(storageKey, next);
     window.dispatchEvent(new CustomEvent(QUIZ_PROGRESS_EVENT, { detail: { key: storageKey } }));
   };
 
@@ -100,10 +92,11 @@ export default function Quiz({ quizzes, storageKey }: QuizProps) {
   };
 
   const retake = () => {
-    const next = quizzes.map(() => null);
+    const next: (Grade | null)[] = quizzes.map(() => null);
     setGrades(next);
     setRevealed(new Set());
     localStorage.removeItem(storageKeyOf(storageKey));
+    syncToServer(storageKey, next);
     window.dispatchEvent(new CustomEvent(QUIZ_PROGRESS_EVENT, { detail: { key: storageKey } }));
   };
 

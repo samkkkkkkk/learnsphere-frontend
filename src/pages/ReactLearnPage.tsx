@@ -7,7 +7,10 @@ import type { LessonDetail, LessonIndex } from '../api/lessonApi';
 import Skeleton from '../components/ui/Skeleton';
 import Modal from '../components/ui/Modal';
 import Breadcrumb from '../components/ui/Breadcrumb';
-import Quiz, { getQuizProgress, QUIZ_PROGRESS_EVENT } from '../components/Quiz';
+import Quiz from '../components/Quiz';
+import { getQuizProgress, lessonIdOf, QUIZ_PROGRESS_EVENT } from '../components/quizProgress';
+import * as learningApi from '../api/learningApi';
+import { useAuth } from '../contexts/AuthContext';
 import './ReactLearnPage.css';
 
 // 학습 수준을 위한 타입 정의
@@ -24,6 +27,29 @@ type Level = '초급' | '중급' | '고급';
  */
 // 마지막 학습 위치 저장 키
 const LAST_LESSON_KEY = 'learnsphere.lastLesson';
+// 로컬 퀴즈 기록을 서버로 1회 업로드했는지 표시하는 마커
+const QUIZ_UPLOAD_MARKER = 'learnsphere.quiz.uploaded';
+
+/** localStorage의 퀴즈 기록을 서버 이관용 목록으로 모은다. */
+function collectLocalQuizRecords(): learningApi.LessonProgressItem[] {
+  const items: learningApi.LessonProgressItem[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key?.startsWith('learnsphere.quiz.lesson-')) continue;
+    const lessonId = lessonIdOf(key.replace('learnsphere.quiz.', ''));
+    if (lessonId === null) continue;
+    const progress = getQuizProgress(`lesson-${lessonId}`);
+    if (!progress) continue;
+    items.push({
+      lesson_id: lessonId,
+      done: progress.done,
+      correct: progress.correct,
+      total: progress.total,
+      completed: progress.completed,
+    });
+  }
+  return items;
+}
 
 function loadLastLesson(): { level: Level; lessonId: number } | null {
   try {
@@ -57,6 +83,46 @@ export default function ReactLearn() {
     window.addEventListener(QUIZ_PROGRESS_EVENT, onQuizUpdate);
     return () => window.removeEventListener(QUIZ_PROGRESS_EVENT, onQuizUpdate);
   }, []);
+
+  const { user } = useAuth();
+  // 서버에 저장된 레슨별 완료 여부 — 다른 기기의 기록도 뱃지에 반영된다
+  const [serverCompleted, setServerCompleted] = useState<Record<number, boolean> | null>(null);
+
+  useEffect(() => {
+    if (!user) {
+      setServerCompleted(null);
+      return;
+    }
+    let cancelled = false;
+    const load = async () => {
+      // 이 브라우저의 예전 퀴즈 기록을 1회만 서버로 올린다
+      try {
+        if (!localStorage.getItem(QUIZ_UPLOAD_MARKER)) {
+          const items = collectLocalQuizRecords();
+          if (items.length > 0) await learningApi.importLessonProgress(items);
+          localStorage.setItem(QUIZ_UPLOAD_MARKER, new Date().toISOString());
+        }
+      } catch {
+        // 업로드 실패 시 마커를 남기지 않는다 — 다음 방문에 재시도
+      }
+      try {
+        const list = await learningApi.fetchLessonProgress();
+        if (!cancelled) {
+          setServerCompleted(Object.fromEntries(
+            list.map(p => [p.lesson_id, p.completed])));
+        }
+      } catch {
+        // 서버 조회 실패 시 로컬 기록만으로 뱃지를 그린다
+      }
+    };
+    void load();
+    return () => { cancelled = true; };
+  }, [user]);
+
+  // 뱃지: 이 브라우저 기록(즉시 반영) 또는 서버 기록(다른 기기 포함)
+  const isLessonCompleted = (lessonId: number) =>
+    (getQuizProgress(`lesson-${lessonId}`)?.completed ?? false) ||
+    (serverCompleted?.[lessonId] ?? false);
 
   /**
    * 레슨 인덱스를 로드하는 함수
@@ -246,7 +312,7 @@ export default function ReactLearn() {
                   >
                     <div className="lesson-number">{lesson.number}</div>
                     <div className="lesson-title">{lesson.title}</div>
-                    {getQuizProgress(`lesson-${lesson.id}`)?.completed && (
+                    {isLessonCompleted(lesson.id) && (
                       <span className="lesson-done" title="퀴즈 완료" role="img" aria-label="퀴즈 완료">✓</span>
                     )}
                   </button>
