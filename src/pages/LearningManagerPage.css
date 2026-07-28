@@ -322,6 +322,77 @@ body {
   flex-direction: column;
   gap: 0.25rem;
 }
+/* 월간 캘린더 */
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+}
+.month-day-name {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.25rem 0;
+}
+.month-day {
+  background: var(--color-bg-card);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  min-height: 64px;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+.month-day:hover {
+  border-color: #c47a5a;
+}
+.month-day--empty {
+  background: transparent;
+  cursor: default;
+  border: none;
+}
+.month-day.today {
+  background: linear-gradient(135deg, #c47a5a, #a55f42);
+  color: white;
+}
+.month-day.selected {
+  border-color: #6d7a5e;
+}
+.month-day-number {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.month-day-count {
+  background: #6d7a5e;
+  color: white;
+  border-radius: 999px;
+  min-width: 1.4rem;
+  padding: 0.05rem 0.35rem;
+  font-size: 0.75rem;
+  text-align: center;
+}
+.month-day-count.all-done {
+  background: #c47a5a;
+}
+.month-day-detail {
+  margin-top: 1rem;
+  background: var(--color-bg-card);
+  border-radius: 10px;
+  padding: 1rem;
+}
+.month-day-detail h4 {
+  margin-bottom: 0.5rem;
+}
+.month-day-detail__empty {
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
 .event-item {
   background: #6d7a5e;
   color: white;
