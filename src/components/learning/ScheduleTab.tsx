@@ -113,7 +113,7 @@ export default function ScheduleTab({
                   <div className="day-header">{dayNames[i]} {date.getDate()}</div>
                   <div className="day-events">
                     {daySchedules.map((s) => (
-                      <div className={`event-item${s.completed ? ' completed' : ''}`} key={s.id} onClick={() => void toggleScheduleComplete(s.id)}>
+                      <div className={`event-item${s.completed ? ' completed' : ''}`} key={s.id} title={s.completed ? '클릭하면 완료를 해제합니다' : '클릭하면 완료로 표시합니다'} onClick={() => void toggleScheduleComplete(s.id)}>
                         <span className="event-label">{s.time} {s.content}</span>
                         <span className="event-actions">
                           <button className="event-action-btn" aria-label="일정 수정" onClick={(e) => openEdit(e, s)}>

@@ -86,6 +86,7 @@ export default function MonthCalendar({
                 <div
                   className={`event-item${s.completed ? ' completed' : ''}`}
                   key={s.id}
+                  title={s.completed ? '클릭하면 완료를 해제합니다' : '클릭하면 완료로 표시합니다'}
                   onClick={() => onToggleComplete(s.id)}
                 >
                   <span className="event-label">{s.time} {s.content}</span>

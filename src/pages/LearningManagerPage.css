@@ -410,6 +410,17 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* 완료된 일정 — 클릭 토글의 시각 피드백 */
+.event-item.completed {
+  background: #a8b298;
+  opacity: 0.75;
+}
+.event-item.completed .event-label {
+  text-decoration: line-through;
+}
+.event-item.completed .event-label::before {
+  content: '✓ ';
+}
 .event-item .event-actions {
   display: none;
   flex-shrink: 0;
