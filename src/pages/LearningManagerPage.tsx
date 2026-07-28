@@ -5,13 +5,21 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import './LearningManagerPage.css';
 import FeedbackTab from '../components/learning/FeedbackTab';
 import GoalsTab from '../components/learning/GoalsTab';
+import LearningLoginPrompt from '../components/learning/LearningLoginPrompt';
 import ProgressTab from '../components/learning/ProgressTab';
 import ScheduleTab from '../components/learning/ScheduleTab';
 import { useLearningData } from '../components/learning/useLearningData';
+import Spinner from '../components/ui/Spinner';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function LearningManagerPage() {
+  const { user, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('goals');
   const data = useLearningData();
+
+  // 토큰 복원이 끝나기 전에는 로그인 여부를 단정할 수 없다 (깜빡임 방지)
+  if (isLoading) return <Spinner label="학습 매니저를 불러오는 중" />;
+  if (!user) return <LearningLoginPrompt />;
 
   return (
     <div className="lm-layout">

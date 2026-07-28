@@ -6,9 +6,9 @@ import { CATEGORY_MAP, type Goal, type GoalFormType } from './useLearningData';
 
 type Props = {
   goals: Goal[];
-  addGoal: (form: GoalFormType) => void;
-  updateGoal: (goalId: number, form: GoalFormType) => void;
-  deleteGoal: (goalId: number) => void;
+  addGoal: (form: GoalFormType) => Promise<boolean>;
+  updateGoal: (goalId: number, form: GoalFormType) => Promise<boolean>;
+  deleteGoal: (goalId: number) => Promise<boolean>;
 };
 
 const EMPTY_FORM: GoalFormType = {
@@ -33,15 +33,15 @@ export default function GoalsTab({ goals, addGoal, updateGoal, deleteGoal }: Pro
     });
   };
 
-  const handleGoalSubmit = (e: React.FormEvent) => {
+  const handleGoalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!goalForm.title || !goalForm.category || !goalForm.deadline) return;
     if (editingGoalId) {
-      updateGoal(editingGoalId, goalForm);
+      if (!(await updateGoal(editingGoalId, goalForm))) return;
       setGoalMessage({ text: '목표가 수정되었습니다!', type: 'success' });
       setEditingGoalId(null);
     } else {
-      addGoal(goalForm);
+      if (!(await addGoal(goalForm))) return;
       setGoalMessage({ text: '목표가 성공적으로 추가되었습니다!', type: 'success' });
     }
     setGoalForm({ ...EMPTY_FORM, deadline: getTodayStr() });
@@ -60,7 +60,7 @@ export default function GoalsTab({ goals, addGoal, updateGoal, deleteGoal }: Pro
 
   const confirmGoalDelete = () => {
     if (deletingGoalId !== null) {
-      deleteGoal(deletingGoalId);
+      void deleteGoal(deletingGoalId);
     }
     setDeletingGoalId(null);
   };
