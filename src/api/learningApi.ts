@@ -168,6 +168,23 @@ export const deleteSchedule = async (scheduleId: number): Promise<void> => {
   await api.delete(`/api/v1/learning/schedules/${scheduleId}`);
 };
 
+// --- 대시보드 ---
+
+export interface DashboardStats {
+  overall_progress: number;
+  completed_goals: number;
+  total_goals: number;
+  weekly_hours: number;
+  weekly_pattern: number[];
+  current_streak: number;
+  best_streak: number;
+}
+
+export const fetchDashboard = async (): Promise<DashboardStats> => {
+  const response = await api.get<DashboardStats>('/api/v1/learning/dashboard');
+  return response.data;
+};
+
 // --- 레슨 퀴즈 진도 ---
 
 export interface LessonProgressPayload {
