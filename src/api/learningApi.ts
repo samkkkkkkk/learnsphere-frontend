@@ -185,6 +185,16 @@ export const fetchDashboard = async (): Promise<DashboardStats> => {
   return response.data;
 };
 
+// --- AI 피드백 ---
+
+export type FeedbackType = 'content' | 'schedule' | 'progress' | 'motivation';
+
+export const requestFeedback = async (type: FeedbackType): Promise<string> => {
+  const response = await api.post<{ answer: string }>(
+    '/api/v1/learning/feedback', { feedback_type: type });
+  return response.data.answer;
+};
+
 // --- 레슨 퀴즈 진도 ---
 
 export interface LessonProgressPayload {

@@ -59,9 +59,7 @@ export default function LearningManagerPage() {
               toggleScheduleComplete={data.toggleScheduleComplete}
             />
           )}
-          {activeTab === 'feedback' && (
-            <FeedbackTab goals={data.goals} schedules={data.schedules} />
-          )}
+          {activeTab === 'feedback' && <FeedbackTab />}
           {activeTab === 'progress' && (
             <ProgressTab goals={data.goals} schedules={data.schedules} />
           )}
