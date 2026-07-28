@@ -6,6 +6,7 @@ import './LearningManagerPage.css';
 import FeedbackTab from '../components/learning/FeedbackTab';
 import GoalsTab from '../components/learning/GoalsTab';
 import LearningLoginPrompt from '../components/learning/LearningLoginPrompt';
+import MigrationBanner from '../components/learning/MigrationBanner';
 import ProgressTab from '../components/learning/ProgressTab';
 import ScheduleTab from '../components/learning/ScheduleTab';
 import { useLearningData } from '../components/learning/useLearningData';
@@ -39,6 +40,7 @@ export default function LearningManagerPage() {
       </aside>
       <div className="lm-main">
         <div className="container">
+          <MigrationBanner onImported={data.reload} />
           {activeTab === 'goals' && (
             <GoalsTab
               goals={data.goals}

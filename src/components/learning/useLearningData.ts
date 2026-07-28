@@ -70,6 +70,7 @@ export function useLearningData() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [goalsLoading, setGoalsLoading] = useState(true);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [reloadKey, setReloadKey] = useState(0);
 
   // 목표·일정을 서버에서 로드 (로그인 사용자 기준).
   // 일정은 개인 데이터라 양이 작아 전체를 한 번에 받고, 주간/월간 필터는
@@ -92,7 +93,10 @@ export function useLearningData() {
       .catch(() => { if (!cancelled) showToast('학습 데이터를 불러오지 못했습니다.', 'error'); })
       .finally(() => { if (!cancelled) setGoalsLoading(false); });
     return () => { cancelled = true; };
-  }, [user, showToast]);
+  }, [user, showToast, reloadKey]);
+
+  // 외부 이벤트(로컬 데이터 이관 등) 후 전체 재로드
+  const reload = () => setReloadKey((key) => key + 1);
 
   // 일정 완료 상태가 바뀌면 목표 진도율(서버 계산)을 다시 읽는다
   const refreshGoals = async () => {
@@ -197,7 +201,7 @@ export function useLearningData() {
   };
 
   return {
-    goals, goalsLoading, schedules,
+    goals, goalsLoading, schedules, reload,
     addGoal, updateGoal, deleteGoal,
     addSchedule, updateScheduleItem, deleteScheduleItem, toggleScheduleComplete,
   };

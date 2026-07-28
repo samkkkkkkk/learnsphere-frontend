@@ -360,6 +360,32 @@ body {
 .event-action-btn:hover {
   opacity: 1;
 }
+.lm-migration-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border, #d8cfc4);
+  border-left: 4px solid #6d7a5e;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.lm-migration-banner > i {
+  font-size: 1.5rem;
+  color: #6d7a5e;
+}
+.lm-migration-banner p {
+  flex: 1;
+  min-width: 200px;
+  margin: 0;
+}
+.lm-migration-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .modal {
   display: none;
   position: fixed;

@@ -167,3 +167,38 @@ export const updateSchedule = async (
 export const deleteSchedule = async (scheduleId: number): Promise<void> => {
   await api.delete(`/api/v1/learning/schedules/${scheduleId}`);
 };
+
+// --- 로컬 데이터 이관 ---
+
+export interface ImportGoalItem {
+  local_id: number;
+  title: string;
+  category: string;
+  deadline: string;
+  description?: string | null;
+  daily_study_time: number;
+}
+
+export interface ImportScheduleItem {
+  local_goal_id: number;
+  date: string;
+  time: string;
+  content: string;
+  duration_minutes: number;
+  completed: boolean;
+}
+
+export interface ImportResult {
+  goals_created: number;
+  schedules_created: number;
+  schedules_skipped: number;
+}
+
+export const importLocalData = async (
+  goals: ImportGoalItem[],
+  schedules: ImportScheduleItem[],
+): Promise<ImportResult> => {
+  const response = await api.post<ImportResult>(
+    '/api/v1/learning/import', { goals, schedules });
+  return response.data;
+};
