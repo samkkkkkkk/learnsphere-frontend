@@ -1,58 +1,57 @@
-import { useState, useEffect } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
+import { lazy, Suspense } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import ErrorBoundary from './components/ErrorBoundary';
+import Spinner from './components/ui/Spinner';
+import { FocusManagerProvider } from './contexts/FocusManagerContext';
+import { ChatWidgetProvider } from './contexts/ChatWidgetContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './components/ui/ToastContext';
+import FocusManagerModal from './pages/FocusManagerModal';
+import ChatWidget from './components/chat/ChatWidget';
+
+// 라우트별 code splitting — 초기 번들에서 페이지 코드를 분리한다
+const MainPage = lazy(() => import('./pages/MainPage'));
+const RoadmapPage = lazy(() => import('./pages/RoadmapPage'));
+const ReactLearnPage = lazy(() => import('./pages/ReactLearnPage'));
+const LMSPage = lazy(() => import('./pages/LMSPage'));
+const LearningManagerPage = lazy(() => import('./pages/LearningManagerPage'));
+const AdminPanel = lazy(() => import('./pages/AdminPanel'));
+const WireframePage = lazy(() => import('./pages/WireframePage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 function App() {
-  // const [count, setCount] = useState(0);
-
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    fetch('http://localhost:8000/api/hello/')
-      .then((response) => response.json())
-      .then((data) => setMessage(data.message))
-      .catch((error) => console.error('Error fetching data:', error));
-  }, []); // 빈 배열은 컴포넌트가 마운트될 때 한 번만 실행됨을 의미합니다.
-
-  //   return (
-  //     <>
-  //       <div>
-  //         <a href='https://vite.dev' target='_blank'>
-  //           <img src={viteLogo} className='logo' alt='Vite logo' />
-  //         </a>
-  //         <a href='https://react.dev' target='_blank'>
-  //           <img src={reactLogo} className='logo react' alt='React logo' />
-  //         </a>
-  //       </div>
-  //       <h1>Vite + React</h1>
-  //       <div className='card'>
-  //         <button onClick={() => setCount((count) => count + 1)}>
-  //           count is {count}
-  //         </button>
-  //         <p>
-  //           Edit <code>src/App.tsx</code> and save to test HMR
-  //         </p>
-  //       </div>
-  //       <p className='read-the-docs'>
-  //         Click on the Vite and React logos to learn more
-  //       </p>
-  //     </>
-  //   );
-
   return (
-    <>
-      <div>
-        <img src={viteLogo} className='logo' alt='Vite logo' />
-        <img src={reactLogo} className='logo react' alt='React logo' />
-      </div>
-      <h1>LearnSphere</h1>
-      <div className='card'>
-        <p>
-          Message from backend: <strong>{message || 'Loading...'}</strong>
-        </p>
-      </div>
-    </>
+    <AuthProvider>
+    <ToastProvider>
+    <FocusManagerProvider>
+      <ChatWidgetProvider>
+        <a href="#main-content" className="skip-link">본문으로 건너뛰기</a>
+        <Header />
+        <ErrorBoundary>
+          <main id="main-content">
+          <Suspense fallback={<Spinner label="페이지를 불러오는 중" />}>
+            <Routes>
+              <Route path="/" element={<MainPage />} />
+              <Route path="/roadmap" element={<RoadmapPage />} />
+              <Route path="/learning-manager" element={<LearningManagerPage />} />
+              <Route path="/react-learn" element={<ReactLearnPage />} />
+              <Route path="/lms" element={<LMSPage />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path='/wireframe' element={<WireframePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </Suspense>
+          </main>
+        </ErrorBoundary>
+        <FocusManagerModal />
+        <ChatWidget />
+      </ChatWidgetProvider>
+    </FocusManagerProvider>
+    </ToastProvider>
+    </AuthProvider>
   );
 }
 

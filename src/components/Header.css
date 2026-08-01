@@ -1,0 +1,138 @@
+/* 에디터 상단 바 느낌의 글로벌 헤더 */
+.header {
+  width: 100%;
+  background: var(--color-header-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-line);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-7);
+  padding: 0 var(--space-7);
+  height: 60px;
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.logo-prompt {
+  color: var(--color-accent);
+}
+
+.logo-text {
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+}
+
+.nav {
+  display: flex;
+  flex: 1;
+  gap: var(--space-4);
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-group {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.nav-link {
+  color: var(--color-sub);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--r-sm);
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.nav-link:hover {
+  background: var(--color-raise);
+  color: var(--color-ink);
+}
+
+.nav-link.active {
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  font-weight: 600;
+}
+
+.focus-manager-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* 로그인 상태 표시 — 네비게이션 오른쪽 끝 */
+.nav-auth {
+  gap: var(--space-3);
+  margin-left: var(--space-3);
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--color-line-strong);
+  min-height: 36px;
+}
+
+/* 세션 복원 중 자리 유지용 (CLS 방지) */
+.nav-auth-placeholder {
+  display: inline-block;
+  width: 96px;
+  height: 20px;
+  border-radius: var(--r-sm);
+  background: var(--color-raise);
+}
+
+.nav-nickname {
+  color: var(--color-ink);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.nav-auth-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+@media (max-width: 640px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    height: auto;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .nav {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .nav-auth {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+  }
+}

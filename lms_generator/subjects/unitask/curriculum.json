@@ -1,0 +1,95 @@
+{
+  "subject": {
+    "name": "UniTask",
+    "description": "Unity 전용 고성능 비동기 프로그래밍 라이브러리",
+    "quality_template": "unitask_lecture_example.md",
+    "total_lectures": 12
+  },
+  "lectures": [
+    {
+      "number": 1,
+      "title": "UniTask 첫걸음",
+      "description": "UniTask vs Coroutine, 기본 async/await, AsyncOperation",
+      "filename": "lecture_01_first_steps.md",
+      "status": "example_exists",
+      "focus_keywords": ["async", "await", "UniTask", "Coroutine", "AsyncOperation"],
+      "main_apis": ["UniTask.Delay", "Resources.LoadAsync", "SceneManager.LoadSceneAsync"],
+      "avoid_topics": []
+    },
+    {
+      "number": 2,
+      "title": "시간과 프레임 제어",
+      "description": "UniTask.Delay, DelayFrame, Yield, NextFrame, ignoreTimeScale",
+      "filename": "lecture_02_time_frame_control.md",
+      "focus_keywords": ["DelayFrame", "Yield", "NextFrame", "ignoreTimeScale", "PlayerLoop"],
+      "main_apis": ["UniTask.DelayFrame", "UniTask.Yield", "UniTask.NextFrame", "UniTask.Delay"],
+      "avoid_topics": ["Coroutine vs UniTask 기본 비교", "async/await 기본 설명", "기본 설치 및 설정"]
+    },
+    {
+      "number": 3,
+      "title": "Unity AsyncOperation 완전 정복",
+      "description": "SceneManager, Resources, UnityWebRequest, Addressables 비동기 처리",
+      "filename": "lecture_03_asyncoperation_mastery.md",
+      "focus_keywords": ["AsyncOperation", "SceneManager", "Resources", "UnityWebRequest", "Addressables"],
+      "main_apis": ["SceneManager.LoadSceneAsync", "Resources.LoadAsync", "UnityWebRequest.Get", "Addressables.LoadAssetAsync"],
+      "avoid_topics": ["기본 async/await 설명", "시간 기반 대기 작업"]
+    },
+    {
+      "number": 4,
+      "title": "취소 시스템 마스터하기",
+      "description": "CancellationToken 심화, GetCancellationTokenOnDestroy, CancelAfterSlim",
+      "filename": "lecture_04_cancellation_system.md",
+      "focus_keywords": ["CancellationToken", "GetCancellationTokenOnDestroy", "CancelAfterSlim", "OperationCanceledException"],
+      "main_apis": ["this.GetCancellationTokenOnDestroy", "CancellationTokenSource", "UniTask.CancelAfterSlim"],
+      "avoid_topics": ["AsyncOperation 기본 사용법", "기본 시간 대기"]
+    },
+    {
+      "number": 5,
+      "title": "예외 처리와 안전한 코딩",
+      "description": "try-catch 패턴, OperationCanceledException, Result<T> 패턴",
+      "filename": "lecture_05_exception_handling.md"
+    },
+    {
+      "number": 6,
+      "title": "진행 상황과 피드백",
+      "description": "IProgress<T>, Progress.Create, 로딩바 실무 패턴",
+      "filename": "lecture_06_progress_feedback.md"
+    },
+    {
+      "number": 7,
+      "title": "병렬 처리의 기술",
+      "description": "WhenAll, WhenAny, 복합 작업 조합, 조건부 병렬 처리",
+      "filename": "lecture_07_parallel_processing.md"
+    },
+    {
+      "number": 8,
+      "title": "커스텀 비동기 작업",
+      "description": "UniTaskCompletionSource 활용, 콜백을 async/await로 변환",
+      "filename": "lecture_08_custom_async_tasks.md"
+    },
+    {
+      "number": 9,
+      "title": "async void vs UniTaskVoid",
+      "description": "fire-and-forget 패턴, UniTask.Action, MonoBehaviour 생명주기 연동",
+      "filename": "lecture_09_async_void_patterns.md"
+    },
+    {
+      "number": 10,
+      "title": "AsyncEnumerable과 스트림",
+      "description": "IUniTaskAsyncEnumerable, Async LINQ, 실시간 데이터 스트림 처리",
+      "filename": "lecture_10_async_enumerable.md"
+    },
+    {
+      "number": 11,
+      "title": "Unity 이벤트와 UI 연동",
+      "description": "Awaitable Events, AsyncTriggers, Button 클릭 비동기 처리",
+      "filename": "lecture_11_unity_events_ui.md"
+    },
+    {
+      "number": 12,
+      "title": "디버깅과 성능 최적화",
+      "description": "UniTaskTracker 활용법, 메모리 누수 방지, 성능 프로파일링",
+      "filename": "lecture_12_debugging_optimization.md"
+    }
+  ]
+}

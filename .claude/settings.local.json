@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:cysharp.github.io)",
+      "WebFetch(domain:github.com)",
+      "Bash(ls:*)",
+      "Bash(python:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "Bash(git checkout:*)",
+      "Bash(npm install:*)"
+    ],
+    "deny": []
+  }
+}
